@@ -1,0 +1,87 @@
+{
+  "groups": [
+    {
+      "name": "access-settings",
+      "type": "hu.dpc.ob.config.AccessSettings",
+      "sourceType": "hu.dpc.ob.config.AccessSettings"
+    },
+    {
+      "name": "adapter-settings",
+      "type": "hu.dpc.ob.config.AdapterSettings",
+      "sourceType": "hu.dpc.ob.config.AdapterSettings"
+    },
+    {
+      "name": "api-settings",
+      "type": "hu.dpc.ob.config.ApiSettings",
+      "sourceType": "hu.dpc.ob.config.ApiSettings"
+    },
+    {
+      "name": "psp-settings",
+      "type": "hu.dpc.ob.config.PspSettings",
+      "sourceType": "hu.dpc.ob.config.PspSettings"
+    }
+  ],
+  "properties": [
+    {
+      "name": "access-settings.schemas",
+      "type": "java.util.List<hu.dpc.ob.config.SchemaProperties<hu.dpc.ob.config.AccessSettings$AccessHeader,hu.dpc.ob.config.AccessSettings$AccessOperation,hu.dpc.ob.config.AccessSettings$AccessBinding>>",
+      "sourceType": "hu.dpc.ob.config.AccessSettings"
+    },
+    {
+      "name": "adapter-settings.expiration",
+      "type": "java.lang.Long",
+      "sourceType": "hu.dpc.ob.config.AdapterSettings"
+    },
+    {
+      "name": "adapter-settings.instance",
+      "type": "java.lang.String",
+      "sourceType": "hu.dpc.ob.config.AdapterSettings"
+    },
+    {
+      "name": "adapter-settings.schemas",
+      "type": "java.util.List<hu.dpc.ob.rest.internal.ApiSchema>",
+      "sourceType": "hu.dpc.ob.config.AdapterSettings"
+    },
+    {
+      "name": "adapter-settings.tenants",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "hu.dpc.ob.config.AdapterSettings"
+    },
+    {
+      "name": "api-settings.permissions",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "hu.dpc.ob.config.ApiSettings"
+    },
+    {
+      "name": "api-settings.schemas",
+      "type": "java.util.List<hu.dpc.ob.config.SchemaProperties<hu.dpc.ob.config.ApiSettings$ApiHeader,hu.dpc.ob.config.ApiSettings$ApiOperation,hu.dpc.ob.config.ApiSettings$ApiBinding>>",
+      "sourceType": "hu.dpc.ob.config.ApiSettings"
+    },
+    {
+      "name": "psp-settings.adapter-settings",
+      "type": "hu.dpc.ob.config.AdapterSettings",
+      "sourceType": "hu.dpc.ob.config.PspSettings"
+    },
+    {
+      "name": "psp-settings.auth",
+      "type": "hu.dpc.ob.config.AuthProperties",
+      "sourceType": "hu.dpc.ob.config.PspSettings"
+    },
+    {
+      "name": "psp-settings.bindings",
+      "type": "java.util.List<hu.dpc.ob.config.BindingProperties>",
+      "sourceType": "hu.dpc.ob.config.PspSettings"
+    },
+    {
+      "name": "psp-settings.headers",
+      "type": "java.util.List<hu.dpc.ob.config.HeaderProperties>",
+      "sourceType": "hu.dpc.ob.config.PspSettings"
+    },
+    {
+      "name": "psp-settings.operations",
+      "type": "java.util.List<hu.dpc.ob.config.OperationProperties>",
+      "sourceType": "hu.dpc.ob.config.PspSettings"
+    }
+  ],
+  "hints": []
+}

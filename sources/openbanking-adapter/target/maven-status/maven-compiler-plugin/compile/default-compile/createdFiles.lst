@@ -1,0 +1,12 @@
+META-INF/spring-configuration-metadata.json
+hu/dpc/ob/config/Header.class
+hu/dpc/ob/config/TenantDependentProperties.class
+hu/dpc/ob/config/BindingProperties.class
+hu/dpc/ob/config/ApplicationSettings.class
+hu/dpc/ob/config/ListConfig.class
+hu/dpc/ob/domain/type/PersistentType.class
+hu/dpc/ob/config/UriProperties.class
+hu/dpc/ob/rest/parser/SchemaJsonParser.class
+hu/dpc/ob/domain/type/DisplayType.class
+hu/dpc/ob/config/TenantProperties.class
+hu/dpc/ob/domain/type/ConsentStatus.class

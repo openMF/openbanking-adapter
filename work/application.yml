@@ -1,0 +1,169 @@
+#
+#    This Source Code Form is subject to the terms of the Mozilla
+#    Public License, v. 2.0. If a copy of the MPL was not distributed
+#    with this file, You can obtain one at
+#
+#    https://mozilla.org/MPL/2.0/.
+#
+
+debug: true
+
+spring:
+  main:
+    web-application-type: none
+  datasource:
+    url: jdbc:mariadb://localhost:3377/ob_tn01
+    username: root
+    password: mysql
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/liquibase-changelog.yml
+
+logging:
+  level:
+    liquibase: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+
+# the name of Camel
+camel:
+  springboot:
+    name: RestCamel
+
+adapter-settings:
+  instance: in01
+  expiration: 30000
+  schemas: OB # OB (OpenBanking UK), PSD2 (NextGenPsd2)
+  tenants: tn01, tn02
+
+api-settings:
+  cors-enabled: true
+  schemas:
+  - name: OB
+    permissions: ReadAccountsBasic, ReadAccountsDetail, ReadBalances, ReadParty, ReadPartyPSU, ReadTransactionsBasic, ReadTransactionsCredits, ReadTransactionsDebits, ReadTransactionsDetail
+    headers:
+    - name: auth-date
+      key: x-fapi-auth-date
+    - name: customer-ip-address
+      key: x-fapi-customer-ip-address
+    - name: interaction-id
+      key: x-fapi-interaction-id
+    bindings: #tpp -> adapter
+    - name: binding-basic-settings
+      tenants:
+      - name: tn01
+        port: 62020
+      - name: tn02
+        port: 62021
+      host: http://0.0.0.0 #http://payments.dpc.hu:80
+      base: adapter/ob
+    - name: accounts #get list of owned accounts
+      path: accounts
+      method: GET
+    - name: account #get owned account details
+      path: accounts/{accountId}
+      method: GET
+    - name: account-balances #get account balance information
+      path: accounts/{accountId}/balances
+      method: GET
+    - name: account-transactions #get account transaction information
+      path: accounts/{accountId}/transactions
+      method: GET
+    - name: ais-consent #get AIS consent
+      path: account-access-consents/{consentId}
+      method: GET
+    - name: ais-consent-create #create AIS TPP consent
+      path: account-access-consents
+      method: POST
+      body-class: hu.dpc.ob.rest.dto.ob.api.ConsentCreateRequestDto
+
+access-settings:
+  cors-enabled: false
+  schemas:
+  - name: schema-basic-settings
+    operations: #adapter -> psp
+    - name: operation-basic-settings
+      user: admin
+      password: admin
+      host:
+      port:
+      base:
+    - name: userinfo #login
+      path: userinfo
+      method: GET
+    - name: introspect
+      path: introspect
+      method: GET
+  - name: OB
+    headers:
+    - name: client
+      key: client_id
+    - name: user
+      key: user_id
+    bindings: #tpp -> adapter
+    - name: binding-basic-settings
+      tenants:
+      - name: tn01
+        port: 63030
+      - name: tn02
+        port: 63031
+      host: http://0.0.0.0
+      base: adapter/ob
+    - name: accounts-held #get list of consent accounts
+      path: accounts-held
+      method: GET
+    - name: party #get user details
+      path: party/{partyId}
+      method: GET
+    - name: consent #get user consent
+      path: consents/{consentId}
+      method: GET
+    - name: consent-update #update user consent
+      path: consents/{consentId}
+      method: PUT
+      body-class: hu.dpc.ob.rest.dto.ob.access.ConsentUpdateRequestDto
+
+psp-settings:
+  auth:
+    profile: BASIC
+    encode: NONE
+  headers:
+  - name: user
+    key: User
+  - name: tenant
+    key: Fineract-Platform-TenantId
+  operations: #adapter -> psp
+  - name: operation-basic-settings
+    user: mifos
+    password: password
+    host: http://localhost
+    port: 80
+    base: fineract-provider/api/v1
+  - name: auth #login
+    path: authentication
+    method: GET
+    body-class: hu.dpc.ob.rest.dto.psp.FineractXLoginResponseDto
+  - name: accounts
+    path: clients/{clientId}/accounts
+    method: GET
+  - name: client
+    path: clients/{clientId}
+    method: GET
+  - name: account
+    path: clients/{clientId}/accounts
+    method: GET
+  - name: account-balances
+    path:
+    method: GET
+  - name:
+    path: interoperation/quotes
+    method: GET
