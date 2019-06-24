@@ -75,10 +75,10 @@ public class ContextUtils {
         HashMap<String, String> result = new HashMap<>(noOfParams);
         int pathPos = 0;
         int pos = 0;
-        for (int i = 0; i < noOfParams - 1; i++) {
-            int start = pathConfig.indexOf(CONFIG_PATH_PARAM_STRART, pos) + 1;
+        for (int i = 0; i < noOfParams; i++) {
+            int start = pathConfig.indexOf(CONFIG_PATH_PARAM_STRART, pos);
             int end = pathConfig.indexOf(CONFIG_PATH_PARAM_END, start);
-            String key = pathConfig.substring(start, end);
+            String key = pathConfig.substring(start + 1, end);
             pos = end + 1;
             if (i > 0) {
                 start = pathInfo.indexOf(PATH_PARAM_SEPARATOR, pathPos) + 1;
@@ -87,6 +87,7 @@ public class ContextUtils {
             if (end < 0)
                 end = pathInfo.length();
             String value = pathInfo.substring(start, end);
+            pathPos = end + 1;
             result.put(key, value);
         }
         return result;
@@ -96,12 +97,17 @@ public class ContextUtils {
         return (String) exchange.getProperty(ExchangeHeader.PATH_PARAMS.getKey(), Map.class).get(paramName);
     }
 
-    public static String resolvePathParam(String pathInfo, String paramName, String value) {
-        if (pathInfo == null || paramName == null)
+    public static String resolvePathParam(String pathInfo, Map<String, String> params) {
+        if (pathInfo == null || params == null)
             return pathInfo;
 
-        paramName = paramName.startsWith(CONFIG_PATH_PARAM_STRART) ? paramName : (CONFIG_PATH_PARAM_STRART + paramName + CONFIG_PATH_PARAM_END);
-        return pathInfo.replace(paramName, value == null ? "" : value);
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            String paramName = entry.getKey();
+            paramName = paramName.startsWith(CONFIG_PATH_PARAM_STRART) ? paramName : (CONFIG_PATH_PARAM_STRART + paramName + CONFIG_PATH_PARAM_END);
+            String value = entry.getValue();
+            pathInfo.replace(paramName, value == null ? "" : value);
+        }
+        return pathInfo;
     }
 
     public static String resolvePathParams(String pathConfig, String... values) {
@@ -111,14 +117,14 @@ public class ContextUtils {
         int noOfParams = StringUtils.countOccurrencesOf(pathConfig, CONFIG_PATH_PARAM_STRART);
         if (noOfParams == 0)
             return pathConfig;
-        if (values == null || noOfParams != pathConfig.length())
+        if (values == null || noOfParams != values.length)
             throw new IllegalArgumentException("Can not format path configuration " + pathConfig + ". Number of parameters do not match for " + Arrays.toString(values));
 
         StringBuilder pathInfo = new StringBuilder();
 
         int pos = 0;
-        for (int i = 0; i < noOfParams - 1; i++) {
-            int start = pathConfig.indexOf(CONFIG_PATH_PARAM_STRART, pos) + 1;
+        for (int i = 0; i < noOfParams; i++) {
+            int start = pathConfig.indexOf(CONFIG_PATH_PARAM_STRART, pos);
             int end = pathConfig.indexOf(CONFIG_PATH_PARAM_END, start);
 
             pathInfo.append(pathConfig.substring(pos, start)).append(values[i]);
@@ -139,7 +145,7 @@ public class ContextUtils {
     }
 
     public static void assertNotNull(Object o) {
-        assertNotNull("Assert object is null");
+        assertNotNull(o, "Assert object is null");
     }
 
     public static void assertNotNull(Object o, String msg) {

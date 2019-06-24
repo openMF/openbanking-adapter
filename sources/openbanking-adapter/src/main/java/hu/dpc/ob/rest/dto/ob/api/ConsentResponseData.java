@@ -8,11 +8,13 @@
 package hu.dpc.ob.rest.dto.ob.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import hu.dpc.ob.domain.entity.Consent;
 import hu.dpc.ob.domain.type.ApiPermission;
 import hu.dpc.ob.domain.type.ConsentStatus;
+import hu.dpc.ob.rest.parser.LocalFormatDateTimeDeserializer;
+import hu.dpc.ob.rest.parser.LocalFormatDateTimeSerializer;
 import hu.dpc.ob.service.ConsentService;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -38,7 +40,8 @@ public class ConsentResponseData extends ConsentData {
 
     @JsonProperty(value = "CreationDateTime", required = true)
     @NotNull
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonSerialize(using = LocalFormatDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalFormatDateTimeDeserializer.class)
     private LocalDateTime creationDateTime;
 
     @JsonProperty(value = "Status", required = true)
@@ -47,7 +50,8 @@ public class ConsentResponseData extends ConsentData {
 
     @JsonProperty(value = "StatusUpdateDateTime", required = true)
     @NotNull
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonSerialize(using = LocalFormatDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalFormatDateTimeDeserializer.class)
     private LocalDateTime statusUpdateDateTime;
 
     protected ConsentResponseData(@NotNull String consentId, @NotNull LocalDateTime creationDateTime, @NotNull ConsentStatus status,

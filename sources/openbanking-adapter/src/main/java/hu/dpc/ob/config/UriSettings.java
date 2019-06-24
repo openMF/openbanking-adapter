@@ -29,6 +29,8 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
     public HeaderProperties getHeader(String header) {
         if (header == null)
             return null;
+        if (getHeaders() == null)
+            return null;
         for (HeaderProperties headerProps : getHeaders()) {
             if (header.equals(headerProps.getName()))
                 return headerProps;
@@ -54,7 +56,9 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
     protected OperationProperties getOperation(String operation) {
         if (operation == null)
             return null;
-        for (OperationProperties operationProps : getOperations()) {
+        if (getOperations() == null)
+            return null;
+        for (OperationProperties operationProps : operations) {
             if (operation.equals(operationProps.getName()))
                 return operationProps;
         }
@@ -68,11 +72,28 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
     protected TenantProperties getOperation(String operation, String tenant) {
         if (operation == null)
             return null;
-        for (OperationProperties operationProps : getOperations()) {
+        if (getOperations() == null)
+            return null;
+        for (OperationProperties operationProps : operations) {
             if (operation.equals(operationProps.getName()))
                 return operationProps.getTenant(tenant);
         }
         return null;
+    }
+
+    protected OperationProperties addOperation(OperationProperties operation) {
+        if (getOperations() == null) {
+            operations = new ArrayList<>(1);
+        }
+        operations.add(operation);
+        return operation;
+    }
+
+    protected OperationProperties removeOperation(OperationProperties operation) {
+        if (getOperations() != null) {
+            operations.remove(operation);
+        }
+        return operation;
     }
 
     public BindingProperties getBinding(@NotNull _B binding) {
@@ -82,7 +103,9 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
     protected BindingProperties getBinding(String binding) {
         if (binding == null)
             return null;
-        for (BindingProperties bindingProps : getBindings()) {
+        if (getBindings() == null)
+            return null;
+        for (BindingProperties bindingProps : bindings) {
             if (binding.equals(bindingProps.getName()))
                 return bindingProps;
         }
@@ -96,29 +119,16 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
     protected TenantProperties getBinding(String binding, String tenant) {
         if (binding == null)
             return null;
-        for (BindingProperties bindingProps : getBindings()) {
+        if (getBindings() == null)
+            return null;
+        for (BindingProperties bindingProps : bindings) {
             if (binding.equals(bindingProps.getName()))
                 return bindingProps.getTenant(tenant);
         }
         return null;
     }
 
-    private OperationProperties addOperation(OperationProperties operation) {
-        if (getOperations() == null) {
-            operations = new ArrayList<>(1);
-        }
-        operations.add(operation);
-        return operation;
-    }
-
-    private OperationProperties removeOperation(OperationProperties operation) {
-        if (getOperations() != null) {
-            operations.remove(operation);
-        }
-        return operation;
-    }
-
-    private BindingProperties addBinding(BindingProperties binding) {
+    protected BindingProperties addBinding(BindingProperties binding) {
         if (getBindings() == null) {
             bindings = new ArrayList<>(1);
         }
@@ -126,7 +136,7 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
         return binding;
     }
 
-    private BindingProperties removeBinding(BindingProperties binding) {
+    protected BindingProperties removeBinding(BindingProperties binding) {
         if (getBindings() != null) {
             bindings.remove(binding);
         }

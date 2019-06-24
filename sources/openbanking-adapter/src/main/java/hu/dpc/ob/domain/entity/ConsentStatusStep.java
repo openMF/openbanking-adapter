@@ -7,17 +7,22 @@
  */
 package hu.dpc.ob.domain.entity;
 
-import hu.dpc.ob.domain.type.ApiScope;
 import hu.dpc.ob.domain.type.ConsentStatus;
-import hu.dpc.ob.util.PersistentTypeEnumConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -25,7 +30,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings("unused")
 @Entity
 @Table(name = "consent_status_step", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"seq_no"}, name = "uk_consent_status_step.seq")})
+        @UniqueConstraint(columnNames = {"consent_id", "seq_no"}, name = "uk_consent_status_step.seq")})
 public class ConsentStatusStep extends AbstractEntity {
 
     @NotNull

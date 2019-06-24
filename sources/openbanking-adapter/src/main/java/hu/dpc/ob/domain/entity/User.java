@@ -16,12 +16,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -45,6 +44,5 @@ public class User extends AbstractEntity {
     private boolean active;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
-    @OrderBy("id")
-    private List<Consent> consents;
+    private List<Consent> consents = new ArrayList<>();
 }

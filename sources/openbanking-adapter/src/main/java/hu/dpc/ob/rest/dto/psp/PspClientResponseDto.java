@@ -8,6 +8,8 @@
 package hu.dpc.ob.rest.dto.psp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +34,7 @@ public class PspClientResponseDto {
     private CodeValueData subStatus;
 
     private Boolean active;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate activationDate;
 
     private String firstname;
@@ -41,6 +44,7 @@ public class PspClientResponseDto {
     private String displayName;
     private String mobileNo;
     private String emailAddress;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate dateOfBirth;
     private CodeValueData gender;
     private CodeValueData clientType;

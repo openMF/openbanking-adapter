@@ -8,14 +8,15 @@
 package hu.dpc.ob.rest.dto.ob.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import hu.dpc.ob.domain.entity.Consent;
 import hu.dpc.ob.rest.dto.psp.PspAccountsResponseDto;
+import hu.dpc.ob.rest.dto.psp.PspIdentifiersResponseDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -30,16 +31,16 @@ public class AccountsResponseDto {
         this.data = data;
     }
 
-    public static AccountsResponseDto transform(@NotNull PspAccountsResponseDto pspAccounts, boolean detail, String accountId) {
-        AccountsData transform = AccountsData.transform(pspAccounts, detail, accountId);
+    public static AccountsResponseDto transform(@NotNull PspAccountsResponseDto pspAccounts, Map<String, PspIdentifiersResponseDto> idMap, boolean detail, String accountId) {
+        AccountsData transform = AccountsData.transform(pspAccounts, idMap, detail, accountId);
         return new AccountsResponseDto(transform);
     }
 
-    public static AccountsResponseDto transform(@NotNull PspAccountsResponseDto pspAccounts, boolean detail) {
-        return transform(pspAccounts, detail, null);
+    public static AccountsResponseDto transform(@NotNull PspAccountsResponseDto pspAccounts, Map<String, PspIdentifiersResponseDto> idMap, boolean detail) {
+        return transform(pspAccounts, idMap, detail, null);
     }
 
     public static AccountsResponseDto transform(@NotNull PspAccountsResponseDto pspAccounts) {
-        return transform(pspAccounts, false);
+        return transform(pspAccounts, null, false);
     }
 }

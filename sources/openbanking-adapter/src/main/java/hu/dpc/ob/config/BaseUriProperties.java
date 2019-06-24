@@ -12,10 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
 
 @Getter
 @Setter(AccessLevel.PUBLIC)
@@ -37,9 +35,11 @@ public class BaseUriProperties extends ListProperties {
     }
 
     public String getUrl() {
-        String base = Objects.toString(this.base, "");
-        return host + (Strings.isEmpty(port) ? "" : (':' + port))
-                + ((base.charAt(0) != '/' ? '/' : "") + base)
+        return host + (Strings.isEmpty(port) ? "" : (':' + port)) + getUriPath();
+    }
+
+    public String getUriPath() {
+        return (Strings.isEmpty(base) ? "" : ((base.charAt(0) != '/' ? '/' : "") + base))
                 + ((path.charAt(0) != '/' ? '/' : "") + path);
     }
 

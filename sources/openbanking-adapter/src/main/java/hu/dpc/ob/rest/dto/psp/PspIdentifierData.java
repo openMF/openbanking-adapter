@@ -5,25 +5,33 @@
  *
  * https://mozilla.org/MPL/2.0/.
  */
-package hu.dpc.ob.rest.dto.ob.access;
+package hu.dpc.ob.rest.dto.psp;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import hu.dpc.ob.domain.type.IdentifierType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserInfoResponseDto {
+@SuppressWarnings("unused")
+@JsonIgnoreProperties(ignoreUnknown=true)
+public class PspIdentifierData {
 
     @NotNull
-    private String sub;
-    private String email;
-    @JsonProperty(value = "email_verified")
-    private boolean emailVerified;
-    private String name;
+    @Length(max = 32)
+    private IdentifierType idType;
+
+    @NotNull
+    @Length(max = 128)
+    private String idValue;
+
+    @Length(max = 128)
+    private String subIdOrType;
 }

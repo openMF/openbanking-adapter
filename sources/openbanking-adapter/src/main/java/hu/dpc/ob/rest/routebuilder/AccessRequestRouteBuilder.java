@@ -7,7 +7,6 @@
  */
 package hu.dpc.ob.rest.routebuilder;
 
-import hu.dpc.ob.cache.TransactionContextHolder;
 import hu.dpc.ob.config.AccessSettings;
 import hu.dpc.ob.config.AdapterSettings;
 import hu.dpc.ob.rest.internal.ApiSchema;
@@ -15,6 +14,7 @@ import org.apache.camel.CamelContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
 import javax.validation.constraints.NotNull;
@@ -29,8 +29,8 @@ public class AccessRequestRouteBuilder extends OpenbankingRouteBuilder {
     private AccessSettings accessSettings;
 
     @Autowired
-    public AccessRequestRouteBuilder(CamelContext camelContext, AccessSettings accessSettings) {
-        super(camelContext);
+    public AccessRequestRouteBuilder(CamelContext camelContext, ApplicationContext appContext, AccessSettings accessSettings) {
+        super(camelContext, appContext);
         this.accessSettings = accessSettings;
     }
 

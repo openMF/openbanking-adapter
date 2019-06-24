@@ -12,7 +12,7 @@ spring:
   main:
     web-application-type: none
   datasource:
-    url: jdbc:mariadb://localhost:3377/ob_tn01
+    url: jdbc:mariadb://localhost:3306/ob_tn02
     username: root
     password: mysql
     driver-class-name: org.mariadb.jdbc.Driver
@@ -43,7 +43,7 @@ adapter-settings:
   instance: in01
   expiration: 30000
   schemas: OB # OB (OpenBanking UK), PSD2 (NextGenPsd2)
-  tenants: tn01, tn02
+  tenants: tn02
 
 api-settings:
   cors-enabled: true
@@ -88,21 +88,24 @@ api-settings:
 
 access-settings:
   cors-enabled: false
+  mock: false
   schemas:
   - name: schema-basic-settings
     operations: #adapter -> psp
     - name: operation-basic-settings
       user: admin
       password: admin
-      host:
-      port:
+      host: https://api.lion.mlabs.dpc.hu # https://10.3.2.101
+    - name: userinfo
+      port: 8243 # https: 8243 http: 9763, 8280
       base:
-    - name: userinfo #login
       path: userinfo
       method: GET
     - name: introspect
+      port: 9443
+      base: oauth2
       path: introspect
-      method: GET
+      method: POST
   - name: OB
     headers:
     - name: client
@@ -145,8 +148,12 @@ psp-settings:
   - name: operation-basic-settings
     user: mifos
     password: password
-    host: http://localhost
-    port: 80
+    tenants:
+    - name: tn01
+      host: http://localhost # http://buffalo.mlabs.dpc.hu
+    - name: tn02
+      host: http://localhost # http://lion.mlabs.dpc.hu
+    port: 8080 # 80
     base: fineract-provider/api/v1
   - name: auth #login
     path: authentication
@@ -161,9 +168,6 @@ psp-settings:
   - name: account
     path: clients/{clientId}/accounts
     method: GET
-  - name: account-balances
-    path:
-    method: GET
-  - name:
-    path: interoperation/quotes
+  - name: identifiers
+    path: interoperation/accounts/{accountId}/identifiers
     method: GET

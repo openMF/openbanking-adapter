@@ -18,6 +18,8 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
+
 
 @Component("access-ob-consent-update-processor")
 public class ConsentUpdateProcessor implements Processor {
@@ -30,6 +32,7 @@ public class ConsentUpdateProcessor implements Processor {
     }
 
     @Override
+    @Transactional
     public void process(Exchange exchange) throws Exception {
         String clientId = exchange.getProperty(ExchangeHeader.CLIENT_ID.getKey(), String.class);
         String apiUserId = exchange.getProperty(ExchangeHeader.API_USER_ID.getKey(), String.class);

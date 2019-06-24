@@ -7,23 +7,21 @@
  */
 package hu.dpc.ob.service;
 
-import hu.dpc.ob.domain.ConsentStateMachine;
 import hu.dpc.ob.domain.entity.Consent;
 import hu.dpc.ob.domain.entity.ConsentAccount;
 import hu.dpc.ob.domain.entity.ConsentEvent;
+import hu.dpc.ob.domain.entity.ConsentEventRepository;
 import hu.dpc.ob.domain.entity.ConsentPermission;
 import hu.dpc.ob.domain.entity.ConsentRepository;
-import hu.dpc.ob.domain.entity.ConsentStatusStep;
 import hu.dpc.ob.domain.entity.ConsentTransaction;
 import hu.dpc.ob.domain.entity.User;
 import hu.dpc.ob.domain.type.ApiPermission;
 import hu.dpc.ob.domain.type.ApiScope;
 import hu.dpc.ob.domain.type.ConsentActionType;
-import hu.dpc.ob.domain.type.ConsentStatus;
-import hu.dpc.ob.rest.component.PspRestClient;
 import hu.dpc.ob.rest.dto.ob.access.ConsentAccountData;
 import hu.dpc.ob.rest.dto.ob.access.ConsentUpdateData;
 import hu.dpc.ob.rest.dto.ob.access.ConsentUpdateRequestDto;
+import hu.dpc.ob.util.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +30,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,15 +37,16 @@ import java.util.stream.Collectors;
 @Service
 public class ConsentService {
 
-    private static Logger log = LoggerFactory.getLogger(PspRestClient.class);
+    private static Logger log = LoggerFactory.getLogger(ConsentService.class);
 
     private final ConsentRepository consentRepository;
+    private final ConsentEventRepository consentEventRepository;
 
     @Autowired
-    public ConsentService(ConsentRepository consentRepository) {
+    public ConsentService(ConsentRepository consentRepository, ConsentEventRepository consentEventRepository) {
         this.consentRepository = consentRepository;
+        this.consentEventRepository = consentEventRepository;
     }
-
 
     @NotNull
     @Transactional
@@ -75,6 +72,8 @@ public class ConsentService {
     public static LocalDateTime getTransactionFromDateTime(Consent consent) {
         if (consent == null)
             return null;
+        if (consent.getTransactionFrom() != null)
+            return consent.getTransactionFrom();
 
         List<ConsentTransaction> transactions = consent.getTransactions();
         if (transactions.isEmpty())
@@ -88,6 +87,8 @@ public class ConsentService {
     public static LocalDateTime getTransactionToDateTime(Consent consent) {
         if (consent == null)
             return null;
+        if (consent.getTransactionTo() != null)
+            return consent.getTransactionTo();
 
         List<ConsentTransaction> transactions = consent.getTransactions();
         int size = transactions.size();
@@ -100,9 +101,16 @@ public class ConsentService {
 
     @Transactional
     public static List<ApiPermission> getPermissions(Consent consent) {
-        if (consent == null)
-            return null;
-        return consent.getPermissions().stream().map(ConsentPermission::getPermission).collect(Collectors.toList());
+        return consent == null ? null : consent.getPermissions().stream().map(ConsentPermission::getPermission).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Consent createConsent(String clientId, @NotNull ApiScope scope, LocalDateTime expirationDateTime, LocalDateTime transactionFromDateTime,
+                                 LocalDateTime transactionToDateTime, List<ApiPermission> permissions) {
+        @NotNull Consent consent = Consent.create(clientId, scope, expirationDateTime, transactionFromDateTime, transactionToDateTime,
+                permissions, getNextEventSeqNo());
+        consentRepository.save(consent);
+        return consent;
     }
 
     @Transactional
@@ -114,28 +122,43 @@ public class ConsentService {
         @NotNull ConsentUpdateData data = request.getData();
         @NotNull Consent consent = getConsentById(data.getConsentId());
 
-        @NotNull ConsentEvent event = consent.action(data.getAction(), data.getReasonCode(), data.getReasonDesc());
+        @NotNull ConsentEvent event = consent.action(data.getAction(), data.getReasonCode(), data.getReasonDesc(), getNextEventSeqNo());
+        consentEventRepository.save(event);
 
         for (Consent userConsent : user.getConsents()) {
-            if (userConsent.isAlive() && !userConsent.getId().equals(consent.getId()) && consent.getScope() == userConsent.getScope()) {
+            if (userConsent.isAlive() && consent.getScope() == userConsent.getScope() && !userConsent.getId().equals(consent.getId()) && userConsent.getClientId().equals(consent.getClientId())) {
                 log.info("Revoke user consent with id " + userConsent.getConsentId() + ", new consent was accepted " + consent.getConsentId());
                 userConsent.action(ConsentActionType.REVOKE, event);
+                consentRepository.save(userConsent);
             }
         }
 
         consent.setUser(user);
         consent.setUpdatedOn(event.getCreatedOn());
         if (consent.isActive()) {
-            data.getPermissions().forEach(p -> consent.addPermission(p, event));
-            data.getAccounts().forEach(a -> consent.addAccount(a.getAccountId(), event));
+            consent.mergePermissions(data.getPermissions(), event);
+            if (data.getAccounts() != null) {
+                consent.mergeAccounts(data.getAccounts().stream().map(ConsentAccountData::getAccountId).collect(Collectors.toList()), event);
+            }
         }
+        consentRepository.save(consent);
         return consent;
     }
 
     @Transactional
     public boolean hasPermission(Consent consent, @NotNull ApiPermission apiPermission, String accountId) {
-        if (consent == null)
+        if (consent == null) {
+            log.info("No consent exist for permission: " + apiPermission + ", account:" + accountId);
             return false;
+        }
+        if (!consent.isActive()) {
+            log.info("Consent is not active: " + consent);
+            return false;
+        }
+        if (consent.getExpiresOn() != null && DateUtils.getLocalDateTimeOfTenant().isAfter(consent.getExpiresOn())) {
+            log.info("Consent expired: " + consent);
+            return false;
+        }
 
         if (accountId != null) {
             boolean hasAccount = false;
@@ -145,14 +168,17 @@ public class ConsentService {
                     break;
                 }
             }
-            if (!hasAccount)
+            if (!hasAccount) {
+                log.info("Consent has no account permission: " + apiPermission + ", account:" + accountId);
                 return false;
+            }
         }
 
-        for (ConsentPermission permission : consent.getPermissions()) {
-            if (permission.getPermission() == apiPermission)
-                return true;
-        }
-        return false;
+        return consent.getPermission(apiPermission) != null;
+    }
+
+    private int getNextEventSeqNo() {
+        ConsentEvent max = consentEventRepository.findTopByOrderBySeqNoDesc();
+        return max == null ? 0 : max.getSeqNo() + 1;
     }
 }

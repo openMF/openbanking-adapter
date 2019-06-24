@@ -11,15 +11,19 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import hu.dpc.ob.rest.dto.ob.api.type.AccountStatus;
 import hu.dpc.ob.rest.dto.ob.api.type.AccountSubType;
 import hu.dpc.ob.rest.dto.ob.api.type.AccountType;
 import hu.dpc.ob.rest.dto.psp.PspAccountsGuarantorData;
 import hu.dpc.ob.rest.dto.psp.PspAccountsLoanData;
 import hu.dpc.ob.rest.dto.psp.PspAccountsSavingsData;
+import hu.dpc.ob.rest.dto.psp.PspAccountsSavingsStatusData;
+import hu.dpc.ob.rest.dto.psp.PspAccountsSavingsTimelineData;
 import hu.dpc.ob.rest.dto.psp.PspAccountsShareData;
+import hu.dpc.ob.rest.dto.psp.PspIdentifierData;
+import hu.dpc.ob.rest.dto.psp.PspIdentifiersResponseDto;
+import hu.dpc.ob.rest.parser.LocalFormatDateTimeDeserializer;
+import hu.dpc.ob.rest.parser.LocalFormatDateTimeSerializer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +33,8 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -44,8 +50,8 @@ public class AccountData {
     private AccountStatus status;
 
     @JsonProperty(value = "StatusUpdateDateTime")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalFormatDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalFormatDateTimeDeserializer.class)
     private LocalDateTime statusUpdateDateTime;
 
     @JsonProperty(value = "Currency", required = true)
@@ -65,10 +71,13 @@ public class AccountData {
     @Length(max = 70)
     private String nickname;
 
+    @JsonProperty(value = "Account")
+    private List<AccountIdentificationData> identifications;
 
-    public AccountData(@NotEmpty @Length(max = 40) String accountId, AccountStatus status, LocalDateTime statusUpdateDateTime,
+
+    AccountData(@NotEmpty @Length(max = 40) String accountId, AccountStatus status, LocalDateTime statusUpdateDateTime,
                        @NotEmpty String currency, @NotNull AccountType accountType, @NotNull AccountSubType accountSubType,
-                       @Length(max = 70) String nickname) {
+                       @Length(max = 70) String nickname, List<AccountIdentificationData> identifications) {
         this.accountId = accountId;
         this.status = status;
         this.statusUpdateDateTime = statusUpdateDateTime;
@@ -76,32 +85,47 @@ public class AccountData {
         this.accountType = accountType;
         this.accountSubType = accountSubType;
         this.nickname = nickname;
+        this.identifications = identifications;
     }
 
-    public AccountData(@NotEmpty @Length(max = 40) String accountId, @NotEmpty String currency, @NotNull AccountType accountType,
+    AccountData(@NotEmpty @Length(max = 40) String accountId, @NotEmpty String currency, @NotNull AccountType accountType,
                        @NotNull AccountSubType accountSubType) {
-        this(accountId, null, null, currency, accountType, accountSubType, null);
+        this(accountId, null, null, currency, accountType, accountSubType, null, null);
     }
 
-    static AccountData transform(@NotNull PspAccountsSavingsData pspAccount, boolean detail, String accountId) {
+    static AccountData transform(@NotNull PspAccountsSavingsData pspAccount, PspIdentifiersResponseDto identities, boolean detail, String accountId) {
         String externalId = pspAccount.getExternalId();
         if (accountId != null && !accountId.equals(externalId)) {
             return null;
         }
-        AccountData transform = new AccountData(externalId, pspAccount.getCurrency().getCode(), pspAccount.getApiAccountType(), AccountSubType.SAVINGS);
-        transform.setNickname(pspAccount.getApiNickName()); // TODO add OBReadAccount4/Data/Account/Account in case of detail
-        return transform;
+
+        PspAccountsSavingsStatusData status = pspAccount.getStatus();
+        AccountStatus accountStatus = status == null ? null : status.getAccountStatus();
+        PspAccountsSavingsTimelineData timeline = pspAccount.getTimeline();
+        LocalDateTime statusUpdateDateTime = timeline == null ? null : timeline.getStatusUpdateDateTime();
+
+        List<AccountIdentificationData> ids = null;
+        if (detail && identities != null) {
+            ids = new ArrayList<>();
+            for (PspIdentifierData identity : identities.getIdentifiers()) {
+                AccountIdentificationData transform = AccountIdentificationData.transform(identity);
+                if (transform != null)
+                    ids.add(transform);
+            }
+        }
+        return new AccountData(externalId, accountStatus, statusUpdateDateTime, pspAccount.getCurrency().getCode(),
+                pspAccount.getApiAccountType(), AccountSubType.SAVINGS, pspAccount.getApiNickName(), ids);
     }
 
-    static AccountData transform(@NotNull PspAccountsLoanData pspAccount, boolean detail, String accountId) {
+    static AccountData transform(@NotNull PspAccountsLoanData pspAccount, PspIdentifiersResponseDto identity, boolean detail, String accountId) {
         return null;
     }
 
-    static AccountData transform(@NotNull PspAccountsGuarantorData pspAccount, boolean detail, String accountId) {
+    static AccountData transform(@NotNull PspAccountsGuarantorData pspAccount, PspIdentifiersResponseDto identity, boolean detail, String accountId) {
         return null;
     }
 
-    static AccountData transform(@NotNull PspAccountsShareData pspAccount, boolean detail, String accountId) {
+    static AccountData transform(@NotNull PspAccountsShareData pspAccount, PspIdentifiersResponseDto identity, boolean detail, String accountId) {
         return null;
     }
 }

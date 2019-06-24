@@ -12,7 +12,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 
 import javax.persistence.Transient;
@@ -31,6 +30,7 @@ public abstract class SchemaSettings<_H extends Header, _O extends Operation, _B
     private AdapterSettings adapterSettings;
 
     private boolean corsEnabled;
+    private boolean mock;
 
     private List<SchemaProperties<_H, _O, _B>> schemas = new ArrayList<>(2);
 
@@ -129,6 +129,28 @@ public abstract class SchemaSettings<_H extends Header, _O extends Operation, _B
                     throw new InvalidConfigurationPropertyValueException("schema", SCHEMA_DEFAULT_SETTINGS, "Configuration is missing on " + getClass().getSimpleName());
                 }
                 schemaProps = addSchema(new SchemaProperties<_H, _O, _B>(schema));
+            }
+            if (schemaProps.isDefault())
+                continue;
+
+            if  (defaultSchema != null) {
+                if (defaultSchema.getOperations() != null) {
+                    for (OperationProperties defaultOps : defaultSchema.getOperations()) {
+                        if (defaultOps.isDefault())
+                            continue;
+                        if (schemaProps.getOperation(defaultOps.getName()) == null)
+                            schemaProps.addOperation(new OperationProperties(defaultOps.getName()));
+                    }
+                }
+
+                if (defaultSchema.getBindings() != null) {
+                    for (BindingProperties bindingProps : defaultSchema.getBindings()) {
+                        if (defaultSchema.isDefault())
+                            continue;
+                        if (schemaProps.getBinding(defaultSchema.getName()) == null)
+                            schemaProps.addBinding(new BindingProperties(defaultSchema.getName()));
+                    }
+                }
             }
             schemaProps.postConstruct(adapterSettings);
             schemaProps.postConstruct(defaultSchema);

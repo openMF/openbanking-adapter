@@ -5,18 +5,18 @@
  *
  * https://mozilla.org/MPL/2.0/.
  */
-package hu.dpc.ob.rest.processor.ob.api;
+package hu.dpc.ob.rest.processor;
 
-import hu.dpc.ob.rest.processor.ValidateProcessor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.camel.Exchange;
-import org.springframework.stereotype.Component;
+import org.apache.camel.Processor;
 
-
-@Component("api-ob-validate-processor")
-public class ApiValidateProcessor extends ValidateProcessor {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public abstract class ValidateProcessor implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
-
+        //
     }
 }

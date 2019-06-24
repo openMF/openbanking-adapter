@@ -13,6 +13,7 @@ import hu.dpc.ob.rest.dto.psp.PspAccountsLoanData;
 import hu.dpc.ob.rest.dto.psp.PspAccountsResponseDto;
 import hu.dpc.ob.rest.dto.psp.PspAccountsSavingsData;
 import hu.dpc.ob.rest.dto.psp.PspAccountsShareData;
+import hu.dpc.ob.rest.dto.psp.PspIdentifiersResponseDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -35,38 +37,59 @@ public class AccountsData {
     }
 
     @NotNull
-    public static AccountsData transform(@NotNull PspAccountsResponseDto pspAccounts, boolean detail, String accountId) {
+    public static AccountsData transform(@NotNull PspAccountsResponseDto pspAccounts, Map<String, PspIdentifiersResponseDto> idMap, boolean detail, String accountId) {
         List<AccountData> accounts = new ArrayList<>();
-        for (PspAccountsSavingsData pspAccount : pspAccounts.getSavingsAccounts()) {
-            AccountData transform = AccountData.transform(pspAccount, detail, accountId);
-            if (transform != null)
-                accounts.add(transform);
+        List<PspAccountsSavingsData> savingsAccounts = pspAccounts.getSavingsAccounts();
+        if (savingsAccounts != null) {
+            for (PspAccountsSavingsData pspAccount : savingsAccounts) {
+                PspIdentifiersResponseDto identities = detail && idMap != null ? idMap.get(accountId == null ? pspAccount.getExternalId() : accountId) : null;
+                AccountData transform = AccountData.transform(pspAccount, identities, detail, accountId);
+                if (transform != null)
+                    accounts.add(transform);
+            }
         }
-        for (PspAccountsLoanData pspAccount : pspAccounts.getLoanAccounts()) {
-            AccountData transform = AccountData.transform(pspAccount, detail, accountId);
-            if (transform != null)
-                accounts.add(transform);
+        List<PspAccountsLoanData> loanAccounts = pspAccounts.getLoanAccounts();
+        if (loanAccounts != null) {
+            for (PspAccountsLoanData pspAccount : loanAccounts) {
+                PspIdentifiersResponseDto identities = detail && idMap != null ? idMap.get(accountId == null ? pspAccount.getExternalId() : accountId) : null;
+                AccountData transform = AccountData.transform(pspAccount, identities, detail, accountId);
+                if (transform != null)
+                    accounts.add(transform);
+            }
         }
-        for (PspAccountsGuarantorData pspAccount : pspAccounts.getGuarantorAccounts()) {
-            AccountData transform = AccountData.transform(pspAccount, detail, accountId);
-            if (transform != null)
-                accounts.add(transform);
+        List<PspAccountsGuarantorData> guarantorAccounts = pspAccounts.getGuarantorAccounts();
+        if (guarantorAccounts != null) {
+            for (PspAccountsGuarantorData pspAccount : guarantorAccounts) {
+                PspIdentifiersResponseDto identities = detail && idMap != null ? idMap.get(accountId == null ? pspAccount.getExternalId() : accountId) : null;
+                AccountData transform = AccountData.transform(pspAccount, identities, detail, accountId);
+                if (transform != null)
+                    accounts.add(transform);
+            }
         }
-        for (PspAccountsShareData pspAccount : pspAccounts.getShareAccounts()) {
-            AccountData transform = AccountData.transform(pspAccount, detail, accountId);
-            if (transform != null)
-                accounts.add(transform);
+        List<PspAccountsShareData> shareAccounts = pspAccounts.getShareAccounts();
+        if (shareAccounts != null) {
+            for (PspAccountsShareData pspAccount : shareAccounts) {
+                PspIdentifiersResponseDto identities = detail && idMap != null ? idMap.get(accountId == null ? pspAccount.getExternalId() : accountId) : null;
+                AccountData transform = AccountData.transform(pspAccount, identities, detail, accountId);
+                if (transform != null)
+                    accounts.add(transform);
+            }
         }
         return new AccountsData(accounts);
     }
 
     @NotNull
+    public static AccountsData transform(@NotNull PspAccountsResponseDto pspAccounts, Map<String, PspIdentifiersResponseDto> idMap, boolean detail) {
+        return transform(pspAccounts, idMap, detail, null);
+    }
+
+    @NotNull
     public static AccountsData transform(@NotNull PspAccountsResponseDto pspAccounts, boolean detail) {
-        return transform(pspAccounts, detail, null);
+        return transform(pspAccounts, null, detail, null);
     }
 
     @NotNull
     public static AccountsData transform(@NotNull PspAccountsResponseDto pspAccounts) {
-        return transform(pspAccounts, false, null);
+        return transform(pspAccounts, null, false, null);
     }
 }

@@ -2,15 +2,43 @@ databaseChangeLog:
   - includeAll:
       path: changelog
       relativeToChangelogFile: true
+#  - changeSet:
+#      id: 1001
+#      author: https://mozilla.org/MPL/2.0/
+#      changes:
+#      - sqlFile:
+#          dbms: mysql
+#          encoding: utf8
+#          endDelimiter: ;
+#          path: changelog/sql/01-ob_tn01_create.sql
+#          relativeToChangelogFile: true
+#          splitStatements: true
+#          stripComments: true
+#      - sqlFile:
+#          dbms: mysql
+#          encoding: utf8
+#          endDelimiter: ;
+#          path: changelog/sql/01-ob_tn01_init.sql
+#          relativeToChangelogFile: true
+#          splitStatements: true
+#          stripComments: true
   - changeSet:
-      id: 0001
+      id: 1002
       author: https://mozilla.org/MPL/2.0/
       changes:
       - sqlFile:
           dbms: mysql
           encoding: utf8
           endDelimiter: ;
-          path: changelog/sql/01-ob_tn01_init.sql
+          path: changelog/sql/02-ob_tn02_create.sql
+          relativeToChangelogFile: true
+          splitStatements: true
+          stripComments: true
+      - sqlFile:
+          dbms: mysql
+          encoding: utf8
+          endDelimiter: ;
+          path: changelog/sql/02-ob_tn02_init.sql
           relativeToChangelogFile: true
           splitStatements: true
           stripComments: true

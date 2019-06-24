@@ -7,7 +7,6 @@
  */
 package hu.dpc.ob.config;
 
-import hu.dpc.ob.domain.type.ApiScope;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -77,6 +76,7 @@ public class PspSettings extends UriSettings<PspSettings.PspHeader, PspSettings.
         CLIENT("client", "Read client information"),
         ACCOUNT_BALANCES("account-balances", "Read balance information"),
         ACCOUNT_TRANSACTIONS("account-transactions", "Read transaction information"),
+        IDENTIFIERS("identifiers", "Read secondary identifiers for an account"),
         ;
 
         @NotNull

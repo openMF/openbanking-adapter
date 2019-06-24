@@ -14,6 +14,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -49,7 +50,9 @@ public class RestClient {
 
         log.debug(String.format("Sending request %s, method: %s, \nheader-keys: %s, \nheader-values: %s, \nbody: %s, ", endpointUrl, httpMethod, Arrays.toString(httpHeaders.keySet().toArray()), Arrays.toString(httpHeaders.values().toArray()), body));
 
-        return restTemplate.exchange(endpointUrl, httpMethod, entity, String.class).getBody();
+        ResponseEntity<String> response = restTemplate.exchange(endpointUrl, httpMethod, entity, String.class);
+
+        return response.getBody();
     }
 
     public static String formatHeaderDate(ZonedDateTime date) {

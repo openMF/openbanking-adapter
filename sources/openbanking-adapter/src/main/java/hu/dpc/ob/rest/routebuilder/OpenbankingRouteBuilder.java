@@ -15,15 +15,15 @@ import hu.dpc.ob.config.TenantProperties;
 import hu.dpc.ob.rest.constant.ExchangeHeader;
 import hu.dpc.ob.rest.internal.ApiSchema;
 import hu.dpc.ob.rest.internal.PspId;
-import hu.dpc.ob.rest.parser.BindingJsonParser;
 import hu.dpc.ob.util.ContextUtils;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.ModelCamelContext;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,8 +35,12 @@ public abstract class OpenbankingRouteBuilder extends RouteBuilder {
 
     private static Logger log = LoggerFactory.getLogger(OpenbankingRouteBuilder.class);
 
-    public OpenbankingRouteBuilder(CamelContext camelContext) {
+    private ApplicationContext appContext;
+
+    @Autowired
+    public OpenbankingRouteBuilder(CamelContext camelContext, ApplicationContext appContext) {
         super(camelContext);
+        this.appContext = appContext;
     }
 
     protected <_B extends Binding> void buildBindingRoutes(ApiSchema schema, String tenant, SchemaSettings<?, ?, _B> settings) {
@@ -59,7 +63,7 @@ public abstract class OpenbankingRouteBuilder extends RouteBuilder {
             from.process(exchange -> {
                 exchange.setProperty(ExchangeHeader.PSP_ID.getKey(), new PspId(instance, tenant));
                 String pathInfo = exchange.getIn().getBody(HttpServletRequest.class).getPathInfo();
-                exchange.setProperty(ExchangeHeader.PATH_PARAMS.getKey(), ContextUtils.parsePathParams(pathInfo, url));
+                exchange.setProperty(ExchangeHeader.PATH_PARAMS.getKey(), ContextUtils.parsePathParams(pathInfo, tenantProps.getUriPath()));
             })
                     .to("direct:" + buildId(schema, binding.getConfigName(), null))
             ;
@@ -86,13 +90,12 @@ public abstract class OpenbankingRouteBuilder extends RouteBuilder {
                 .process(buildId(schema, ID_VALIDATE_PROCESSOR))
         ;
 
-        ModelCamelContext context = getContext();
         for (_C config : configs) {
             @NotNull String configName = config.getConfigName();
             // service dependent prepare route and processor, if not exists we fall back to general
             String actPrepareRouteId = prepareRouteId;
             String actPrepareProcId = buildId(schema, configName, ID_PREPARE_PROCESSOR);
-            if (context.hasComponent(actPrepareProcId) != null) {
+            if (appContext.containsBeanDefinition(actPrepareProcId)) {
                 actPrepareRouteId = buildId(schema, configName, ID_PREPARE);
                 final String aarid = actPrepareRouteId;
                 from("direct:" + actPrepareRouteId)
@@ -105,7 +108,7 @@ public abstract class OpenbankingRouteBuilder extends RouteBuilder {
             // service dependent validation route and processor, if not exists we fall back to general
             String actValidateRouteId = validateRouteId;
             String actValidateProcId = buildId(schema, configName, ID_VALIDATE_PROCESSOR);
-            if (context.hasComponent(actValidateProcId) != null) {
+            if (appContext.containsBeanDefinition(actValidateProcId)) {
                 actValidateRouteId = buildId(schema, configName, ID_PREPARE);
                 final String avrid = actValidateRouteId;
                 from("direct:" + actValidateRouteId)

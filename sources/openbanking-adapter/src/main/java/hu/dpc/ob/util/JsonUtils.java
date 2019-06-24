@@ -30,7 +30,6 @@ public class JsonUtils {
     }
 
     public static <T extends Object> T toPojo(String json, Class<T> type) {
-
         try {
             return mapper.readValue(json, type);
         } catch (IOException e) {

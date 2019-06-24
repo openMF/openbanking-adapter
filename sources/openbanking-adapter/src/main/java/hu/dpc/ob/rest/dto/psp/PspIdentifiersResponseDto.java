@@ -5,25 +5,25 @@
  *
  * https://mozilla.org/MPL/2.0/.
  */
-package hu.dpc.ob.rest.dto.ob.access;
+package hu.dpc.ob.rest.dto.psp;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserInfoResponseDto {
+@SuppressWarnings("unused")
+@JsonIgnoreProperties(ignoreUnknown=true)
+public class PspIdentifiersResponseDto {
 
     @NotNull
-    private String sub;
-    private String email;
-    @JsonProperty(value = "email_verified")
-    private boolean emailVerified;
-    private String name;
+    private List<PspIdentifierData> identifiers;
+
 }

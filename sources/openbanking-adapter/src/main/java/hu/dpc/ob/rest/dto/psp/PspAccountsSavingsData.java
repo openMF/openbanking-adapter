@@ -7,6 +7,8 @@
  */
 package hu.dpc.ob.rest.dto.psp;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import hu.dpc.ob.rest.dto.ob.api.type.AccountType;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,6 +32,7 @@ public class PspAccountsSavingsData extends PspAccountsData {
     private EnumOptionData accountType;
     private PspAccountsSavingsTimelineData timeline;
     private PspAccountsSavingsSubStatusData subStatus;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate lastActiveTransactionDate;
 
     //differentiate deposit accounts Savings, FD and RD accounts

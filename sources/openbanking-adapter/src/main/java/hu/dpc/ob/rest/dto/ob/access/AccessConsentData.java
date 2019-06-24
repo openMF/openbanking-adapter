@@ -8,8 +8,6 @@
 package hu.dpc.ob.rest.dto.ob.access;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import hu.dpc.ob.domain.entity.Consent;
 import hu.dpc.ob.domain.type.ApiPermission;
 import hu.dpc.ob.domain.type.ApiScope;
@@ -20,7 +18,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -67,7 +64,8 @@ public class AccessConsentData extends ConsentResponseData {
     @NotNull
     static AccessConsentData create(@NotNull Consent consent) {
         return new AccessConsentData(consent.getConsentId(), consent.getScope(), consent.getClientId(), consent.getCreatedOn(),
-                consent.getStatus(), ConsentService.getPermissions(consent), ConsentAccountData.create(consent), consent.getUser().getApiUserId(),
-                consent.getUpdatedOn(), consent.getExpiresOn(), ConsentService.getTransactionFromDateTime(consent), ConsentService.getTransactionToDateTime(consent));
+                consent.getStatus(), ConsentService.getPermissions(consent), ConsentAccountData.create(consent),
+                consent.getUser() == null ? null : consent.getUser().getApiUserId(), consent.getUpdatedOn(), consent.getExpiresOn(),
+                ConsentService.getTransactionFromDateTime(consent), ConsentService.getTransactionToDateTime(consent));
     }
 }

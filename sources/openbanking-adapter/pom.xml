@@ -10,13 +10,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>adapter</artifactId>
+    <artifactId>openbanking-adapter</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <description>Open Banking Spring Boot Project</description>
 
     <parent>
-        <groupId>hu.dpc.openbanking</groupId>
+        <groupId>hu.dpc.opb</groupId>
         <artifactId>openbanking</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
@@ -206,55 +206,55 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <version>3.6.3</version>
-                <configuration>
-                    <propertyFile>src/main/resources/db/liquibase.properties</propertyFile>
-                    <changeLogFile>src/main/resources/db/liquibase-changelog.yml</changeLogFile>
-                    <diffChangeLogFile>src/main/resources/db/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>
-                    <logging>info</logging>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>update-profile</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>update</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>diff-profile</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>diff</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.liquibase.ext</groupId>
-                        <artifactId>liquibase-hibernate5</artifactId>
-                        <version>3.7</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-data-jpa</artifactId>
-                        <version>${springframework.boot.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>javax.validation</groupId>
-                        <artifactId>validation-api</artifactId>
-                        <version>2.0.1.Final</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.javassist</groupId>
-                        <artifactId>javassist</artifactId>
-                        <version>3.25.0-GA</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.liquibase</groupId>-->
+                <!--<artifactId>liquibase-maven-plugin</artifactId>-->
+                <!--<version>3.6.3</version>-->
+                <!--<configuration>-->
+                    <!--<propertyFile>src/main/resources/db/liquibase.properties</propertyFile>-->
+                    <!--<changeLogFile>src/main/resources/db/liquibase-changelog.yml</changeLogFile>-->
+                    <!--<diffChangeLogFile>src/main/resources/db/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>-->
+                    <!--<logging>info</logging>-->
+                <!--</configuration>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>update-profile</id>-->
+                        <!--<phase>process-resources</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>update</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>diff-profile</id>-->
+                        <!--<phase>process-test-resources</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>diff</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+                <!--<dependencies>-->
+                    <!--<dependency>-->
+                        <!--<groupId>org.liquibase.ext</groupId>-->
+                        <!--<artifactId>liquibase-hibernate5</artifactId>-->
+                        <!--<version>3.7</version>-->
+                    <!--</dependency>-->
+                    <!--<dependency>-->
+                        <!--<groupId>org.springframework.boot</groupId>-->
+                        <!--<artifactId>spring-boot-starter-data-jpa</artifactId>-->
+                        <!--<version>${springframework.boot.version}</version>-->
+                    <!--</dependency>-->
+                    <!--<dependency>-->
+                        <!--<groupId>javax.validation</groupId>-->
+                        <!--<artifactId>validation-api</artifactId>-->
+                        <!--<version>2.0.1.Final</version>-->
+                    <!--</dependency>-->
+                    <!--<dependency>-->
+                        <!--<groupId>org.javassist</groupId>-->
+                        <!--<artifactId>javassist</artifactId>-->
+                        <!--<version>3.25.0-GA</version>-->
+                    <!--</dependency>-->
+                <!--</dependencies>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 

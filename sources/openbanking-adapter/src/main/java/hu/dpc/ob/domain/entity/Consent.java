@@ -16,9 +16,7 @@ import hu.dpc.ob.domain.type.EventReasonCode;
 import hu.dpc.ob.domain.type.IdentifierType;
 import hu.dpc.ob.domain.type.Scenario;
 import hu.dpc.ob.domain.type.TransactionRole;
-import hu.dpc.ob.rest.dto.ob.api.ConsentData;
 import hu.dpc.ob.util.DateUtils;
-import hu.dpc.ob.util.LocalDateTimeConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +26,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,8 +36,8 @@ import java.util.UUID;
 @SuppressWarnings("unused")
 @Entity
 @Table(name = "consent", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"consent_id"}, name = "uk_consent.consent"),
-        @UniqueConstraint(columnNames = {"scope", "client_id", "user_id"}, name = "uk_consent.scope")})
+        @UniqueConstraint(columnNames = {"consent_id"}, name = "uk_consent.consent")/* ,
+        @UniqueConstraint(columnNames = {"scope", "client_id", "user_id", "status"}, name = "uk_consent.scope") */})
 public class Consent extends AbstractEntity {
 
     @NotNull
@@ -60,6 +59,7 @@ public class Consent extends AbstractEntity {
     private User user;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 128)
     private ConsentStatus status;
 
@@ -93,23 +93,21 @@ public class Consent extends AbstractEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "consent")
     @OrderBy("seqNo")
-    private List<ConsentEvent> events;
+    private List<ConsentEvent> events = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "consent")
     @OrderBy("seqNo")
-    private List<ConsentStatusStep> statusSteps;
+    private List<ConsentStatusStep> statusSteps = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "consent")
-    @OrderBy("id")
-    private List<ConsentPermission> permissions;
+    private List<ConsentPermission> permissions = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "consent")
-    @OrderBy("accountId")
-    private List<ConsentAccount> accounts;
+    private List<ConsentAccount> accounts = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "consent")
     @OrderBy("seqNo")
-    private List<ConsentTransaction> transactions;
+    private List<ConsentTransaction> transactions = new ArrayList<>();
 
 
     Consent(@NotNull String consentId, @NotNull ApiScope scope, @NotNull String clientId, User user, @NotNull ConsentStatus status,
@@ -147,18 +145,23 @@ public class Consent extends AbstractEntity {
     }
 
     @NotNull
-    public static Consent create(@NotNull ConsentData consentData, @NotNull ApiScope scope, @NotNull String clientId) {
+    public static Consent create(@NotNull String clientId, @NotNull ApiScope scope, LocalDateTime expirationDateTime, LocalDateTime transactionFromDateTime,
+                                 LocalDateTime transactionToDateTime, List<ApiPermission> permissions, Integer seqNo) {
         Consent consent = new Consent(UUID.randomUUID().toString(), scope, clientId, ConsentStatus.forAction(null, ConsentActionType.CREATE),
-                DateUtils.getLocalDateTimeOfTenant(), consentData.getExpirationDateTime(), consentData.getTransactionFromDateTime(),
-                consentData.getTransactionToDateTime());
+                DateUtils.getLocalDateTimeOfTenant(), expirationDateTime, transactionFromDateTime, transactionToDateTime);
         EventReasonCode reason = EventReasonCode.CLIENT_CONSENT_REQUESTED;
-        ConsentEvent event = consent.addEvent(ConsentActionType.CREATE, reason.getCode(), reason.getDesc());
+        ConsentEvent event = consent.addEvent(ConsentActionType.CREATE, reason.getCode(), reason.getDesc(), seqNo);
+        if (permissions != null) {
+            for (ApiPermission permission : permissions) {
+                consent.addPermission(permission, event);
+            }
+        }
         return consent;
     }
 
     @NotNull
-    public ConsentEvent action(ConsentActionType action, String reasonCode, String reasonDesc) {
-        ConsentEvent event = addEvent(action, reasonCode, reasonDesc);
+    public ConsentEvent action(ConsentActionType action, String reasonCode, String reasonDesc, Integer seqNo) {
+        ConsentEvent event = addEvent(action, reasonCode, reasonDesc, seqNo);
         return action(action, event);
     }
 
@@ -187,10 +190,8 @@ public class Consent extends AbstractEntity {
         return size == 0 ? null : events.get(size - 1);
     }
 
-    private ConsentEvent addEvent(@NotNull ConsentActionType action, String reasonCode, String reasonDesc) {
-        ConsentEvent lastEvent = getLastEvent();
-        ConsentEvent event = new ConsentEvent(this, action, DateUtils.getLocalDateTimeOfTenant(),
-                (lastEvent == null ? 0 : lastEvent.getSeqNo() + 1), reasonCode, reasonDesc);
+    private ConsentEvent addEvent(@NotNull ConsentActionType action, String reasonCode, String reasonDesc, Integer seqNo) {
+        ConsentEvent event = new ConsentEvent(this, action, DateUtils.getLocalDateTimeOfTenant(), seqNo, reasonCode, reasonDesc);
         getEvents().add(event);
         return event;
     }
@@ -210,10 +211,50 @@ public class Consent extends AbstractEntity {
         return step;
     }
 
+    public boolean hasPermission(@NotNull ApiPermission apiPermission) {
+        return getPermission(apiPermission) != null;
+    }
+
+    public ConsentPermission getPermission(@NotNull ApiPermission apiPermission) {
+        for (ConsentPermission permission : getPermissions()) {
+            if (permission.getPermission() == apiPermission)
+                return permission;
+        }
+        return null;
+    }
+
     public ConsentPermission addPermission(@NotNull ApiPermission apiPermission, @NotNull ConsentEvent event) {
         ConsentPermission permission = new ConsentPermission(this, apiPermission, event);
         getPermissions().add(permission);
         return permission;
+    }
+
+    public void mergePermissions(List<ApiPermission> apiPermissions, @NotNull ConsentEvent event) {
+        if (apiPermissions == null)
+            getPermissions().clear();
+        else {
+            for (int i = getPermissions().size(); --i >= 0; ) {
+                ConsentPermission consentPermission = permissions.get(i);
+                if (!apiPermissions.contains(consentPermission.getPermission()))
+                    permissions.remove(consentPermission);
+            }
+            for (ApiPermission apiPermission : apiPermissions) {
+                if (!hasPermission(apiPermission))
+                    addPermission(apiPermission, event);
+            }
+        }
+    }
+
+    public boolean hasAccount(@NotNull String accountId) {
+        return getAccount(accountId) != null;
+    }
+
+    public ConsentAccount getAccount(@NotNull String accountId) {
+        for (ConsentAccount account : getAccounts()) {
+            if (account.getAccountId().equals(accountId))
+                return account;
+        }
+        return null;
     }
 
     public ConsentAccount addAccount(@NotNull String accountid, @NotNull ConsentEvent event) {
@@ -222,12 +263,28 @@ public class Consent extends AbstractEntity {
         return account;
     }
 
+    public void mergeAccounts(List<String> accountIds, @NotNull ConsentEvent event) {
+        if (accountIds == null)
+            getAccounts().clear();
+        else {
+            for (int i = getAccounts().size(); --i >= 0; ) {
+                ConsentAccount consentAccount = accounts.get(i);
+                if (!accountIds.contains(consentAccount.getAccountId()))
+                    accounts.remove(consentAccount);
+            }
+            for (String accountId : accountIds) {
+                if (!hasAccount(accountId))
+                    addAccount(accountId, event);
+            }
+        }
+    }
+
     @NotNull
     public ConsentTransaction transaction(@NotNull BigDecimal amount, @NotNull String currency, @NotNull AmountType amountType,
                                           @NotNull Scenario scenario, @NotNull TransactionRole initiator, @NotNull IdentifierType payerIdType,
-                                          @NotNull String payerId, @NotNull IdentifierType payeeIdType, @NotNull String payeeId) {
+                                          @NotNull String payerId, @NotNull IdentifierType payeeIdType, @NotNull String payeeId, Integer seqNo) {
         EventReasonCode reason = EventReasonCode.USER_TRANSACTION;
-        ConsentEvent event = addEvent(ConsentActionType.INTEROP_TRANSACTION, reason.getCode(), reason.getDesc()); // TODO
+        ConsentEvent event = addEvent(ConsentActionType.INTEROP_TRANSACTION, reason.getCode(), reason.getDesc(), seqNo); // TODO
         return addTransaction(amount, currency, amountType, scenario, initiator, payerIdType, payerId, payeeIdType, payeeId, event);
     }
 

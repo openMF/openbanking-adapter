@@ -16,6 +16,7 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
 
@@ -30,6 +31,7 @@ public class ConsentRequestProcessor implements Processor {
     }
 
     @Override
+    @Transactional
     public void process(Exchange exchange) throws Exception {
         String consentId = ContextUtils.getPathParam(exchange, ContextUtils.PARAM_CONSENT_ID);
         @NotNull Consent consent = consentService.getConsentById(consentId);

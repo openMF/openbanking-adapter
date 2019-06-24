@@ -9,13 +9,15 @@ package hu.dpc.ob.rest.component;
 
 import hu.dpc.ob.config.AccessSettings;
 import hu.dpc.ob.config.AuthEncodeType;
+import hu.dpc.ob.config.AuthProfileType;
 import hu.dpc.ob.config.OperationProperties;
 import hu.dpc.ob.config.TenantProperties;
-import hu.dpc.ob.rest.dto.ob.access.IntrospectRequestDto;
 import hu.dpc.ob.rest.dto.ob.access.IntrospectResponseDto;
 import hu.dpc.ob.rest.dto.ob.access.UserInfoResponseDto;
 import hu.dpc.ob.rest.internal.ApiSchema;
 import hu.dpc.ob.util.JsonUtils;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.eclipse.jetty.http.HttpHeader;
 import org.slf4j.Logger;
@@ -29,7 +31,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@NoArgsConstructor
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AccessRestClient {
 
     private static Logger log = LoggerFactory.getLogger(AccessRestClient.class);
@@ -46,10 +49,9 @@ public class AccessRestClient {
     }
 
     public UserInfoResponseDto callUserInfo(@NotNull ApiSchema schema, @NotNull String tenant, @NotNull String accessCode) {
-        @NotNull String configName = AccessSettings.AccessOperation.USER_INFO.getConfigName();
-        log.debug(String.format("Call Identity GET /" + configName + ", access: %s", accessCode));
-
         OperationProperties opProps = accessSettings.getOperation(schema, AccessSettings.AccessOperation.USER_INFO);
+        log.debug(String.format("Call Identity " + opProps.getMethod() + " /" + opProps.getName() + ", access: %s", accessCode));
+
         TenantProperties tenantProps = opProps.getTenant(tenant);
         String url = tenantProps.getUrl();
 
@@ -58,15 +60,14 @@ public class AccessRestClient {
 
         String responseJson = restClient.call(url, opProps.getHttpMethod(), headers, null);
 
-        log.debug(String.format("Response Identity GET /" + configName + ", access: %s", accessCode));
+        log.debug(String.format("Response Identity " + opProps.getMethod() + " /" + opProps.getName() + ", access: %s", accessCode));
         return JsonUtils.toPojo(responseJson, UserInfoResponseDto.class);
     }
 
     public IntrospectResponseDto callIntrospect(@NotNull ApiSchema schema, @NotNull String tenant, @NotNull String userAccessCode) {
-        @NotNull String configName = AccessSettings.AccessOperation.INTROSPECT.getConfigName();
-        log.debug(String.format("Call Identity GET /" + configName + ", access: %s", userAccessCode));
-
         OperationProperties opProps = accessSettings.getOperation(schema, AccessSettings.AccessOperation.INTROSPECT);
+        log.debug(String.format("Call Identity " + opProps.getMethod() + " /" + opProps.getName() + ", access: %s", userAccessCode));
+
         TenantProperties tenantProps = opProps.getTenant(tenant);
         String url = tenantProps.getUrl();
 
@@ -74,14 +75,18 @@ public class AccessRestClient {
         String pwd = tenantProps.getPassword();
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeader.AUTHORIZATION.asString(), AuthEncodeType.BASE64.encode(user + ':' + pwd));
+        headers.put(HttpHeader.AUTHORIZATION.asString(), AuthProfileType.BASIC.encode(AuthEncodeType.BASE64.encode(user + ':' + pwd)));
         headers.put(HttpHeader.CONTENT_TYPE.asString(), MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 
-        IntrospectRequestDto request = IntrospectRequestDto.create(userAccessCode);
+        String token = userAccessCode;
+        @NotNull String prefix = AuthProfileType.OAUTH.getPrefix();
+        if (token.startsWith(prefix))
+            token = token.substring(prefix.length());
 
-        String responseJson = restClient.call(url, opProps.getHttpMethod(), headers, JsonUtils.toJson(request));
+        String body = "token=" + token;
+        String responseJson = restClient.call(url, opProps.getHttpMethod(), headers, body);
 
-        log.debug(String.format("Response Identity GET /" + configName + ", access: %s", userAccessCode));
+        log.debug(String.format("Response Identity " + opProps.getMethod() + " /" + opProps.getName() + ", access: %s", userAccessCode));
         return JsonUtils.toPojo(responseJson, IntrospectResponseDto.class);
     }
 }

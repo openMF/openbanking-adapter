@@ -7,6 +7,7 @@
  */
 package hu.dpc.ob.rest.dto.psp;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,7 @@ public class FineractXLoginResponseDto implements PspLoginResponseDto {
 
     private boolean authenticated;
     private boolean shouldRenewPassword;
+    @JsonProperty(value = "isTwoFactorAuthenticationRequired")
     private boolean isTwoFactorAuthenticationRequired;
 
     private Long officeId;

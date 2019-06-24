@@ -9,17 +9,16 @@ package hu.dpc.ob.domain.entity;
 
 import hu.dpc.ob.domain.type.ConsentActionType;
 import hu.dpc.ob.util.DateUtils;
-import hu.dpc.ob.util.LocalDateTimeConverter;
-import hu.dpc.ob.util.PersistentTypeEnumConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -56,6 +55,19 @@ public class ConsentEvent extends AbstractEntity {
     @Setter(AccessLevel.PUBLIC)
     @Column(name = "reason_desc", length = 256)
     private String reasonDesc;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "event")
+    private List<ConsentStatusStep> statusSteps = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "event")
+    private List<ConsentPermission> permissions = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "event")
+    private List<ConsentAccount> accounts = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "event")
+    @OrderBy("seqNo")
+    private List<ConsentTransaction> transactions = new ArrayList<>();
 
     ConsentEvent(@NotNull Consent consent, @NotNull ConsentActionType action, @NotNull LocalDateTime createdOn, int seqNo,
                         String reasonCode, String reasonDesc) {

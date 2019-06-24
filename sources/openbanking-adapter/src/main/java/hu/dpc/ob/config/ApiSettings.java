@@ -9,7 +9,7 @@ package hu.dpc.ob.config;
 
 import hu.dpc.ob.domain.type.ApiPermission;
 import hu.dpc.ob.domain.type.ApiScope;
-import hu.dpc.ob.domain.type.DisplayType;
+import hu.dpc.ob.rest.internal.ApiSchema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +21,6 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,9 +31,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
 public class ApiSettings extends SchemaSettings<ApiSettings.ApiHeader, ApiSettings.ApiOperation, ApiSettings.ApiBinding> {
-
-    @Getter(lazy = true)
-    private final List<String> permissions = new ArrayList<>(0);
 
     @Autowired
     public ApiSettings(AdapterSettings adapterSettings) {
@@ -63,8 +58,8 @@ public class ApiSettings extends SchemaSettings<ApiSettings.ApiHeader, ApiSettin
     }
 
     @NotNull
-    public List<ApiPermission> getValidPermissions(ApiScope scope) {
-        return ApiPermission.getPermissions(scope).stream().filter(p -> getPermissions().contains(p.getApiName())).collect(Collectors.toList());
+    public List<ApiPermission> getValidPermissions(ApiSchema schema, ApiScope scope) {
+        return ApiPermission.getPermissions(scope).stream().filter(p -> getSchema(schema).getPermissions().contains(p.getApiName())).collect(Collectors.toList());
     }
 
     @Getter

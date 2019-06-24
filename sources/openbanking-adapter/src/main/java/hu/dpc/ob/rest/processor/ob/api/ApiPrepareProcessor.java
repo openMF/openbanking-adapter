@@ -7,7 +7,6 @@
  */
 package hu.dpc.ob.rest.processor.ob.api;
 
-import hu.dpc.ob.config.AccessSettings;
 import hu.dpc.ob.rest.component.AccessRestClient;
 import hu.dpc.ob.rest.constant.ExchangeHeader;
 import hu.dpc.ob.rest.dto.ob.access.IntrospectResponseDto;
@@ -48,24 +47,24 @@ public class ApiPrepareProcessor extends ObPrepareProcessor {
         String tenant = pspId.getTenant();
         Message in = exchange.getIn();
         String accessCode = in.getHeader(HttpHeader.AUTHORIZATION.asString(), String.class);
-
         String clientId;
-        String apiUserId;
-        if (isUserRequest()) {
-            IntrospectResponseDto response = accessRestClient.callIntrospect(getSchema(), tenant, accessCode);
-            if (!response.isActive())
-                throw new UnsupportedOperationException("User access token is not valid");
-
-            clientId = response.getClient_id();
-            apiUserId = response.getSub();
-            ContextUtils.assertNotNull(apiUserId);
+        String apiUserId = null;
+        if (accessRestClient.getAccessSettings().isMock()) {
+            clientId = apiService.getMockClientId();
+            if (isUserRequest())
+                apiUserId = apiService.getMockUser().getApiUserId();
+        } else {
+            IntrospectResponseDto clientResponse = accessRestClient.callIntrospect(getSchema(), tenant, accessCode);
+            if (!clientResponse.isActive())
+                throw new UnsupportedOperationException("Client access token is not valid");
+            clientId = clientResponse.getClientId();
+            ContextUtils.assertNotNull(clientId);
+            if (isUserRequest()) {
+                UserInfoResponseDto userResponse = accessRestClient.callUserInfo(getSchema(), tenant, accessCode);
+                apiUserId = userResponse.getSub();
+                ContextUtils.assertNotNull(apiUserId);
+            }
         }
-        else {
-            UserInfoResponseDto response = accessRestClient.callUserInfo(getSchema(), tenant, accessCode);
-            clientId = response.getSub();
-            apiUserId = null;
-        }
-        ContextUtils.assertNotNull(clientId);
         apiService.populateUserProps(exchange, apiUserId, clientId);
     }
 }

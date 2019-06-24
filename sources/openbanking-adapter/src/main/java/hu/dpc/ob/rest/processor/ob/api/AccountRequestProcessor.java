@@ -12,6 +12,7 @@ import hu.dpc.ob.rest.component.PspRestClient;
 import hu.dpc.ob.rest.constant.ExchangeHeader;
 import hu.dpc.ob.rest.dto.ob.api.AccountsResponseDto;
 import hu.dpc.ob.rest.dto.psp.PspAccountsResponseDto;
+import hu.dpc.ob.rest.dto.psp.PspIdentifiersResponseDto;
 import hu.dpc.ob.rest.internal.PspId;
 import hu.dpc.ob.service.ApiService;
 import hu.dpc.ob.util.ContextUtils;
@@ -19,6 +20,8 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
 
 @Component("api-ob-account-processor")
 public class AccountRequestProcessor implements Processor {
@@ -38,11 +41,20 @@ public class AccountRequestProcessor implements Processor {
         PspId pspId = exchange.getProperty(ExchangeHeader.PSP_ID.getKey(), PspId.class);
         PspAccountsResponseDto response = pspRestClient.callAccounts(pspUserId, pspId);
 
+        String accountId = ContextUtils.getPathParam(exchange, ContextUtils.PARAM_ACCOUNT_ID);
         String apiUserId = exchange.getProperty(ExchangeHeader.API_USER_ID.getKey(), String.class);
         String clientId = exchange.getProperty(ExchangeHeader.CLIENT_ID.getKey(), String.class);
-        String accountId = ContextUtils.getPathParam(exchange, ContextUtils.PARAM_ACCOUNT_ID);
-        AccountsResponseDto transform = AccountsResponseDto.transform(response, apiService.hasPermission(apiUserId, clientId, ApiSettings.ApiBinding.ACCOUNTS, true),
-                accountId);
+
+        boolean detail = apiService.hasPermission(apiUserId, clientId, ApiSettings.ApiBinding.ACCOUNTS, true);
+
+        HashMap<String, PspIdentifiersResponseDto> idMap = new HashMap<>();
+        if (detail) {
+            PspIdentifiersResponseDto ids = pspRestClient.callIdentifiers(pspUserId, accountId, pspId);
+            if (ids != null)
+                idMap.put(accountId, ids);
+        }
+
+        AccountsResponseDto transform = AccountsResponseDto.transform(response, idMap, detail, accountId);
         exchange.getIn().setBody(transform);
     }
 }

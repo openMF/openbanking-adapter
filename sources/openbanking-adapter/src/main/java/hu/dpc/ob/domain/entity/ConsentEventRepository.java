@@ -14,4 +14,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ConsentEventRepository extends JpaRepository<ConsentEvent, Long>, JpaSpecificationExecutor<ConsentEvent> {
 
+    ConsentEvent findTopByOrderBySeqNoDesc();
 }

@@ -14,6 +14,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter(AccessLevel.PUBLIC)
@@ -23,6 +25,9 @@ public class SchemaProperties<_H extends Header, _O extends Operation, _B extend
 
     @NotNull
     private String name;
+
+    @Getter(lazy = true)
+    private final List<String> permissions = new ArrayList<>(0);
 
     protected SchemaProperties(@NotNull String name) {
         this.name = name;

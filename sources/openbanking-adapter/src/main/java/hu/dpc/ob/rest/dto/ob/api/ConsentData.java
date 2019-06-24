@@ -8,19 +8,18 @@
 package hu.dpc.ob.rest.dto.ob.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import hu.dpc.ob.domain.entity.Consent;
 import hu.dpc.ob.domain.type.ApiPermission;
-import hu.dpc.ob.domain.type.ConsentStatus;
+import hu.dpc.ob.rest.parser.LocalFormatDateTimeDeserializer;
+import hu.dpc.ob.rest.parser.LocalFormatDateTimeSerializer;
 import hu.dpc.ob.service.ConsentService;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,15 +34,18 @@ public class ConsentData {
     private List<ApiPermission> permissions;
 
     @JsonProperty(value = "ExpirationDateTime")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonSerialize(using = LocalFormatDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalFormatDateTimeDeserializer.class)
     private LocalDateTime expirationDateTime;
 
     @JsonProperty(value = "TransactionFromDateTime")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonSerialize(using = LocalFormatDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalFormatDateTimeDeserializer.class)
     private LocalDateTime transactionFromDateTime;
 
     @JsonProperty(value = "TransactionToDateTime")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonSerialize(using = LocalFormatDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalFormatDateTimeDeserializer.class)
     private LocalDateTime transactionToDateTime;
 
     protected ConsentData(@NotNull List<ApiPermission> permissions, LocalDateTime expirationDateTime,

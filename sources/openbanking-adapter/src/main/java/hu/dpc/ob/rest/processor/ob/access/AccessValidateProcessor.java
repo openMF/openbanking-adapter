@@ -8,13 +8,13 @@
 package hu.dpc.ob.rest.processor.ob.access;
 
 import hu.dpc.ob.rest.internal.ApiSchema;
+import hu.dpc.ob.rest.processor.ValidateProcessor;
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
 
 @Component("access-ob-validate-processor")
-public class AccessValidateProcessor implements Processor {
+public class AccessValidateProcessor extends ValidateProcessor {
 
 
     public ApiSchema getSchema() {
