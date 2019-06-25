@@ -91,7 +91,7 @@ access-settings:
   mock: false
   schemas:
   - name: schema-basic-settings
-    operations: #adapter -> psp
+    operations: #adapter -> identity
     - name: operation-basic-settings
       user: admin
       password: admin
@@ -108,11 +108,9 @@ access-settings:
       method: POST
   - name: OB
     headers:
-    - name: client
-      key: client_id
     - name: user
-      key: user_id
-    bindings: #tpp -> adapter
+      key: user-id
+    bindings: #identity -> adapter
     - name: binding-basic-settings
       tenants:
       - name: tn01

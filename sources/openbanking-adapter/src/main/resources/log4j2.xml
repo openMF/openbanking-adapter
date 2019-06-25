@@ -11,7 +11,7 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level [%t] %logger{28} - %msg%n"/>
         </Console>
-        <RollingFile name="rollingFile" fileName="logs/paymenthub.log" filePattern="logs/paymenthub-%d{yyyy-MM-dd}.log">
+        <RollingFile name="rollingFile" fileName="logs/adapter.log" filePattern="logs/adapter-%d{yyyy-MM-dd}.log">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level [%t] %logger{28} - %msg%n"/>
             <Policies>
                 <OnStartupTriggeringPolicy/>

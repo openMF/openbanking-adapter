@@ -8,11 +8,16 @@
 package hu.dpc.ob.rest.processor.ob.access;
 
 import hu.dpc.ob.config.AccessSettings;
+import hu.dpc.ob.rest.component.AccessRestClient;
+import hu.dpc.ob.rest.constant.ExchangeHeader;
+import hu.dpc.ob.rest.dto.ob.access.IntrospectResponseDto;
+import hu.dpc.ob.rest.internal.PspId;
 import hu.dpc.ob.rest.processor.ob.ObPrepareProcessor;
 import hu.dpc.ob.service.ApiService;
 import hu.dpc.ob.util.ContextUtils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
+import org.eclipse.jetty.http.HttpHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +25,13 @@ import org.springframework.stereotype.Component;
 @Component("access-ob-prepare-processor")
 public class AccessPrepareProcessor extends ObPrepareProcessor {
 
+    private AccessRestClient accessRestClient;
     private AccessSettings accessSettings;
     private ApiService apiService;
 
     @Autowired
-    public AccessPrepareProcessor(AccessSettings accessSettings, ApiService apiService) {
+    public AccessPrepareProcessor(AccessRestClient accessRestClient, AccessSettings accessSettings, ApiService apiService) {
+        this.accessRestClient = accessRestClient;
         this.accessSettings = accessSettings;
         this.apiService = apiService;
     }
@@ -33,10 +40,21 @@ public class AccessPrepareProcessor extends ObPrepareProcessor {
     public void process(Exchange exchange) throws Exception {
         super.process(exchange);
 
+        PspId pspId = exchange.getProperty(ExchangeHeader.PSP_ID.getKey(), PspId.class);
+
+        String tenant = pspId.getTenant();
         Message in = exchange.getIn();
-        String clientId = in.getHeader(accessSettings.getHeader(getSchema(), AccessSettings.AccessHeader.CLIENT).getKey(), String.class);
+        String accessCode = in.getHeader(HttpHeader.AUTHORIZATION.asString(), String.class);
+
+        IntrospectResponseDto clientResponse = accessRestClient.callIntrospect(getSchema(), tenant, accessCode);
+        if (!clientResponse.isActive())
+            throw new UnsupportedOperationException("Client access token is not valid");
+
+        String clientId = clientResponse.getClientId();
+        ContextUtils.assertNotNull(clientId);
         String apiUserId = in.getHeader(accessSettings.getHeader(getSchema(), AccessSettings.AccessHeader.USER).getKey(), String.class);
         ContextUtils.assertNotNull(apiUserId);
+
         apiService.populateUserProps(exchange, apiUserId, clientId);
     }
 }

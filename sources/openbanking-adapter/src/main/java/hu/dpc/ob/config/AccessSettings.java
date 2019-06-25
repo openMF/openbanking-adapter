@@ -7,8 +7,6 @@
  */
 package hu.dpc.ob.config;
 
-import hu.dpc.ob.domain.type.ApiScope;
-import hu.dpc.ob.domain.type.DisplayType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -57,7 +55,6 @@ public class AccessSettings extends SchemaSettings<AccessSettings.AccessHeader, 
     @Getter
     @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
     public enum AccessHeader implements Header {
-        CLIENT("client"),
         USER("user"),
         ;
 
