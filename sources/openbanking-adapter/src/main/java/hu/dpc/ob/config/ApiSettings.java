@@ -78,8 +78,10 @@ public class ApiSettings extends SchemaSettings<ApiSettings.ApiHeader, ApiSettin
     public enum ApiBinding implements Binding {
         ACCOUNTS("accounts", ApiScope.AIS, "Read accounts list"),
         ACCOUNT("account", ApiScope.AIS, "Read account information"),
-        ACCOUNT_BALANCES("account-balances", ApiScope.AIS, "Read balance information"),
-        ACCOUNT_TRANSACTIONS("account-transactions", ApiScope.AIS, "Read transaction information"),
+        BALANCES("balances", ApiScope.AIS, "Read balances of owned accounts"),
+        BALANCE("balance", ApiScope.AIS, "Read account balance"),
+        PARTY_PSU("psu-party", ApiScope.AIS, "Read party information on the PSU logged in"),
+        PARTY("account-party", ApiScope.AIS, "Read account owner information"),
         AIS_CONSENT("ais-consent", ApiScope.AIS, "Retrieve an AIS consent resource"),
         AIS_CONSENT_CREATE("ais-consent-create", ApiScope.AIS, "Create a new AIS consent resource"),
         ;

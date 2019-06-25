@@ -9,6 +9,7 @@ package hu.dpc.ob.rest.dto.psp;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import hu.dpc.ob.util.DateUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -76,6 +77,6 @@ public class PspAccountsSavingsTimelineData {
             date = approvedOnDate;
         if (submittedOnDate != null)
             date = submittedOnDate;
-        return date == null ? null : date.atStartOfDay();
+        return DateUtils.toLocalDateTime(date);
     }
 }

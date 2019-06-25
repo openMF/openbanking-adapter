@@ -84,11 +84,13 @@ public class ApiService {
             case ACCOUNT:
                 return consentService.hasPermission(consent, READ_ACCOUNTS_DETAIL, accountId)
                         || (!detail && consentService.hasPermission(consent, READ_ACCOUNTS_BASIC, accountId));
-            case ACCOUNT_BALANCES:
+            case BALANCES:
+            case BALANCE:
                 return consentService.hasPermission(consent, READ_BALANCES, accountId);
-            case ACCOUNT_TRANSACTIONS:
-                return consentService.hasPermission(consent, READ_TRANSACTIONS_DETAIL, accountId)
-                        || (!detail && consentService.hasPermission(consent, READ_TRANSACTIONS_BASIC, accountId));
+            case PARTY_PSU:
+                return consentService.hasPermission(consent, READ_PARTY_PSU, accountId);
+            case PARTY:
+                return consentService.hasPermission(consent, READ_PARTY, accountId);
             case AIS_CONSENT:
             case AIS_CONSENT_CREATE:
                 return true;

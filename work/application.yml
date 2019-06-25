@@ -20,7 +20,7 @@ spring:
     hibernate:
       ddl-auto: none
   liquibase:
-    enabled: true
+    enabled: false
     change-log: classpath:/db/liquibase-changelog.yml
 
 logging:
@@ -40,7 +40,7 @@ camel:
     name: RestCamel
 
 adapter-settings:
-  instance: in01
+  instance: in02
   expiration: 30000
   schemas: OB # OB (OpenBanking UK), PSD2 (NextGenPsd2)
   tenants: tn02
@@ -49,7 +49,7 @@ api-settings:
   cors-enabled: true
   schemas:
   - name: OB
-    permissions: ReadAccountsBasic, ReadAccountsDetail, ReadBalances, ReadParty, ReadPartyPSU, ReadTransactionsBasic, ReadTransactionsCredits, ReadTransactionsDebits, ReadTransactionsDetail
+    permissions: ReadAccountsBasic, ReadAccountsDetail, ReadBalances, ReadParty, ReadPartyPSU
     headers:
     - name: auth-date
       key: x-fapi-auth-date
@@ -72,12 +72,21 @@ api-settings:
     - name: account #get owned account details
       path: accounts/{accountId}
       method: GET
-    - name: account-balances #get account balance information
+    - name: balances #get balances of owned accounts
+      path: balances
+      method: GET
+    - name: balance #get account balance information
       path: accounts/{accountId}/balances
       method: GET
-    - name: account-transactions #get account transaction information
-      path: accounts/{accountId}/transactions
+    - name: psu-party #get party information on the PSU logged in
+      path: party
       method: GET
+    - name: account-party #get party information of the account owner
+      path: accounts/{accountId}/party
+      method: GET
+#    - name: account-transactions #get account transaction information
+#      path: accounts/{accountId}/transactions
+#      method: GET
     - name: ais-consent #get AIS consent
       path: account-access-consents/{consentId}
       method: GET
@@ -119,14 +128,14 @@ access-settings:
         port: 63031
       host: http://0.0.0.0
       base: adapter/ob
-    - name: accounts-held #get list of consent accounts
-      path: accounts-held
-      method: GET
-    - name: party #get user details
-      path: party/{partyId}
-      method: GET
     - name: consent #get user consent
       path: consents/{consentId}
+      method: GET
+    - name: consent-party #get user details
+      path: consents/{consentId}/party
+      method: GET
+    - name: consent-accounts #get list of consent accounts
+      path: consents/{consentId}/accounts
       method: GET
     - name: consent-update #update user consent
       path: consents/{consentId}

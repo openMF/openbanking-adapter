@@ -82,6 +82,11 @@ public class DateUtils {
         return stamp == null ? null : stamp.toLocalDateTime();
     }
 
+    @NotNull
+    public static LocalDateTime toLocalDateTime(LocalDate localDate) {
+        return localDate == null ? null : localDate.atStartOfDay();
+    }
+
     public static int compareDatePart(@NotNull Date first, @NotNull Date second) {
         return getDatePartOf(first).compareTo(getDatePartOf(second));
     }

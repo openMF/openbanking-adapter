@@ -58,7 +58,7 @@ public class AccountsRequestProcessor implements Processor {
             }
         }
 
-        AccountsResponseDto transform = AccountsResponseDto.transform(response, idMap, apiService.hasPermission(apiUserId, clientId, ApiSettings.ApiBinding.ACCOUNTS, true));
+        AccountsResponseDto transform = AccountsResponseDto.transform(response, idMap, detail);
         exchange.getIn().setBody(transform);
     }
 }

@@ -12,11 +12,11 @@ import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
 
 
-@Component("api-ob-account-validate-processor")
-public class AccountValidateProcessor extends ApiValidateProcessor {
+@Component("api-ob-balance-validate-processor")
+public class BalanceValidateProcessor extends ApiValidateProcessor {
 
     protected ApiSettings.ApiBinding getBinding() {
-        return ApiSettings.ApiBinding.ACCOUNT;
+        return ApiSettings.ApiBinding.BALANCE;
     }
 
     protected boolean isUserRequest() {

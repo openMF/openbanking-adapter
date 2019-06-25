@@ -80,8 +80,8 @@ public class AccessSettings extends SchemaSettings<AccessSettings.AccessHeader, 
     @Getter
     @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
     public enum AccessBinding implements Binding {
-        ACCOUNTS_HELD("accounts-held", "Read consent accounts list"),
-        PARTY("party", "Read PSP user details"),
+        ACCOUNTS_HELD("consent-accounts", "Read consent accounts list"),
+        PARTY("consent-party", "Read PSP user details"),
         CONSENT("consent", "GET user consent resource details"),
         CONSENT_PUT("consent-update", "Update a user consent resource"),
         ;

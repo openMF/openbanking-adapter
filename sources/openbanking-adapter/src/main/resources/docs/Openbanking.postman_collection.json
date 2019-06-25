@@ -116,7 +116,7 @@
 							"response": []
 						},
 						{
-							"name": "Get User Accounts",
+							"name": "Get Accounts",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -151,7 +151,7 @@
 							"response": []
 						},
 						{
-							"name": "Get User Account",
+							"name": "Get Account",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -185,6 +185,150 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Get Balances",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{in01tn02_userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{in01tn02_domain}}:{{in01tn02_apiPort}}{{in01tn02_apiBase}}/balances",
+									"protocol": "http",
+									"host": [
+										"{{in01tn02_domain}}"
+									],
+									"port": "{{in01tn02_apiPort}}{{in01tn02_apiBase}}",
+									"path": [
+										"balances"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Account Balances",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{in01tn02_userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{in01tn02_domain}}:{{in01tn02_apiPort}}{{in01tn02_apiBase}}/accounts/{{in01tn02_accountId}}/balances",
+									"protocol": "http",
+									"host": [
+										"{{in01tn02_domain}}"
+									],
+									"port": "{{in01tn02_apiPort}}{{in01tn02_apiBase}}",
+									"path": [
+										"accounts",
+										"{{in01tn02_accountId}}",
+										"balances"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get PSU Party",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{in01tn02_userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{in01tn02_domain}}:{{in01tn02_apiPort}}{{in01tn02_apiBase}}/party",
+									"protocol": "http",
+									"host": [
+										"{{in01tn02_domain}}"
+									],
+									"port": "{{in01tn02_apiPort}}{{in01tn02_apiBase}}",
+									"path": [
+										"party"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Account Party - NOT WORKING",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{in01tn02_userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{in01tn02_domain}}:{{in01tn02_apiPort}}{{in01tn02_apiBase}}/accounts/{{in01tn02_accountId}}/party",
+									"protocol": "http",
+									"host": [
+										"{{in01tn02_domain}}"
+									],
+									"port": "{{in01tn02_apiPort}}{{in01tn02_apiBase}}",
+									"path": [
+										"accounts",
+										"{{in01tn02_accountId}}",
+										"party"
+									]
+								}
+							},
+							"response": []
 						}
 					],
 					"_postman_isSubFolder": true
@@ -205,10 +349,6 @@
 							"request": {
 								"method": "GET",
 								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{in01tn02_clientToken}}"
-									},
 									{
 										"key": "Accept",
 										"type": "text",
@@ -255,17 +395,13 @@
 							"response": []
 						},
 						{
-							"name": "Get Party",
+							"name": "Get Consent Party",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
 							"request": {
 								"method": "GET",
 								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{in01tn02_clientToken}}"
-									},
 									{
 										"key": "Accept",
 										"type": "text",
@@ -297,32 +433,29 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "http://{{in01tn02_domain}}:{{in01tn02_accessPort}}{{in01tn02_accessBase}}/party/lionuser1",
+									"raw": "http://{{in01tn02_domain}}:{{in01tn02_accessPort}}{{in01tn02_accessBase}}/consents/{{in01tn02_consentId}}/party",
 									"protocol": "http",
 									"host": [
 										"{{in01tn02_domain}}"
 									],
 									"port": "{{in01tn02_accessPort}}{{in01tn02_accessBase}}",
 									"path": [
-										"party",
-										"lionuser1"
+										"consents",
+										"{{in01tn02_consentId}}",
+										"party"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "Get Accounts Held",
+							"name": "Get Consent Accounts",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
 							"request": {
 								"method": "GET",
 								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{in01tn02_clientToken}}"
-									},
 									{
 										"key": "Accept",
 										"type": "text",
@@ -354,14 +487,16 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "http://{{in01tn02_domain}}:{{in01tn02_accessPort}}{{in01tn02_accessBase}}/accounts-held",
+									"raw": "http://{{in01tn02_domain}}:{{in01tn02_accessPort}}{{in01tn02_accessBase}}/consents/{{in01tn02_consentId}}/accounts",
 									"protocol": "http",
 									"host": [
 										"{{in01tn02_domain}}"
 									],
 									"port": "{{in01tn02_accessPort}}{{in01tn02_accessBase}}",
 									"path": [
-										"accounts-held"
+										"consents",
+										"{{in01tn02_consentId}}",
+										"accounts"
 									]
 								}
 							},
@@ -372,10 +507,6 @@
 							"request": {
 								"method": "PUT",
 								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{in01tn02_clientToken}}"
-									},
 									{
 										"key": "Accept",
 										"type": "text",

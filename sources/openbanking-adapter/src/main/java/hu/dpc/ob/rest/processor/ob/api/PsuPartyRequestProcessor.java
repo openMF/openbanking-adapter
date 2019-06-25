@@ -5,7 +5,7 @@
  *
  * https://mozilla.org/MPL/2.0/.
  */
-package hu.dpc.ob.rest.processor.ob.access;
+package hu.dpc.ob.rest.processor.ob.api;
 
 import hu.dpc.ob.rest.component.PspRestClient;
 import hu.dpc.ob.rest.constant.ExchangeHeader;
@@ -18,13 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
-@Component("access-ob-party-processor")
-public class PartyRequestProcessor implements Processor {
+@Component("api-ob-psu-party-processor")
+public class PsuPartyRequestProcessor implements Processor {
 
     private final PspRestClient pspRestClient;
 
     @Autowired
-    public PartyRequestProcessor(PspRestClient pspRestClient) {
+    public PsuPartyRequestProcessor(PspRestClient pspRestClient) {
         this.pspRestClient = pspRestClient;
     }
 

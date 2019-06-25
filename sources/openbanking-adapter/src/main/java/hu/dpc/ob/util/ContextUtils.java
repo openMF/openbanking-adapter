@@ -94,7 +94,8 @@ public class ContextUtils {
     }
 
     public static String getPathParam(Exchange exchange, String paramName) {
-        return (String) exchange.getProperty(ExchangeHeader.PATH_PARAMS.getKey(), Map.class).get(paramName);
+        Map property = exchange.getProperty(ExchangeHeader.PATH_PARAMS.getKey(), Map.class);
+        return property == null ? null : (String) property.get(paramName);
     }
 
     public static String resolvePathParam(String pathInfo, Map<String, String> params) {
