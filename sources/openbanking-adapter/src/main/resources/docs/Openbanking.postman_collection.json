@@ -9,329 +9,323 @@
 			"name": "API",
 			"item": [
 				{
-					"name": "in01tn02",
-					"item": [
-						{
-							"name": "Create AIS Consent",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{in01tn02_clientToken}}"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									},
-									{
-										"key": "Accept",
-										"value": "application/json",
-										"type": "text"
-									},
-									{
-										"key": "x-fapi-auth-date",
-										"value": "Sun, 10 Sep 2017 19:43:31 GMT",
-										"type": "text"
-									},
-									{
-										"key": "x-fapi-customer-ip-address",
-										"value": "104.25.212.99",
-										"type": "text"
-									},
-									{
-										"key": "x-fapi-interaction-id",
-										"value": "93bac548-d2de-4546-b106-880a5018460d",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"Data\": {\n    \"Permissions\": [\n      \"ReadAccountsDetail\",\n      \"ReadBalances\",\n      \"ReadBeneficiariesDetail\",\n      \"ReadDirectDebits\",\n      \"ReadProducts\",\n      \"ReadStandingOrdersDetail\",\n      \"ReadTransactionsCredits\",\n      \"ReadTransactionsDebits\",\n      \"ReadTransactionsDetail\",\n      \"ReadOffers\",\n      \"ReadPAN\",\n      \"ReadParty\",\n      \"ReadPartyPSU\",\n      \"ReadScheduledPaymentsDetail\",\n      \"ReadStatementsDetail\"\n    ],\n    \"ExpirationDateTime\": \"2019-12-31T00:00:00+00:00\",\n    \"TransactionFromDateTime\": \"2017-05-31T00:00:00+00:00\",\n    \"TransactionToDateTime\": \"2027-12-31T00:00:00+00:00\"\n  },\n  \"Risk\": {}\n}"
-								},
-								"url": {
-									"raw": "http://{{in01tn02_domain}}:{{in01tn02_apiPort}}{{in01tn02_apiBase}}/account-access-consents",
-									"protocol": "http",
-									"host": [
-										"{{in01tn02_domain}}"
-									],
-									"port": "{{in01tn02_apiPort}}{{in01tn02_apiBase}}",
-									"path": [
-										"account-access-consents"
-									]
-								}
+					"name": "Create AIS Consent",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{clientToken}}"
 							},
-							"response": []
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"value": "104.25.212.99",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"value": "93bac548-d2de-4546-b106-880a5018460d",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Data\": {\n    \"Permissions\": [\n      \"ReadAccountsBasic\",\n      \"ReadAccountsDetail\",\n      \"ReadBalances\",\n      \"ReadBeneficiariesDetail\",\n      \"ReadDirectDebits\",\n      \"ReadProducts\",\n      \"ReadStandingOrdersDetail\",\n      \"ReadTransactionsCredits\",\n      \"ReadTransactionsDebits\",\n      \"ReadTransactionsDetail\",\n      \"ReadOffers\",\n      \"ReadPAN\",\n      \"ReadParty\",\n      \"ReadPartyPSU\",\n      \"ReadScheduledPaymentsDetail\",\n      \"ReadStatementsDetail\"\n    ],\n    \"ExpirationDateTime\": \"2019-12-31T00:00:00+00:00\",\n    \"TransactionFromDateTime\": \"2017-05-31T00:00:00+00:00\",\n    \"TransactionToDateTime\": \"2027-12-31T00:00:00+00:00\"\n  },\n  \"Risk\": {}\n}"
 						},
-						{
-							"name": "Get AIS Consent",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{in01tn02_clientToken}}"
-									},
-									{
-										"key": "Accept",
-										"value": "application/json",
-										"type": "text"
-									},
-									{
-										"key": "x-fapi-auth-date",
-										"value": "Sun, 10 Sep 2017 19:43:31 GMT",
-										"type": "text"
-									},
-									{
-										"key": "x-fapi-customer-ip-address",
-										"value": "104.25.212.99",
-										"type": "text"
-									},
-									{
-										"key": "x-fapi-interaction-id",
-										"value": "93bac548-d2de-4546-b106-880a5018460d",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "http://{{in01tn02_domain}}:{{in01tn02_apiPort}}{{in01tn02_apiBase}}/account-access-consents/{{in01tn02_consentId}}",
-									"protocol": "http",
-									"host": [
-										"{{in01tn02_domain}}"
-									],
-									"port": "{{in01tn02_apiPort}}{{in01tn02_apiBase}}",
-									"path": [
-										"account-access-consents",
-										"{{in01tn02_consentId}}"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Accounts",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{in01tn02_userToken}}"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "http://{{in01tn02_domain}}:{{in01tn02_apiPort}}{{in01tn02_apiBase}}/accounts",
-									"protocol": "http",
-									"host": [
-										"{{in01tn02_domain}}"
-									],
-									"port": "{{in01tn02_apiPort}}{{in01tn02_apiBase}}",
-									"path": [
-										"accounts"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Account",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{in01tn02_userToken}}"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "http://{{in01tn02_domain}}:{{in01tn02_apiPort}}{{in01tn02_apiBase}}/accounts/{{in01tn02_accountId}}",
-									"protocol": "http",
-									"host": [
-										"{{in01tn02_domain}}"
-									],
-									"port": "{{in01tn02_apiPort}}{{in01tn02_apiBase}}",
-									"path": [
-										"accounts",
-										"{{in01tn02_accountId}}"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Balances",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{in01tn02_userToken}}"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "http://{{in01tn02_domain}}:{{in01tn02_apiPort}}{{in01tn02_apiBase}}/balances",
-									"protocol": "http",
-									"host": [
-										"{{in01tn02_domain}}"
-									],
-									"port": "{{in01tn02_apiPort}}{{in01tn02_apiBase}}",
-									"path": [
-										"balances"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Account Balances",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{in01tn02_userToken}}"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "http://{{in01tn02_domain}}:{{in01tn02_apiPort}}{{in01tn02_apiBase}}/accounts/{{in01tn02_accountId}}/balances",
-									"protocol": "http",
-									"host": [
-										"{{in01tn02_domain}}"
-									],
-									"port": "{{in01tn02_apiPort}}{{in01tn02_apiBase}}",
-									"path": [
-										"accounts",
-										"{{in01tn02_accountId}}",
-										"balances"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get PSU Party",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{in01tn02_userToken}}"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "http://{{in01tn02_domain}}:{{in01tn02_apiPort}}{{in01tn02_apiBase}}/party",
-									"protocol": "http",
-									"host": [
-										"{{in01tn02_domain}}"
-									],
-									"port": "{{in01tn02_apiPort}}{{in01tn02_apiBase}}",
-									"path": [
-										"party"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Account Party - NOT WORKING",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Authorization",
-										"value": "Bearer {{in01tn02_userToken}}"
-									},
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "http://{{in01tn02_domain}}:{{in01tn02_apiPort}}{{in01tn02_apiBase}}/accounts/{{in01tn02_accountId}}/party",
-									"protocol": "http",
-									"host": [
-										"{{in01tn02_domain}}"
-									],
-									"port": "{{in01tn02_apiPort}}{{in01tn02_apiBase}}",
-									"path": [
-										"accounts",
-										"{{in01tn02_accountId}}",
-										"party"
-									]
-								}
-							},
-							"response": []
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/account-access-consents",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"account-access-consents"
+							]
 						}
-					],
-					"_postman_isSubFolder": true
+					},
+					"response": []
+				},
+				{
+					"name": "Get AIS Consent",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{clientToken}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"value": "104.25.212.99",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"value": "93bac548-d2de-4546-b106-880a5018460d",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/account-access-consents/{{consentId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"account-access-consents",
+								"{{consentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Accounts",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts/{{accountId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"accounts",
+								"{{accountId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Balances",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/balances",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"balances"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account Balances",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts/{{accountId}}/balances",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"accounts",
+								"{{accountId}}",
+								"balances"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get PSU Party",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/party",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"party"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account Party - NOT WORKING",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts/{{accountId}}/party",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"accounts",
+								"{{accountId}}",
+								"party"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -339,232 +333,221 @@
 			"name": "Access",
 			"item": [
 				{
-					"name": "in01tn02",
-					"item": [
-						{
-							"name": "Get Consent",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
+					"name": "Get Consent",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
 							},
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"type": "text",
-										"value": "application/json"
-									},
-									{
-										"key": "x-fapi-auth-date",
-										"type": "text",
-										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
-									},
-									{
-										"key": "x-fapi-customer-ip-address",
-										"type": "text",
-										"value": "104.25.212.99"
-									},
-									{
-										"key": "x-fapi-interaction-id",
-										"type": "text",
-										"value": "93bac548-d2de-4546-b106-880a5018460d"
-									},
-									{
-										"key": "user-id",
-										"value": "{{in01tn02_userId}}",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "http://{{in01tn02_domain}}:{{in01tn02_accessPort}}{{in01tn02_accessBase}}/consents/{{in01tn02_consentId}}",
-									"protocol": "http",
-									"host": [
-										"{{in01tn02_domain}}"
-									],
-									"port": "{{in01tn02_accessPort}}{{in01tn02_accessBase}}",
-									"path": [
-										"consents",
-										"{{in01tn02_consentId}}"
-									]
-								}
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
 							},
-							"response": []
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							},
+							{
+								"key": "user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
 						},
-						{
-							"name": "Get Consent Party",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"type": "text",
-										"value": "application/json"
-									},
-									{
-										"key": "x-fapi-auth-date",
-										"type": "text",
-										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
-									},
-									{
-										"key": "x-fapi-customer-ip-address",
-										"type": "text",
-										"value": "104.25.212.99"
-									},
-									{
-										"key": "x-fapi-interaction-id",
-										"type": "text",
-										"value": "93bac548-d2de-4546-b106-880a5018460d"
-									},
-									{
-										"key": "user-id",
-										"type": "text",
-										"value": "{{in01tn02_userId}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "http://{{in01tn02_domain}}:{{in01tn02_accessPort}}{{in01tn02_accessBase}}/consents/{{in01tn02_consentId}}/party",
-									"protocol": "http",
-									"host": [
-										"{{in01tn02_domain}}"
-									],
-									"port": "{{in01tn02_accessPort}}{{in01tn02_accessBase}}",
-									"path": [
-										"consents",
-										"{{in01tn02_consentId}}",
-										"party"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Consent Accounts",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"type": "text",
-										"value": "application/json"
-									},
-									{
-										"key": "x-fapi-auth-date",
-										"type": "text",
-										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
-									},
-									{
-										"key": "x-fapi-customer-ip-address",
-										"type": "text",
-										"value": "104.25.212.99"
-									},
-									{
-										"key": "x-fapi-interaction-id",
-										"type": "text",
-										"value": "93bac548-d2de-4546-b106-880a5018460d"
-									},
-									{
-										"key": "user-id",
-										"value": "{{in01tn02_userId}}",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": ""
-								},
-								"url": {
-									"raw": "http://{{in01tn02_domain}}:{{in01tn02_accessPort}}{{in01tn02_accessBase}}/consents/{{in01tn02_consentId}}/accounts",
-									"protocol": "http",
-									"host": [
-										"{{in01tn02_domain}}"
-									],
-									"port": "{{in01tn02_accessPort}}{{in01tn02_accessBase}}",
-									"path": [
-										"consents",
-										"{{in01tn02_consentId}}",
-										"accounts"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Update Consent",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Accept",
-										"type": "text",
-										"value": "application/json"
-									},
-									{
-										"key": "x-fapi-auth-date",
-										"type": "text",
-										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
-									},
-									{
-										"key": "x-fapi-customer-ip-address",
-										"type": "text",
-										"value": "104.25.212.99"
-									},
-									{
-										"key": "x-fapi-interaction-id",
-										"type": "text",
-										"value": "93bac548-d2de-4546-b106-880a5018460d"
-									},
-									{
-										"key": "user-id",
-										"value": "{{in01tn02_userId}}",
-										"type": "text"
-									},
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"Data\": {\n        \"Permissions\": [\n            \"ReadAccountsDetail\",\n            \"ReadBalances\",\n            \"ReadTransactionsCredits\",\n            \"ReadTransactionsDebits\",\n            \"ReadTransactionsDetail\",\n            \"ReadParty\",\n            \"ReadPartyPSU\"\n        ],\n        \"ConsentId\": \"{{in01tn02_consentId}}\",\n        \"Action\": \"Authorize\",\n        \"Account\": [\n        \t{\n            \"AccountId\": \"{{in01tn02_accountId}}\"\n        \t}\n        ]\n    }\n}"
-								},
-								"url": {
-									"raw": "http://{{in01tn02_domain}}:{{in01tn02_accessPort}}{{in01tn02_accessBase}}/consents/{{in01tn02_consentId}}",
-									"protocol": "http",
-									"host": [
-										"{{in01tn02_domain}}"
-									],
-									"port": "{{in01tn02_accessPort}}{{in01tn02_accessBase}}",
-									"path": [
-										"consents",
-										"{{in01tn02_consentId}}"
-									]
-								}
-							},
-							"response": []
+						"url": {
+							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{accessPort}}{{accessBase}}",
+							"path": [
+								"consents",
+								"{{consentId}}"
+							]
 						}
-					],
-					"_postman_isSubFolder": true
+					},
+					"response": []
 				},
 				{
-					"name": "in02tn04",
-					"item": [],
-					"_postman_isSubFolder": true
+					"name": "Get Consent Party",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							},
+							{
+								"key": "user-id",
+								"type": "text",
+								"value": "{{userId}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}/party",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{accessPort}}{{accessBase}}",
+							"path": [
+								"consents",
+								"{{consentId}}",
+								"party"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Consent Accounts",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							},
+							{
+								"key": "user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}/accounts",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{accessPort}}{{accessBase}}",
+							"path": [
+								"consents",
+								"{{consentId}}",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Consent",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							},
+							{
+								"key": "user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Data\": {\n        \"Permissions\": [\n        \t\"ReadAccountsBasic\",\n            \"ReadAccountsDetail\",\n            \"ReadBalances\",\n            \"ReadParty\",\n            \"ReadPartyPSU\"\n        ],\n        \"ConsentId\": \"{{consentId}}\",\n        \"Action\": \"Authorize\",\n        \"Account\": [\n        \t{\n            \"AccountId\": \"{{accountId}}\"\n        \t},\n        \t{\n            \"AccountId\": \"5bd367df29b74a6e857fbd\"\n        \t}\n        ]\n    }\n}"
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{accessPort}}{{accessBase}}",
+							"path": [
+								"consents",
+								"{{consentId}}"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
