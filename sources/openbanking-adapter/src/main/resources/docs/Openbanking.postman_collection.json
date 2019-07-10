@@ -61,6 +61,58 @@
 					"response": []
 				},
 				{
+					"name": "Create PISd Consent",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{clientToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Data\": {\n    \"Initiation\": {\n      \"InstructionIdentification\": \"c0559b88-4ddf-4790-a5ec-392ce0b761e1\",\n      \"EndToEndIdentification\": \"fefce099-2f17-4c3a-ae29-41276a196bcd\",\n      \"InstructedAmount\": {\n        \"Amount\": \"165.88\",\n        \"Currency\": \"TZS\"\n      },\n      \"DebtorAccount\": {\n        \"SchemeName\": \"UK.OBIE.BBAN\",\n        \"Identification\": \"31d77b06141c11e9ab14d6\"\n      },\n      \"CreditorAccount\": {\n        \"SchemeName\": \"UK.OBIE.Paym\",\n        \"Identification\": \"27710102999\",\n        \"Name\": \"Lion Saving Account 1\"\n      },\n      \"SupplementaryData\": {\n      \t\"interopData\": {\n      \t\t\"amountType\": \"RECEIVE\",\n\t\t    \"transactionType\": {\n\t\t\t    \"scenario\": \"PAYMENT\",\n\t\t\t    \"initiator\": \"PAYER\",\n\t\t\t    \"initiatorType\": \"CONSUMER\"\n\t\t    }\n      \t}\n      }\n    }\n  },\n  \"Risk\": {}\n}"
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/account-access-consents",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"account-access-consents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get AIS Consent",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -333,7 +385,7 @@
 			"name": "Access",
 			"item": [
 				{
-					"name": "Get Consent",
+					"name": "Get AIS Consent",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -379,6 +431,56 @@
 							"port": "{{accessPort}}{{accessBase}}",
 							"path": [
 								"consents",
+								"{{consentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Init PISd Consent",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							},
+							{
+								"key": "user-id",
+								"type": "text",
+								"value": "{{userId}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/pis-consents/{{consentId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{accessPort}}{{accessBase}}",
+							"path": [
+								"pis-consents",
 								"{{consentId}}"
 							]
 						}
@@ -494,7 +596,7 @@
 					"response": []
 				},
 				{
-					"name": "Update Consent",
+					"name": "Update AIS Consent",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -520,14 +622,14 @@
 							},
 							{
 								"key": "user-id",
-								"value": "{{userId}}",
-								"type": "text"
+								"type": "text",
+								"value": "{{userId}}"
 							},
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
+								"type": "text",
+								"value": "application/json"
 							}
 						],
 						"body": {
@@ -543,6 +645,62 @@
 							"port": "{{accessPort}}{{accessBase}}",
 							"path": [
 								"consents",
+								"{{consentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update PISd Consent",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							},
+							{
+								"key": "user-id",
+								"type": "text",
+								"value": "{{userId}}"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Data\": {\n        \"ConsentId\": \"{{consentId}}\",\n        \"Action\": \"Authorize\"\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/pis-consents/{{consentId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{accessPort}}{{accessBase}}",
+							"path": [
+								"pis-consents",
 								"{{consentId}}"
 							]
 						}
