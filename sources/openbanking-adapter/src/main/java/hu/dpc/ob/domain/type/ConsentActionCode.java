@@ -89,7 +89,7 @@ public enum ConsentActionCode implements PersistentType<ConsentActionCode, Strin
     }
 
     public static ConsentActionCode forAction(@NotNull PaymentActionCode action) {
-        if (action == PaymentActionCode.PAYMENT_CREATE)
+        if (action == PaymentActionCode.PAYMENT_ACCEPT)
             return PAYMENT;
         if (action == PaymentActionCode.PAYMENT_EXECUTE)
             return PAYMENT_EXECUTED;

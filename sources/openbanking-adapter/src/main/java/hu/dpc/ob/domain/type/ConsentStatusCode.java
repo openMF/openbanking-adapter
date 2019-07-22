@@ -79,8 +79,6 @@ public enum ConsentStatusCode implements PersistentType<ConsentStatusCode, Strin
                 return this == AWAITING_AUTHORIZATION;
             case REJECT:
                 return this == AWAITING_AUTHORIZATION || this == AUTHORIZED;
-            case PAYMENT_EXECUTED:
-                return this == AUTHORIZED;
             default:
                 return this == AUTHORIZED;
         }

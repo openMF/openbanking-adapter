@@ -10,6 +10,19 @@
 			"item": [
 				{
 					"name": "Create AIS Consent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d85986c9-83be-4a67-b79f-ec684071f309",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"consentId\", response.Data.ConsentId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -329,6 +342,40 @@
 				},
 				{
 					"name": "Create PIS Consent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "353a7dcb-a1a9-4a6d-a86a-5e11e24f44a8",
+								"exec": [
+									"var res = pm.response.json();",
+									"pm.environment.set(\"pis-consentId\", res.Data.ConsentId);",
+									"",
+									"pm.environment.set(\"amount\", res.Data.Initiation.InstructedAmount.Amount);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "db06b798-7def-4d1f-9815-fd6c32dbca7d",
+								"exec": [
+									"var clientRefId = pm.environment.get(\"clientRefId\");",
+									"var refBase = clientRefId.substr(0, clientRefId.length - 6);",
+									"var refNo = parseInt(clientRefId.substring(clientRefId.length - 6, clientRefId.length), 10) + 1;",
+									"pm.environment.set(\"clientRefId\", (refBase + refNo));",
+									"",
+									"var instructionId = pm.environment.get(\"instructionId\");",
+									"var instrBase = instructionId.substr(0, instructionId.length - 6);",
+									"var instrNo = parseInt(instructionId.substring(instructionId.length - 6, instructionId.length), 10) + 1;",
+									"pm.environment.set(\"instructionId\", (instrBase + instrNo));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -363,7 +410,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"Data\": {\n    \"Initiation\": {\n      \"InstructionIdentification\": \"{{instructionId}}\",\n      \"EndToEndIdentification\": \"{{clientRefId}}\",\n      \"InstructedAmount\": {\n        \"Amount\": {{amount}},\n        \"Currency\": \"TZS\"\n      },\n      \"DebtorAccount\": {\n        \"SchemeName\": \"UK.OBIE.BBAN\",\n        \"Identification\": \"83c4ed1c074b484e85cc79\"\n      },\n      \"CreditorAccount\": {\n        \"SchemeName\": \"UK.OBIE.Paym\",\n        \"Identification\": \"27710203999\",\n        \"Name\": \"Rhino Saving Account 1\"\n      },\n      \"SupplementaryData\": {\n      \t\"interopData\": {\n      \t\t\"amountType\": \"RECEIVE\",\n\t\t    \"transactionType\": {\n\t\t\t    \"scenario\": \"PAYMENT\",\n\t\t\t    \"initiator\": \"PAYER\",\n\t\t\t    \"initiatorType\": \"CONSUMER\"\n\t\t    },\n\t\t    \"note\": \"Test payment\"\n      \t}\n      }\n    }\n  },\n  \"Risk\": {}\n}"
+							"raw": "{\n  \"Data\": {\n    \"Initiation\": {\n      \"InstructionIdentification\": \"{{instructionId}}\",\n      \"EndToEndIdentification\": \"{{clientRefId}}\",\n      \"InstructedAmount\": {\n        \"Amount\": 5,\n        \"Currency\": \"TZS\"\n      },\n      \"DebtorAccount\": {\n        \"SchemeName\": \"UK.OBIE.BBAN\",\n        \"Identification\": \"83c4ed1c074b484e85cc79\"\n      },\n      \"CreditorAccount\": {\n        \"SchemeName\": \"UK.OBIE.Paym\",\n        \"Identification\": \"27710203999\",\n        \"Name\": \"Rhino Saving Account 1\"\n      },\n      \"SupplementaryData\": {\n      \t\"interopData\": {\n      \t\t\"amountType\": \"RECEIVE\",\n\t\t    \"transactionType\": {\n\t\t\t    \"scenario\": \"PAYMENT\",\n\t\t\t    \"initiator\": \"PAYER\",\n\t\t\t    \"initiatorType\": \"CONSUMER\"\n\t\t    },\n\t\t    \"note\": \"Test payment\"\n      \t}\n      }\n    }\n  },\n  \"Risk\": {}\n}"
 						},
 						"url": {
 							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payment-consents",
@@ -433,6 +480,19 @@
 				},
 				{
 					"name": "Start PIS Payment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "efc44fe6-efef-458f-ae1c-3da50e1f3153",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"paymentId\", response.Data.DomesticPaymentId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [

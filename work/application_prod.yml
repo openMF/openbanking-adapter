@@ -12,9 +12,9 @@ spring:
   main:
     web-application-type: none
   datasource:
-    url: jdbc:mariadb://localhost:3306/ob_tn02
-    username: root
-    password: mysql
+    url: jdbc:mariadb://hackathon2019-fin12ireland2.c1doadknyjf1.eu-west-1.rds.amazonaws.com:3306/ob_tn02
+    username: admin
+    password: adminadminadmin
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
@@ -26,10 +26,6 @@ spring:
 logging:
   level:
     liquibase: INFO
-#    org:
-#      springframework:
-#        transaction:
-#          interceptor: TRACE
 
 management:
   endpoints:
@@ -44,13 +40,13 @@ camel:
     name: AdapterCamel
 
 adapter-settings:
-  env: test # test, prod (default: prod)
+  env: prod # test, prod (default: prod)
   instance: in01
   schemas: OB # OB (OpenBanking UK), PSD2 (NextGenPsd2)
   tenants: tn02
   # default limits, may be overwritten in request
   event-limits: # request must be rejected if any of the limits was reached
-    frequency: 10 # per day
+    frequency: 100 # per day
 #  consent-limits: # consent must be rejected if any of the limits was reached
 #    expiration: 36000 #sec = 10h
   payment-limits: # payment is not valid if any of the limits was reached
@@ -210,9 +206,9 @@ psp-settings:
     password: password
     tenants:
     - name: tn01
-      host: http://buffalo.mlabs.dpc.hu
+      host: http://localhost # http://buffalo.mlabs.dpc.hu
     - name: tn02
-      host: http://lion.mlabs.dpc.hu
+      host: http://localhost # http://lion.mlabs.dpc.hu
     port: 80 # 8080
     base: fineract-provider/api/v1
   - name: auth #login
