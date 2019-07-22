@@ -9,10 +9,7 @@ package hu.dpc.ob.model.service;
 
 import hu.dpc.ob.config.AdapterSettings;
 import hu.dpc.ob.domain.entity.*;
-import hu.dpc.ob.domain.repository.AccountIdentificationRepository;
-import hu.dpc.ob.domain.repository.ConsentEventRepository;
-import hu.dpc.ob.domain.repository.ConsentRepository;
-import hu.dpc.ob.domain.repository.PaymentRepository;
+import hu.dpc.ob.domain.repository.*;
 import hu.dpc.ob.domain.type.*;
 import hu.dpc.ob.model.ConsentStateMachine;
 import hu.dpc.ob.rest.dto.ob.access.*;
@@ -52,6 +49,7 @@ public class ConsentService {
 
     private final ConsentRepository consentRepository;
     private final ConsentEventRepository consentEventRepository;
+    private final ConsentAccountRepository consentAccountRepository;
     private final PaymentRepository paymentRepository;
     private final AccountIdentificationRepository accountIdentificationRepository;
 
@@ -59,12 +57,13 @@ public class ConsentService {
 
     @Autowired
     public ConsentService(AdapterSettings adapterSettings, PaymentService paymentService, ConsentRepository consentRepository,
-                          ConsentEventRepository consentEventRepository, PaymentRepository paymentRepository, AccountIdentificationRepository accountIdentificationRepository,
-                          SeqNoGenerator seqNoGenerator) {
+                          ConsentEventRepository consentEventRepository, ConsentAccountRepository consentAccountRepository, PaymentRepository paymentRepository,
+                          AccountIdentificationRepository accountIdentificationRepository, SeqNoGenerator seqNoGenerator) {
         this.adapterSettings = adapterSettings;
         this.paymentService = paymentService;
         this.consentRepository = consentRepository;
         this.consentEventRepository = consentEventRepository;
+        this.consentAccountRepository = consentAccountRepository;
         this.paymentRepository = paymentRepository;
         this.accountIdentificationRepository = accountIdentificationRepository;
         this.seqNoGenerator = seqNoGenerator;
@@ -205,6 +204,7 @@ public class ConsentService {
         }
 
         // sca calc
+        consentEventRepository.save(consentEvent);
         consentRepository.save(consent);
         return consent;
     }
@@ -236,6 +236,8 @@ public class ConsentService {
         if (event == null) {
             return consent;
         }
+
+        consentEventRepository.save(event);
         if (event.isAccepted()) {
             // no need to implement update of already authorized consent - revoke and create new
             for (Consent userConsent : user.getConsents()) {

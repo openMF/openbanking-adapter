@@ -19,6 +19,15 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+      jdbc:
+        batch_size: 1000
+        rewriteBatchedStatements: true
+        cachePrepStmts: true
+        prepStmtCacheSize: 1000
+        prepStmtCacheSqlLimit: 1000
+        useServerPrepStmts: true
+      ejb:
+        use_class_enhancer: true
   liquibase:
     enabled: false
     change-log: classpath:/db/liquibase-changelog.yml
@@ -44,7 +53,7 @@ camel:
     name: AdapterCamel
 
 adapter-settings:
-  env: test # test, prod (default: prod)
+  env: prod # test, prod (default: prod)
   instance: in01
   schemas: OB # OB (OpenBanking UK), PSD2 (NextGenPsd2)
   tenants: tn02

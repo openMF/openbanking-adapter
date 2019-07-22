@@ -123,12 +123,10 @@ public class InteropPayment extends AbstractEntity {
     }
 
     public boolean addExtension(@NotNull String key, @NotNull String value) {
-        return addExtension(new InteropExtension(this, key, value));
-    }
-
-    public boolean addExtension(@NotNull InteropExtension extension) {
-        extension.setInteropPayment(this);
-        return getExtensions().add(extension);
+        List<InteropExtension> extensions = getExtensions();
+        InteropExtension extension = new InteropExtension(this, key, value);
+        extensions.add(extension);
+        return true;
     }
 
     public boolean removeExtension(@NotNull InteropExtension extension) {

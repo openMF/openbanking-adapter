@@ -12,6 +12,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -53,6 +55,7 @@ public class AccountIdentification extends AbstractEntity {
 
     @Setter(AccessLevel.PUBLIC)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "account")
+    @LazyToOne(LazyToOneOption.NO_PROXY)
     private TrustedBeneficiary trustedBeneficiary;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "account")

@@ -78,6 +78,9 @@ public class ConsentEvent extends AbstractEntity implements Comparable<ConsentEv
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "event")
     private List<ConsentAccount> accounts = new ArrayList<>();
+//
+//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "cause")
+//    private List<ConsentEvent> results = new ArrayList<>();
 
     ConsentEvent(@NotNull Consent consent, @NotNull ConsentActionCode action, @NotNull EventStatusCode status, String resourceId,
                  @NotNull LocalDateTime createdOn, long seqNo, ConsentStatusCode consentStatus, ConsentEvent cause, String reason, String reasonDesc) {

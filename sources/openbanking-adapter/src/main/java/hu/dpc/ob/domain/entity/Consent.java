@@ -15,6 +15,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -78,6 +80,7 @@ public class Consent extends AbstractEntity implements Comparable<Consent> {
 
     @Setter(AccessLevel.PUBLIC)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "consent")
+    @LazyToOne(LazyToOneOption.NO_PROXY)
     private Payment payment;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "consent")
@@ -192,8 +195,11 @@ public class Consent extends AbstractEntity implements Comparable<Consent> {
     }
 
     private boolean addEvent(@NotNull ConsentEvent event, @NotNull SeqNoGenerator seqNoGenerator) {
-        event.setConsent(this);
-        boolean added = getEvents().add(event);
+        boolean added = true;
+        if (event.getConsent() == null) {
+            added = getEvents().add(event);
+            event.setConsent(this);
+        }
         if (added && getPayment() != null) {
             payment.consentEventAdded(event, seqNoGenerator);
         }
@@ -245,8 +251,9 @@ public class Consent extends AbstractEntity implements Comparable<Consent> {
     }
 
     public ConsentPermission addPermission(@NotNull PermissionCode apiPermission, @NotNull ConsentEvent event) {
+        List<ConsentPermission> permissions = getPermissions();
         ConsentPermission permission = new ConsentPermission(this, apiPermission, event);
-        getPermissions().add(permission);
+        permissions.add(permission);
         return permission;
     }
 
@@ -279,8 +286,9 @@ public class Consent extends AbstractEntity implements Comparable<Consent> {
     }
 
     public ConsentAccount addAccount(@NotNull String accountid, @NotNull ConsentEvent event) {
+        List<ConsentAccount> accounts = getAccounts();
         ConsentAccount account = new ConsentAccount(this, accountid, event);
-        getAccounts().add(account);
+        accounts.add(account);
         return account;
     }
 

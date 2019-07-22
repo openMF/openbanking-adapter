@@ -109,8 +109,10 @@ public class Address extends AbstractEntity {
     }
 
     public AddressLine addLine(@NotNull AddressLine line) {
-        line.setAddress(this);
-        getAddressLines().add(line);
+        if (line.getAddress() == null) {
+            getAddressLines().add(line);
+            line.setAddress(this);
+        }
         return line;
     }
 
@@ -120,10 +122,6 @@ public class Address extends AbstractEntity {
     }
 
     public AddressLine addLine(String line) {
-        if (Strings.isEmpty(line))
-            return null;
-        AddressLine addressLine = new AddressLine(this, line);
-        getAddressLines().add(addressLine);
-        return addressLine;
+        return Strings.isEmpty(line) ? null : addLine(new AddressLine(this, line));
     }
 }

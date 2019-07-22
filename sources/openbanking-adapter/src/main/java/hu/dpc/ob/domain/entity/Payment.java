@@ -15,6 +15,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -125,22 +127,27 @@ public class Payment extends AbstractEntity implements Comparable<Payment> {
 
     @Setter(AccessLevel.PUBLIC)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
+    @LazyToOne(LazyToOneOption.NO_PROXY)
     private Remittance remittanceInformation; // Information supplied to enable the matching of an entry with the items that the transfer is intended to settle, such as commercial invoices in an accounts' receivable system
 
     @Setter(AccessLevel.PUBLIC)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
+    @LazyToOne(LazyToOneOption.NO_PROXY)
     private PaymentAuthorization authorization; // The authorisation type request from the TPP.
 
     @Setter(AccessLevel.PUBLIC)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
+    @LazyToOne(LazyToOneOption.NO_PROXY)
     private ScaSupport scaSupport; // Supporting Data provided by TPP, when requesting SCA Exemption.
 
     @Setter(AccessLevel.PUBLIC)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
+    @LazyToOne(LazyToOneOption.NO_PROXY)
     private PaymentRisk risk;
 
     @Setter(AccessLevel.PUBLIC)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
+    @LazyToOne(LazyToOneOption.NO_PROXY)
     private InteropPayment interopPayment;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
@@ -306,8 +313,11 @@ public class Payment extends AbstractEntity implements Comparable<Payment> {
     }
 
     private boolean addEvent(@NotNull PaymentEvent event, @NotNull SeqNoGenerator seqNoGenerator) {
-        event.setPayment(this);
-        boolean added = getEvents().add(event);
+        boolean added = true;
+        if (event.getPayment() == null) {
+            added = getEvents().add(event);
+            event.setPayment(this);
+        }
         if (added) {
             if (getAuthorization() != null)
                 authorization.paymentEventAdded(event);
@@ -351,16 +361,24 @@ public class Payment extends AbstractEntity implements Comparable<Payment> {
         if (charge == null)
             return false;
 
-        charge.setPayment(this);
-        return getCharges().add(charge);
+        boolean added = true;
+        if (charge.getPayment() == null) {
+            added = getCharges().add(charge);
+            charge.setPayment(this);
+        }
+        return added;
     }
 
     public boolean addTransfer(PaymentTransfer transfer) {
         if (transfer == null)
             return false;
 
-        transfer.setPayment(this);
-        return getTransfers().add(transfer);
+        boolean added = true;
+        if (transfer.getPayment() == null) {
+            added = getTransfers().add(transfer);
+            transfer.setPayment(this);
+        }
+        return added;
     }
 
     public PaymentTransfer getTransfer(String transferId) {
