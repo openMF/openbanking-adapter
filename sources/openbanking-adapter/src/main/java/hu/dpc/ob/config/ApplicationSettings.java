@@ -7,16 +7,15 @@
  */
 package hu.dpc.ob.config;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.List;
+import hu.dpc.ob.domain.type.RequestSource;
 
 public interface ApplicationSettings {
 
     static String SCHEMA_DEFAULT_SETTINGS = "schema-basic-settings";
     static String OPERATION_DEFAULT_SETTINGS = "operation-basic-settings";
     static String BINDING_DEFAULT_SETTINGS = "binding-basic-settings";
+
+    default RequestSource getSource() {
+        return null;
+    }
 }

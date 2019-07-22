@@ -7,21 +7,17 @@
  */
 package hu.dpc.ob.rest.component;
 
+import liquibase.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -48,7 +44,7 @@ public class RestClient {
 
         HttpEntity<String> entity = new HttpEntity<>(body, httpHeaders);
 
-        log.debug(String.format("Sending request %s, method: %s, \nheader-keys: %s, \nheader-values: %s, \nbody: %s, ", endpointUrl, httpMethod, Arrays.toString(httpHeaders.keySet().toArray()), Arrays.toString(httpHeaders.values().toArray()), body));
+        log.debug(String.format("Sending request %s, method: %s, \nheader: %s, \nbody: %s, ", endpointUrl, httpMethod, StringUtils.join(headers, ","), body));
 
         ResponseEntity<String> response = restTemplate.exchange(endpointUrl, httpMethod, entity, String.class);
 

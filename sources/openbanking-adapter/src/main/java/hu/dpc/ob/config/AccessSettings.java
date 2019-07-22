@@ -7,11 +7,11 @@
  */
 package hu.dpc.ob.config;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import hu.dpc.ob.domain.type.ApiScope;
+import hu.dpc.ob.domain.type.ConsentActionCode;
+import hu.dpc.ob.domain.type.PermissionCode;
+import hu.dpc.ob.domain.type.RequestSource;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +35,12 @@ public class AccessSettings extends SchemaSettings<AccessSettings.AccessHeader, 
     @PostConstruct
     public void postConstruct() {
         super.postConstruct();
+    }
+
+    @Override
+    @NotNull
+    public RequestSource getSource() {
+        return RequestSource.ACCESS;
     }
 
     @Override
@@ -80,18 +86,34 @@ public class AccessSettings extends SchemaSettings<AccessSettings.AccessHeader, 
     @Getter
     @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
     public enum AccessBinding implements Binding {
-        ACCOUNTS_HELD("consent-accounts", "Read consent accounts list"),
-        PARTY("consent-party", "Read PSP user details"),
-        CONSENT("consent", "GET user consent resource details"),
-        CONSENT_PUT("consent-update", "Update a user consent resource"),
+        ACCOUNTS_HELD("consent-accounts", ApiScope.AIS, ConsentActionCode.QUERY_ACCOUNT, true, "Read consent accounts list"),
+        PARTY("consent-party", ApiScope.AIS, ConsentActionCode.QUERY_PARTY, true, "Read PSP user details"),
+        AIS_CONSENT("ais-consent", ApiScope.AIS, ConsentActionCode.QUERY_CONSENT, true, "Read user consent resourceId details"),
+        AIS_CONSENT_UPDATE("ais-consent-update", ApiScope.AIS, ConsentActionCode.AUTHORIZE, true, "Authorize user consent"),
+        PIS_CONSENT_INIT("pis-consent-init", ApiScope.PIS, ConsentActionCode.PREPARE, true, "Prepare user payment consent"),
+        PIS_CONSENT_UPDATE("pis-consent-update", ApiScope.PIS, ConsentActionCode.AUTHORIZE, true, "Authorize user payment consent"),
         ;
 
         private @NotNull final String configName;
+        private @NotNull final ApiScope scope;
+        private @NotNull final ConsentActionCode actionCode;
+        private @NotNull final boolean userRequest;
         private @NotNull final String displayText;
 
+        public PermissionCode[] getPermissions(boolean detail) {
+            return null;
+        }
+
         @Override
+        @NotNull
         public String getDisplayLabel() {
             return configName;
+        }
+
+        @Override
+        @NotNull
+        public RequestSource getSource() {
+            return RequestSource.ACCESS;
         }
     }
 }

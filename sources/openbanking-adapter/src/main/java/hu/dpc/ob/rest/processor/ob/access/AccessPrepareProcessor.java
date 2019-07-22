@@ -10,11 +10,14 @@ package hu.dpc.ob.rest.processor.ob.access;
 import hu.dpc.ob.config.AccessSettings;
 import hu.dpc.ob.domain.entity.Consent;
 import hu.dpc.ob.domain.entity.User;
+import hu.dpc.ob.model.internal.ApiSchema;
+import hu.dpc.ob.model.service.ApiService;
+import hu.dpc.ob.model.service.ConsentService;
+import hu.dpc.ob.rest.ExchangeHeader;
 import hu.dpc.ob.rest.processor.ob.ObPrepareProcessor;
-import hu.dpc.ob.service.ApiService;
-import hu.dpc.ob.service.ConsentService;
 import hu.dpc.ob.util.ContextUtils;
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +50,9 @@ public class AccessPrepareProcessor extends ObPrepareProcessor {
         String clientId = consent.getClientId();
         ContextUtils.assertNotNull(clientId);
 
-        String apiUserId = exchange.getIn().getHeader(accessSettings.getHeader(getSchema(), AccessSettings.AccessHeader.USER).getKey(), String.class);
+        Message in = exchange.getIn();
+        ApiSchema schema = exchange.getProperty(ExchangeHeader.SCHEMA.getKey(), ApiSchema.class);
+        String apiUserId = in.getHeader(accessSettings.getHeader(schema, AccessSettings.AccessHeader.USER).getKey(), String.class);
         ContextUtils.assertNotNull(apiUserId);
         User user = consent.getUser();
         if (user != null)

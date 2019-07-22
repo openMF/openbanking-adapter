@@ -7,10 +7,14 @@
  */
 package hu.dpc.ob.rest.dto.ob.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import hu.dpc.ob.domain.entity.Consent;
-import hu.dpc.ob.domain.type.ApiPermission;
-import hu.dpc.ob.domain.type.ConsentStatus;
-import hu.dpc.ob.service.ConsentService;
+import hu.dpc.ob.domain.type.PermissionCode;
+import hu.dpc.ob.model.service.ConsentService;
+import hu.dpc.ob.rest.parser.LocalFormatDateTimeDeserializer;
+import hu.dpc.ob.rest.parser.LocalFormatDateTimeSerializer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,24 +28,41 @@ import java.util.List;
 @Setter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
-public class AisConsentData extends ConsentResponseData {
+public class AisConsentData {
 
-    AisConsentData(@NotNull String consentId, @NotNull LocalDateTime creationDateTime, @NotNull ConsentStatus status,
-                   @NotNull LocalDateTime statusUpdateDateTime, @NotNull List<ApiPermission> permissions, LocalDateTime expirationDateTime,
-                   LocalDateTime transactionFromDateTime, LocalDateTime transactionToDateTime) {
-        super(consentId, creationDateTime, status, permissions, statusUpdateDateTime, expirationDateTime, transactionFromDateTime,
-                transactionToDateTime);
+    @JsonProperty(value = "Permissions", required = true)
+    private List<PermissionCode> permissions;
+
+    @JsonProperty(value = "ExpirationDateTime")
+    @JsonSerialize(using = LocalFormatDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalFormatDateTimeDeserializer.class)
+    private LocalDateTime expirationDateTime;
+
+    @JsonProperty(value = "TransactionFromDateTime")
+    @JsonSerialize(using = LocalFormatDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalFormatDateTimeDeserializer.class)
+    private LocalDateTime transactionFromDateTime;
+
+    @JsonProperty(value = "TransactionToDateTime")
+    @JsonSerialize(using = LocalFormatDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalFormatDateTimeDeserializer.class)
+    private LocalDateTime transactionToDateTime;
+
+    protected AisConsentData(@NotNull List<PermissionCode> permissions, LocalDateTime expirationDateTime,
+                             LocalDateTime transactionFromDateTime, LocalDateTime transactionToDateTime) {
+        this.permissions = permissions;
+        this.expirationDateTime = expirationDateTime;
+        this.transactionFromDateTime = transactionFromDateTime;
+        this.transactionToDateTime = transactionToDateTime;
     }
 
-    AisConsentData(@NotNull String consentId, @NotNull LocalDateTime creationDateTime, @NotNull ConsentStatus status,
-                   @NotNull LocalDateTime statusUpdateDateTime, @NotNull List<ApiPermission> permissions) {
-        this(consentId, creationDateTime, status, statusUpdateDateTime, permissions, null, null, null);
+    protected AisConsentData(@NotNull List<PermissionCode> permissions) {
+        this(permissions, null, null, null);
     }
 
     @NotNull
     static AisConsentData create(@NotNull Consent consent) {
-        return new AisConsentData(consent.getConsentId(), consent.getCreatedOn(), consent.getStatus(), consent.getUpdatedOn(),
-                ConsentService.getPermissions(consent), consent.getExpiresOn(), ConsentService.getTransactionFromDateTime(consent),
-                ConsentService.getTransactionToDateTime(consent));
+        return new AisConsentData(ConsentService.getPermissions(consent), consent.getExpiresOn(),
+                ConsentService.getTransactionFromDateTime(consent), ConsentService.getTransactionToDateTime(consent));
     }
 }

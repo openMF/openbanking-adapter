@@ -7,7 +7,7 @@
  */
 package hu.dpc.ob.config;
 
-import hu.dpc.ob.rest.internal.ApiSchema;
+import hu.dpc.ob.model.internal.ApiSchema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +30,6 @@ public abstract class SchemaSettings<_H extends Header, _O extends Operation, _B
     private AdapterSettings adapterSettings;
 
     private boolean corsEnabled;
-    private boolean mock;
 
     private List<SchemaProperties<_H, _O, _B>> schemas = new ArrayList<>(2);
 
@@ -39,7 +38,7 @@ public abstract class SchemaSettings<_H extends Header, _O extends Operation, _B
     }
 
     public SchemaProperties<_H, _O, _B> getSchema(ApiSchema schema) {
-        return schema == null ? null : getSchema(schema.getConfigName());
+        return schema == null ? null : getSchema(schema.getId());
     }
 
     public SchemaProperties<_H, _O, _B> getSchema(String schema) {

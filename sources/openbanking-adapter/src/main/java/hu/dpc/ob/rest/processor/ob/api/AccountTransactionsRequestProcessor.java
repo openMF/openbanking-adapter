@@ -8,16 +8,12 @@
 package hu.dpc.ob.rest.processor.ob.api;
 
 import hu.dpc.ob.rest.component.PspRestClient;
-import hu.dpc.ob.rest.constant.ExchangeHeader;
-import hu.dpc.ob.rest.dto.psp.PspAccountsResponseDto;
-import hu.dpc.ob.rest.internal.PspId;
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("api-ob-account-transactions-processor")
-public class AccountTransactionsRequestProcessor implements Processor {
+public class AccountTransactionsRequestProcessor extends ApiRequestProcessor {
 
     private PspRestClient pspRestClient;
 
@@ -28,5 +24,6 @@ public class AccountTransactionsRequestProcessor implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
+        super.process(exchange);
     }
 }

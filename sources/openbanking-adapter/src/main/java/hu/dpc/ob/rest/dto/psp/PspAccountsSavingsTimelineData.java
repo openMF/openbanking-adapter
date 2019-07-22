@@ -67,15 +67,15 @@ public class PspAccountsSavingsTimelineData {
         LocalDate date = null;
         if (closedOnDate != null)
             date = closedOnDate;
-        if (withdrawnOnDate != null)
+        else if (withdrawnOnDate != null)
             date = withdrawnOnDate;
-        if (activatedOnDate != null)
+        else if (activatedOnDate != null)
             date = activatedOnDate;
-        if (rejectedOnDate != null)
+        else if (rejectedOnDate != null)
             date = rejectedOnDate;
-        if (approvedOnDate != null)
+        else if (approvedOnDate != null)
             date = approvedOnDate;
-        if (submittedOnDate != null)
+        else if (submittedOnDate != null)
             date = submittedOnDate;
         return DateUtils.toLocalDateTime(date);
     }

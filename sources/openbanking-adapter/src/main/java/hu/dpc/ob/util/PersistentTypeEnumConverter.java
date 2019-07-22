@@ -7,12 +7,11 @@
  */
 package hu.dpc.ob.util;
 
-import hu.dpc.ob.domain.type.PersistentType;
+import hu.dpc.ob.domain.entity.PersistentType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.EnumSet;

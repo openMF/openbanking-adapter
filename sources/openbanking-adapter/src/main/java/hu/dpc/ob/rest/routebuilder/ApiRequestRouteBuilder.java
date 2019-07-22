@@ -9,7 +9,7 @@ package hu.dpc.ob.rest.routebuilder;
 
 import hu.dpc.ob.config.AdapterSettings;
 import hu.dpc.ob.config.ApiSettings;
-import hu.dpc.ob.rest.internal.ApiSchema;
+import hu.dpc.ob.model.internal.ApiSchema;
 import org.apache.camel.CamelContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,14 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
-import javax.validation.constraints.NotNull;
-
 @Configuration
 public class ApiRequestRouteBuilder extends OpenbankingRouteBuilder {
 
     private static Logger log = LoggerFactory.getLogger(ApiRequestRouteBuilder.class);
-
-    public static final String ID_SOURCE_API = "api";
 
     private ApiSettings apiSettings;
 
@@ -40,24 +36,18 @@ public class ApiRequestRouteBuilder extends OpenbankingRouteBuilder {
 
         AdapterSettings adapterSettings = apiSettings.getAdapterSettings();
         adapterSettings.getSchemas().forEach(schema -> {
-            buildDirectRoutes(schema);
             adapterSettings.getTenants().forEach(tenant -> {
                 buildConsumerRoutes(schema, tenant);
             });
+            buildDirectRoutes(schema);
         });
     }
 
-    @Override
-    @NotNull
-    protected String getSource() {
-        return ID_SOURCE_API;
-    }
-
     private void buildConsumerRoutes(ApiSchema schema, String tenant) {
-        buildBindingRoutes(schema, tenant, apiSettings);
+        buildConsumerRoutes(schema, tenant, apiSettings);
     }
 
     private void buildDirectRoutes(ApiSchema schema) {
-        buildDirectRoutes(schema, apiSettings.getBindings(schema));
+        buildDirectRoutes(schema, apiSettings);
     }
 }

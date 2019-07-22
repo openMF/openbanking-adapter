@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -23,6 +24,7 @@ import javax.validation.constraints.NotNull;
 public class SinglePartyData {
 
     @JsonProperty(value = "Party")
+    @Valid
     private PartyData party;
 
     public SinglePartyData(PartyData party) {

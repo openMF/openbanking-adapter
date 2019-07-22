@@ -7,16 +7,10 @@
  */
 package hu.dpc.ob.rest.component;
 
-import hu.dpc.ob.config.AuthEncodeType;
-import hu.dpc.ob.config.AuthProperties;
-import hu.dpc.ob.config.OperationProperties;
-import hu.dpc.ob.config.PspSettings;
-import hu.dpc.ob.config.TenantProperties;
-import hu.dpc.ob.rest.dto.psp.PspAccountsResponseDto;
-import hu.dpc.ob.rest.dto.psp.PspClientResponseDto;
-import hu.dpc.ob.rest.dto.psp.PspIdentifiersResponseDto;
-import hu.dpc.ob.rest.dto.psp.PspLoginResponseDto;
-import hu.dpc.ob.rest.internal.PspId;
+import hu.dpc.ob.config.*;
+import hu.dpc.ob.domain.type.InteropIdentifierType;
+import hu.dpc.ob.model.internal.PspId;
+import hu.dpc.ob.rest.dto.psp.*;
 import hu.dpc.ob.util.ContextUtils;
 import hu.dpc.ob.util.JsonUtils;
 import lombok.NoArgsConstructor;
@@ -29,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,25 +60,10 @@ public class PspRestClient {
         });
     }
 
-    public PspAccountsResponseDto callAccounts(String pspUserId, PspId pspId) {
-        OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.ACCOUNTS);
-        log.debug(String.format("Call PSP " + opProps.getMethod() + " /" + opProps.getName() + ". User: %s", pspUserId));
-
-        String tenant = pspId.getTenant();
-        TenantProperties tenantProps = opProps.getTenant(tenant);
-        String url = ContextUtils.resolvePathParams(tenantProps.getUrl(), pspUserId);
-
-        Map<String, String> headers = getHeaders(tenant);
-
-        String responseJson = restClient.call(url, HttpMethod.GET, headers, null);
-
-        log.debug(String.format("Response PSP  " + opProps.getMethod() + " /" + opProps.getName() + ", user: %s, payload: %s", pspUserId, responseJson));
-        return JsonUtils.toPojo(responseJson, PspAccountsResponseDto.class); // TODO: response class for CN
-    }
-
-    public PspIdentifiersResponseDto callIdentifiers(String pspUserId, String accountId, PspId pspId) {
-        OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.IDENTIFIERS);
-        log.debug(String.format("Call " + opProps.getMethod() + " /" + opProps.getName() + ", user: %s", pspUserId + ", account: %s", accountId));
+    public PspAccountResponseDto callAccount(String accountId, PspId pspId) {
+        OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.ACCOUNT);
+        @NotNull HttpMethod method = opProps.getHttpMethod();
+        log.debug(String.format("Call PSP " + method + " /" + opProps.getName() + ". account: %s", accountId));
 
         String tenant = pspId.getTenant();
         TenantProperties tenantProps = opProps.getTenant(tenant);
@@ -93,14 +73,14 @@ public class PspRestClient {
 
         String responseJson = restClient.call(url, HttpMethod.GET, headers, null);
 
-        log.debug(String.format("Response PSP " + opProps.getMethod() + " /" + opProps.getName() + ". User: %s, payload: %s", pspUserId, responseJson));
-        return JsonUtils.toPojo(responseJson, PspIdentifiersResponseDto.class);
+        log.debug(String.format("Response PSP  " + method + " /" + opProps.getName() + ", account: %s, payload: %s", accountId, responseJson));
+        return JsonUtils.toPojo(responseJson, PspAccountResponseDto.class); // TODO: response class for CN
     }
 
-
-    public PspClientResponseDto callClient(String pspUserId, PspId pspId) {
-        OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.CLIENT);
-        log.debug(String.format("Call  " + opProps.getMethod() + " /" + opProps.getName() + ", user: %s", pspUserId));
+    public PspAccountsResponseDto callAccounts(String pspUserId, PspId pspId) {
+        OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.ACCOUNTS);
+        @NotNull HttpMethod method = opProps.getHttpMethod();
+        log.debug(String.format("Call PSP " + method + " /" + opProps.getName() + ". User: %s", pspUserId));
 
         String tenant = pspId.getTenant();
         TenantProperties tenantProps = opProps.getTenant(tenant);
@@ -108,10 +88,122 @@ public class PspRestClient {
 
         Map<String, String> headers = getHeaders(tenant);
 
-        String responseJson = restClient.call(url, HttpMethod.GET, headers, null);
+        String responseJson = restClient.call(url, method, headers, null);
 
-        log.debug(String.format("Response PSP  " + opProps.getMethod() + " /" + opProps.getName() + ". User: %s, payload: %s", pspUserId, responseJson));
+        log.debug(String.format("Response PSP  " + method + " /" + opProps.getName() + ", user: %s, payload: %s", pspUserId, responseJson));
+        return JsonUtils.toPojo(responseJson, PspAccountsResponseDto.class); // TODO: response class for CN
+    }
+
+    public PspIdentifiersResponseDto callIdentifiers(String pspUserId, String accountId, PspId pspId) {
+        OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.IDENTIFIERS);
+        @NotNull HttpMethod method = opProps.getHttpMethod();
+        log.debug(String.format("Call " + method + " /" + opProps.getName() + ", user: %s, accountId: %s", pspUserId, accountId));
+
+        String tenant = pspId.getTenant();
+        TenantProperties tenantProps = opProps.getTenant(tenant);
+        String url = ContextUtils.resolvePathParams(tenantProps.getUrl(), accountId);
+
+        Map<String, String> headers = getHeaders(tenant);
+
+        String responseJson = restClient.call(url, method, headers, null);
+
+        log.debug(String.format("Response PSP " + method + " /" + opProps.getName() + ", user: %s, accountId: %s, payload: %s", pspUserId, accountId, responseJson));
+        return JsonUtils.toPojo(responseJson, PspIdentifiersResponseDto.class);
+    }
+
+    public PspPartyByIdentifierResponseDto callPartyByIdentitier(InteropIdentifierType idType, String idValue, String subIdOrType, PspId pspId) {
+        OperationProperties opProps = pspSettings.getOperation(subIdOrType == null ? PspSettings.PspOperation.PARTY_BY_IDENTIFIER : PspSettings.PspOperation.PARTY_BY_SUBIDENTIFIER);
+        @NotNull HttpMethod method = opProps.getHttpMethod();
+        log.debug(String.format("Call " + method + " /" + opProps.getName() + ", psp: %s, idType: %s, idValue: %s, subIdOrType: %s",
+                pspId, idType, idValue, subIdOrType));
+
+        String tenant = pspId.getTenant();
+        TenantProperties tenantProps = opProps.getTenant(tenant);
+        String url = subIdOrType == null
+                ? ContextUtils.resolvePathParams(tenantProps.getUrl(), idType.name(), idValue)
+                : ContextUtils.resolvePathParams(tenantProps.getUrl(), idType.name(), idValue, subIdOrType);
+
+        Map<String, String> headers = getHeaders(tenant);
+
+        String responseJson = restClient.call(url, method, headers, null);
+
+        log.debug(String.format("Response PSP " + method + " /" + opProps.getName() + ", psp: %s, idType: %s, idValue: %s, " +
+                "subIdOrType: %s, payload: %s", pspId, idType, idValue, subIdOrType, responseJson));
+        return JsonUtils.toPojo(responseJson, PspPartyByIdentifierResponseDto.class);
+    }
+
+    public PspClientResponseDto callClient(String pspUserId, PspId pspId) {
+        OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.CLIENT);
+        @NotNull HttpMethod method = opProps.getHttpMethod();
+        log.debug(String.format("Call  " + method + " /" + opProps.getName() + ", user: %s", pspUserId));
+
+        String tenant = pspId.getTenant();
+        TenantProperties tenantProps = opProps.getTenant(tenant);
+        String url = ContextUtils.resolvePathParams(tenantProps.getUrl(), pspUserId);
+
+        Map<String, String> headers = getHeaders(tenant);
+
+        String responseJson = restClient.call(url, method, headers, null);
+
+        log.debug(String.format("Response PSP  " + method + " /" + opProps.getName() + ". User: %s, payload: %s", pspUserId, responseJson));
         return JsonUtils.toPojo(responseJson, PspClientResponseDto.class); // TODO: response class for CN
+    }
+
+    public PspQuoteResponseDto callQuoteCreate(@NotNull PspQuoteRequestDto request, PspId pspId) {
+        OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.QUOTE_CREATE);
+        @NotNull HttpMethod method = opProps.getHttpMethod();
+        log.debug(String.format("Call " + method + " /" + opProps.getName() + ", psp: %s, paymentId: %s, quoteId: %s",
+                pspId, request.getTransactionCode(), request.getQuoteCode()));
+
+        String tenant = pspId.getTenant();
+        TenantProperties tenantProps = opProps.getTenant(tenant);
+        String url = tenantProps.getUrl();
+
+        Map<String, String> headers = getHeaders(tenant);
+
+        String responseJson = restClient.call(url, method, headers, JsonUtils.toJson(request));
+
+        log.debug(String.format("Response PSP " + method + " /" + opProps.getName() + ", psp: %s, paymentId: %s, quoteId: %s, " +
+                "payload: %s", pspId, request.getTransactionCode(), request.getQuoteCode(), responseJson));
+        return JsonUtils.toPojo(responseJson, PspQuoteResponseDto.class);
+    }
+
+    public PspTransactionCreateResponseDto callTransactionCreate(@NotNull PspTransactionCreateRequestDto request, PspId pspId) {
+        OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.TRANSACTION_CREATE);
+        @NotNull HttpMethod method = opProps.getHttpMethod();
+        log.debug(String.format("Call " + method + " /" + opProps.getName() + ", psp: %s, paymentId: %s", pspId, request.getClientRefId()));
+
+        String tenant = pspId.getTenant();
+        TenantProperties tenantProps = opProps.getTenant(tenant);
+        String url = tenantProps.getUrl();
+
+        Map<String, String> headers = getHeaders(tenant);
+        headers.put(pspSettings.getHeader(PspSettings.PspHeader.TRANSACTION_TENANT).getKey(), tenant);
+
+        String responseJson = restClient.call(url, method, headers, JsonUtils.toJson(request));
+
+        log.debug(String.format("Response PSP " + opProps.getMethod() + " /" + opProps.getName() + ", psp: %s, paymentId: %s, " +
+                "payload: %s", pspId, request.getClientRefId(), responseJson));
+        return JsonUtils.toPojo(responseJson, PspTransactionCreateResponseDto.class);
+    }
+
+    public PspTransactionResponseDto callTransaction(@NotNull String transactionId, PspId pspId) {
+        OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.TRANSACTION);
+        @NotNull HttpMethod method = opProps.getHttpMethod();
+        log.debug(String.format("Call " + method + " /" + opProps.getName() + ", psp: %s, transactionId: %s", pspId, transactionId));
+
+        String tenant = pspId.getTenant();
+        TenantProperties tenantProps = opProps.getTenant(tenant);
+        String url = ContextUtils.resolvePathParams(tenantProps.getUrl(), transactionId);
+
+        Map<String, String> headers = getHeaders(tenant);
+        headers.put(pspSettings.getHeader(PspSettings.PspHeader.TRANSACTION_TENANT).getKey(), tenant);
+
+        String responseJson = restClient.call(url, method, headers, null);
+
+        log.debug(String.format("Response PSP " + opProps.getMethod() + " /" + opProps.getName() + ", psp: %s, transactionId: %s, " +
+                "payload: %s", pspId, transactionId, responseJson));
+        return JsonUtils.toPojo(responseJson, PspTransactionResponseDto.class);
     }
 
     private Map<String, String> getHeaders(String tenant) {

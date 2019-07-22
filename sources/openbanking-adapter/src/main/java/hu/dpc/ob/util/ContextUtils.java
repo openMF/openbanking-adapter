@@ -7,7 +7,7 @@
  */
 package hu.dpc.ob.util;
 
-import hu.dpc.ob.rest.constant.ExchangeHeader;
+import hu.dpc.ob.rest.ExchangeHeader;
 import org.apache.camel.Exchange;
 import org.springframework.util.StringUtils;
 
@@ -19,10 +19,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ContextUtils {
-
-    public static final String EXTENSION_KEY_TRANSACTION_ID = "transactionId";
-    public static final String EXTENSION_KEY_CHANNEL_CLIENT_REF = "CHANNEL_CLIENT_REF";
-    public static final String EXTENSION_SEPARATOR = "#_#";
 
     private final static DecimalFormat AMOUNT_FORMAT = new DecimalFormat("#.####");
 
@@ -39,7 +35,9 @@ public class ContextUtils {
 
     public static final String PARAM_PARTY_ID = "partyId";
     public static final String PARAM_CONSENT_ID = "consentId";
-    public static final String PARAM_ACCOUNT_ID = "accountId";
+    public static final String PARAM_ACCOUNT_ID = "resourceId";
+    public static final String PARAM_PAYMENT_ID = "paymentId";
+    public static final String PARAM_CLIENT_PAYMENT_ID = "clientPaymentId";
 
 
     public static String generateUUID(){
@@ -94,8 +92,8 @@ public class ContextUtils {
     }
 
     public static String getPathParam(Exchange exchange, String paramName) {
-        Map property = exchange.getProperty(ExchangeHeader.PATH_PARAMS.getKey(), Map.class);
-        return property == null ? null : (String) property.get(paramName);
+        Map pathParams = exchange.getProperty(ExchangeHeader.PATH_PARAMS.getKey(), Map.class);
+        return pathParams == null ? null : (String) pathParams.get(paramName);
     }
 
     public static String resolvePathParam(String pathInfo, Map<String, String> params) {
@@ -132,7 +130,7 @@ public class ContextUtils {
             pos = end + 1;
         }
         if (pos < pathConfig.length()) {
-            pathInfo.append(pathConfig.substring(pos, pathConfig.length()));
+            pathInfo.append(pathConfig.substring(pos));
         }
         return pathInfo.toString();
     }

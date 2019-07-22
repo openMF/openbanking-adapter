@@ -7,42 +7,26 @@
  */
 package hu.dpc.ob.rest.processor.ob.api;
 
-import hu.dpc.ob.config.ApiSettings;
-import hu.dpc.ob.rest.constant.ExchangeHeader;
-import hu.dpc.ob.rest.processor.ValidateProcessor;
-import hu.dpc.ob.service.ApiService;
-import hu.dpc.ob.util.ContextUtils;
+import hu.dpc.ob.model.service.ApiService;
+import hu.dpc.ob.model.service.ConsentService;
+import hu.dpc.ob.model.service.PaymentService;
+import hu.dpc.ob.rest.processor.ob.ObValidateProcessor;
 import org.apache.camel.Exchange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
 @Component("api-ob-validate-processor")
-public class ApiValidateProcessor extends ValidateProcessor {
+public class ApiValidateProcessor extends ObValidateProcessor {
 
     @Autowired
-    private ApiService apiService;
-
-    protected ApiSettings.ApiBinding getBinding() {
-        return null;
+    public ApiValidateProcessor(ApiService apiService, ConsentService consentService, PaymentService paymentService) {
+        super(apiService, consentService, paymentService);
     }
 
-    protected boolean isUserRequest() {
-        return false;
-    }
-
-    protected String getAccountId(Exchange exchange) {
-        return ContextUtils.getPathParam(exchange, ContextUtils.PARAM_ACCOUNT_ID);
-    }
 
     @Override
     public void process(Exchange exchange) throws Exception {
         super.process(exchange);
-        if (isUserRequest()) {
-            String apiUserId = exchange.getProperty(ExchangeHeader.API_USER_ID.getKey(), String.class);
-            String clientId = exchange.getProperty(ExchangeHeader.CLIENT_ID.getKey(), String.class);
-
-            apiService.checkPermission(apiUserId, clientId, getBinding(), getAccountId(exchange));
-        }
     }
 }

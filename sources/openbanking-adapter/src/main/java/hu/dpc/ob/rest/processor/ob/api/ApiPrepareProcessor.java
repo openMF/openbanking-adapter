@@ -7,13 +7,16 @@
  */
 package hu.dpc.ob.rest.processor.ob.api;
 
+import hu.dpc.ob.config.AdapterSettings;
+import hu.dpc.ob.config.Binding;
+import hu.dpc.ob.model.internal.ApiSchema;
+import hu.dpc.ob.model.internal.PspId;
+import hu.dpc.ob.model.service.ApiService;
+import hu.dpc.ob.rest.ExchangeHeader;
 import hu.dpc.ob.rest.component.AccessRestClient;
-import hu.dpc.ob.rest.constant.ExchangeHeader;
 import hu.dpc.ob.rest.dto.ob.access.IntrospectResponseDto;
 import hu.dpc.ob.rest.dto.ob.access.UserInfoResponseDto;
-import hu.dpc.ob.rest.internal.PspId;
 import hu.dpc.ob.rest.processor.ob.ObPrepareProcessor;
-import hu.dpc.ob.service.ApiService;
 import hu.dpc.ob.util.ContextUtils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -25,18 +28,17 @@ import org.springframework.stereotype.Component;
 @Component("api-ob-prepare-processor")
 public class ApiPrepareProcessor extends ObPrepareProcessor {
 
+    AdapterSettings adapterSettings;
+
     AccessRestClient accessRestClient;
 
     ApiService apiService;
 
     @Autowired
-    public ApiPrepareProcessor(AccessRestClient accessRestClient, ApiService apiService) {
+    public ApiPrepareProcessor(AdapterSettings adapterSettings, AccessRestClient accessRestClient, ApiService apiService) {
+        this.adapterSettings = adapterSettings;
         this.accessRestClient = accessRestClient;
         this.apiService = apiService;
-    }
-
-    protected boolean isUserRequest() {
-        return true;
     }
 
     @Override
@@ -44,27 +46,32 @@ public class ApiPrepareProcessor extends ObPrepareProcessor {
         super.process(exchange);
 
         PspId pspId = exchange.getProperty(ExchangeHeader.PSP_ID.getKey(), PspId.class);
+        Binding binding = exchange.getProperty(ExchangeHeader.BINDING.getKey(), Binding.class);
         String tenant = pspId.getTenant();
         Message in = exchange.getIn();
         String accessCode = in.getHeader(HttpHeader.AUTHORIZATION.asString(), String.class);
-        String clientId;
         String apiUserId = null;
-        if (accessRestClient.getAccessSettings().isMock()) {
-            clientId = apiService.getMockClientId();
-            if (isUserRequest())
-                apiUserId = apiService.getMockUser().getApiUserId();
+
+        ApiSchema schema = exchange.getProperty(ExchangeHeader.SCHEMA.getKey(), ApiSchema.class);
+
+        String clientId;
+        if ("test".equals(adapterSettings.getEnv())) {
+            clientId = pspId.getId();
+            apiUserId = clientId + "_user";
         } else {
-            IntrospectResponseDto clientResponse = accessRestClient.callIntrospect(getSchema(), tenant, accessCode);
+            IntrospectResponseDto clientResponse = accessRestClient.callIntrospect(schema, tenant, accessCode);
             if (!clientResponse.isActive())
                 throw new UnsupportedOperationException("Client access token is not valid");
+
             clientId = clientResponse.getClientId();
             ContextUtils.assertNotNull(clientId);
-            if (isUserRequest()) {
-                UserInfoResponseDto userResponse = accessRestClient.callUserInfo(getSchema(), tenant, accessCode);
+            if (binding.isUserRequest()) {
+                UserInfoResponseDto userResponse = accessRestClient.callUserInfo(schema, tenant, accessCode);
                 apiUserId = userResponse.getSub();
                 ContextUtils.assertNotNull(apiUserId);
             }
         }
+
         apiService.populateUserProps(exchange, apiUserId, clientId);
     }
 }

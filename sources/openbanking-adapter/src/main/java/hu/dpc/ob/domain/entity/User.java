@@ -7,20 +7,19 @@
  */
 package hu.dpc.ob.domain.entity;
 
+import hu.dpc.ob.domain.type.AuthenticationApproachCode;
+import hu.dpc.ob.domain.type.ConsentActionCode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -45,4 +44,28 @@ public class User extends AbstractEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
     private List<Consent> consents = new ArrayList<>();
+
+    public List<Payment> getTransactionsTillLastSca(@NotNull String clientId) {
+        Consent consent = getConsents().stream().filter(c -> {
+            if (!c.getClientId().equals(clientId))
+                return false;
+            Payment payment = c.getPayment();
+            if (payment == null)
+                return false;
+            ScaSupport scaSupport = payment.getScaSupport();
+            if (scaSupport == null)
+                return false;
+            ConsentEvent authEvent = c.getLastEvent(ConsentActionCode.AUTHORIZE);
+            if (authEvent == null || !authEvent.isAccepted())
+                return false;
+            return scaSupport.getAuthenticationApproach() == AuthenticationApproachCode.SCA;
+        }).sorted(Comparator.comparing(Consent::getPayment).reversed()).findFirst().orElse(null);
+
+        if (consent == null)
+            return null;
+
+        Payment payment = consent.getPayment();
+
+        return getConsents().stream().filter(c -> c.getPayment() != null && c.getPayment().compareTo(payment) > 0).map(Consent::getPayment).collect(Collectors.toList());
+    }
 }

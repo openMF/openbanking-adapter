@@ -7,10 +7,7 @@
  */
 package hu.dpc.ob.domain.entity;
 
-import hu.dpc.ob.domain.type.ApiPermission;
-import hu.dpc.ob.domain.type.ApiScope;
-import hu.dpc.ob.domain.type.ConsentStatus;
-import hu.dpc.ob.util.PersistentTypeEnumConverter;
+import hu.dpc.ob.domain.type.PermissionCode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +15,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -26,26 +22,25 @@ import java.time.LocalDateTime;
 @SuppressWarnings("unused")
 @Entity
 @Table(name = "consent_permission", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"consent_id", "permission"}, name = "uk_consent_permission.permission")})
+        @UniqueConstraint(columnNames = {"consent_id", "permission_code"}, name = "uk_consent_permission.permission")})
 public class ConsentPermission extends AbstractEntity {
 
     @NotNull
     @ManyToOne(fetch= FetchType.LAZY, optional = false)
-    @JoinColumn(name = "consent_id")
+    @JoinColumn(name = "consent_id", nullable = false)
     private Consent consent;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-//    @Convert(converter = PersistentTypeEnumConverter.class)
-    @Column(name = "permission", nullable = false)
-    private ApiPermission permission;
+    @Column(name = "permission_code", nullable = false)
+    private PermissionCode permission;
 
     @NotNull
     @ManyToOne(fetch= FetchType.LAZY, optional = false)
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "event_id", nullable = false)
     private ConsentEvent event;
 
-    public ConsentPermission(@NotNull Consent consent, @NotNull ApiPermission permission, @NotNull ConsentEvent event) {
+    public ConsentPermission(@NotNull Consent consent, @NotNull PermissionCode permission, @NotNull ConsentEvent event) {
         this.consent = consent;
         this.permission = permission;
         this.event = event;

@@ -7,43 +7,41 @@
  */
 package hu.dpc.ob.rest.processor.ob.api;
 
-import hu.dpc.ob.config.ApiSettings;
 import hu.dpc.ob.domain.entity.Consent;
 import hu.dpc.ob.domain.type.ApiScope;
-import hu.dpc.ob.rest.constant.ExchangeHeader;
-import hu.dpc.ob.rest.dto.ob.api.ApiConsentResponseDto;
-import hu.dpc.ob.rest.dto.ob.api.ConsentCreateRequestDto;
-import hu.dpc.ob.rest.internal.ApiSchema;
-import hu.dpc.ob.service.ApiService;
+import hu.dpc.ob.model.internal.ApiSchema;
+import hu.dpc.ob.model.service.ApiService;
+import hu.dpc.ob.rest.ExchangeHeader;
+import hu.dpc.ob.rest.dto.ob.api.AisApiConsentResponseDto;
+import hu.dpc.ob.rest.dto.ob.api.AisConsentCreateRequestDto;
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 
 @Component("api-ob-ais-consent-create-processor")
-public class AisConsentCreateProcessor implements Processor {
+public class AisConsentCreateProcessor extends ApiRequestProcessor {
 
-    private ApiSettings apiSettings;
     private ApiService apiService;
 
     @Autowired
-    public AisConsentCreateProcessor(ApiSettings apiSettings, ApiService apiService) {
-        this.apiSettings = apiSettings;
+    public AisConsentCreateProcessor(ApiService apiService) {
         this.apiService = apiService;
     }
 
     @Override
     @Transactional
     public void process(Exchange exchange) throws Exception {
+        super.process(exchange);
+
         String clientId = exchange.getProperty(ExchangeHeader.CLIENT_ID.getKey(), String.class);
-        ConsentCreateRequestDto request = exchange.getIn().getBody(ConsentCreateRequestDto.class);
+        AisConsentCreateRequestDto request = exchange.getProperty(ExchangeHeader.REQUEST_DTO.getKey(), AisConsentCreateRequestDto.class);
 
-        ApiScope scope = ApiScope.AIS;
-        Consent consent = apiService.requestConsent(clientId, request, scope, apiSettings.getValidPermissions(ApiSchema.OB, scope));
+        ApiScope scope = exchange.getProperty(ExchangeHeader.SCOPE.getKey(), ApiScope.class); // AIS
+        Consent consent = apiService.requestConsent(clientId, request, scope, ApiSchema.OB);
 
-        ApiConsentResponseDto response = ApiConsentResponseDto.create(consent);
+        AisApiConsentResponseDto response = AisApiConsentResponseDto.create(consent);
         exchange.getIn().setBody(response);
     }
 }

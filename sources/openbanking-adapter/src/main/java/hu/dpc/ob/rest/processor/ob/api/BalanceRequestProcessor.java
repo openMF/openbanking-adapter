@@ -7,39 +7,35 @@
  */
 package hu.dpc.ob.rest.processor.ob.api;
 
+import hu.dpc.ob.model.internal.PspId;
+import hu.dpc.ob.rest.ExchangeHeader;
 import hu.dpc.ob.rest.component.PspRestClient;
-import hu.dpc.ob.rest.constant.ExchangeHeader;
 import hu.dpc.ob.rest.dto.ob.api.BalancesResponseDto;
-import hu.dpc.ob.rest.dto.psp.PspAccountsResponseDto;
-import hu.dpc.ob.rest.internal.PspId;
-import hu.dpc.ob.service.ApiService;
+import hu.dpc.ob.rest.dto.psp.PspAccountResponseDto;
 import hu.dpc.ob.util.ContextUtils;
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("api-ob-balance-processor")
-public class BalanceRequestProcessor implements Processor {
+public class BalanceRequestProcessor extends ApiRequestProcessor {
 
     private PspRestClient pspRestClient;
-    private ApiService apiService;
 
     @Autowired
-    public BalanceRequestProcessor(PspRestClient pspRestClient, ApiService apiService) {
+    public BalanceRequestProcessor(PspRestClient pspRestClient) {
         this.pspRestClient = pspRestClient;
-        this.apiService = apiService;
     }
 
     @Override
     public void process(Exchange exchange) throws Exception {
-        String pspUserId = exchange.getProperty(ExchangeHeader.PSP_USER_ID.getKey(), String.class);
-        PspId pspId = exchange.getProperty(ExchangeHeader.PSP_ID.getKey(), PspId.class);
-        PspAccountsResponseDto response = pspRestClient.callAccounts(pspUserId, pspId);
+        super.process(exchange);
 
         String accountId = ContextUtils.getPathParam(exchange, ContextUtils.PARAM_ACCOUNT_ID);
+        PspId pspId = exchange.getProperty(ExchangeHeader.PSP_ID.getKey(), PspId.class);
+        PspAccountResponseDto response = pspRestClient.callAccount(accountId, pspId);
 
-        BalancesResponseDto transform = BalancesResponseDto.transform(response, accountId);
+        BalancesResponseDto transform = BalancesResponseDto.transform(response);
         exchange.getIn().setBody(transform);
     }
 }

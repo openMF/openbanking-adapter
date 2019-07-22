@@ -7,14 +7,10 @@
  */
 package hu.dpc.ob.rest.component;
 
-import hu.dpc.ob.config.AccessSettings;
-import hu.dpc.ob.config.AuthEncodeType;
-import hu.dpc.ob.config.AuthProfileType;
-import hu.dpc.ob.config.OperationProperties;
-import hu.dpc.ob.config.TenantProperties;
+import hu.dpc.ob.config.*;
+import hu.dpc.ob.model.internal.ApiSchema;
 import hu.dpc.ob.rest.dto.ob.access.IntrospectResponseDto;
 import hu.dpc.ob.rest.dto.ob.access.UserInfoResponseDto;
-import hu.dpc.ob.rest.internal.ApiSchema;
 import hu.dpc.ob.util.JsonUtils;
 import lombok.AccessLevel;
 import lombok.Getter;

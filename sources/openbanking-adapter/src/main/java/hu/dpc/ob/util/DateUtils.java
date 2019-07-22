@@ -14,12 +14,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -119,6 +114,10 @@ public class DateUtils {
         return first != null && (second == null || compareDatePart(first, second) > 0);
     }
 
+    public static boolean isAfter(@NotNull LocalDateTime first, @NotNull LocalDateTime second) {
+        return first != null && (second == null || first.isAfter(second));
+    }
+
     /** @return the date which is not null and earlier than the other. Still can return null if both dates are null */
     public static Date getEarlierNotNull(@NotNull Date first, @NotNull Date second) {
         if (first == null)
@@ -138,18 +137,28 @@ public class DateUtils {
     }
 
     @NotNull
-    public static int compareToDateOfTenant(LocalDate date) {
+    public static int compareToDateOfTenant(@NotNull LocalDate date) {
         return compareDatePart(date, getLocalDateOfTenant());
     }
 
     @NotNull
+    public static int compareToDateTimeOfTenant(@NotNull LocalDateTime dateTime) {
+        return dateTime.compareTo(getLocalDateTimeOfTenant());
+    }
+
+    @NotNull
     public static boolean isBeforeDateOfTenant(Date date) {
-        return compareToDateOfTenant(date) < 0;
+        return date == null || compareToDateOfTenant(date) < 0;
     }
 
     @NotNull
     public static boolean isBeforeDateOfTenant(LocalDate date) {
-        return compareToDateOfTenant(date) < 0;
+        return date == null || compareToDateOfTenant(date) < 0;
+    }
+
+    @NotNull
+    public static boolean isBeforeDateTimeOfTenant(LocalDateTime dateTime) {
+        return dateTime == null || compareToDateTimeOfTenant(dateTime) < 0;
     }
 
     @NotNull
@@ -160,6 +169,11 @@ public class DateUtils {
     @NotNull
     public static boolean isAfterDateOfTenant(LocalDate date) {
         return compareToDateOfTenant(date) > 0;
+    }
+
+    @NotNull
+    public static boolean isAfterDateTimeOfTenant(LocalDateTime dateTime) {
+        return dateTime == null || compareToDateTimeOfTenant(dateTime) > 0;
     }
 
     @NotNull

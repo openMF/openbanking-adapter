@@ -11,11 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import hu.dpc.ob.rest.dto.ob.api.type.BalanceType;
-import hu.dpc.ob.rest.dto.ob.api.type.CreditDebitCode;
-import hu.dpc.ob.rest.dto.psp.PspAccountsGuarantorData;
-import hu.dpc.ob.rest.dto.psp.PspAccountsLoanData;
-import hu.dpc.ob.rest.dto.psp.PspAccountsSavingsData;
-import hu.dpc.ob.rest.dto.psp.PspAccountsShareData;
+import hu.dpc.ob.rest.dto.ob.api.type.CreditDebitType;
+import hu.dpc.ob.rest.dto.psp.*;
 import hu.dpc.ob.rest.parser.LocalFormatDateTimeDeserializer;
 import hu.dpc.ob.rest.parser.LocalFormatDateTimeSerializer;
 import hu.dpc.ob.util.DateUtils;
@@ -23,10 +20,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -37,16 +35,17 @@ public class AccountBalanceData {
 
     @JsonProperty(value = "AccountId", required = true)
     @NotEmpty
-    @Length(max = 40)
+    @Size(max = 40)
     private String accountId;
 
     @JsonProperty(value = "Amount", required = true)
     @NotNull
+    @Valid
     private AmountData amount;
 
     @JsonProperty(value = "CreditDebitIndicator", required = true)
     @NotNull
-    private CreditDebitCode creditDebitIndicator;
+    private CreditDebitType creditDebitIndicator;
 
     @JsonProperty(value = "Type", required = true)
     @NotNull
@@ -61,7 +60,7 @@ public class AccountBalanceData {
     @JsonProperty(value = "CreditLine", required = true)
     private List<CreditLineData> creditLine;
 
-    AccountBalanceData(@NotEmpty @Length(max = 40) String accountId, @NotNull AmountData amount, @NotNull CreditDebitCode creditDebitIndicator,
+    AccountBalanceData(@NotEmpty @Size(max = 40) String accountId, @NotNull AmountData amount, @NotNull CreditDebitType creditDebitIndicator,
                               @NotNull BalanceType type, @NotNull LocalDateTime dateTime, List<CreditLineData> creditLine) {
         this.accountId = accountId;
         this.amount = amount;
@@ -71,9 +70,15 @@ public class AccountBalanceData {
         this.creditLine = creditLine;
     }
 
-    AccountBalanceData(@NotEmpty @Length(max = 40) String accountId, @NotNull AmountData amount, @NotNull CreditDebitCode creditDebitIndicator,
+    AccountBalanceData(@NotEmpty @Size(max = 40) String accountId, @NotNull AmountData amount, @NotNull CreditDebitType creditDebitIndicator,
                               @NotNull BalanceType type, @NotNull LocalDateTime dateTime) {
         this(accountId, amount, creditDebitIndicator, type, dateTime, null);
+    }
+
+    static AccountBalanceData transform(@NotNull PspAccountResponseDto pspAccount) {
+        AmountData amount = AmountData.transform(pspAccount);
+        return new AccountBalanceData(pspAccount.getAccountId(), amount, CreditDebitType.DEBIT, BalanceType.INFORMATION,
+                DateUtils.toLocalDateTime(pspAccount.getBalanceOn()));
     }
 
     static AccountBalanceData transform(@NotNull PspAccountsSavingsData pspAccount, String accountId) {
@@ -83,7 +88,7 @@ public class AccountBalanceData {
         }
 
         AmountData amount = AmountData.transform(pspAccount);
-        return amount == null ? null : new AccountBalanceData(externalId, amount, CreditDebitCode.DEBIT, BalanceType.INFORMATION,
+        return amount == null ? null : new AccountBalanceData(externalId, amount, CreditDebitType.DEBIT, BalanceType.INFORMATION,
                 DateUtils.toLocalDateTime(pspAccount.getLastActiveTransactionDate()));
     }
 

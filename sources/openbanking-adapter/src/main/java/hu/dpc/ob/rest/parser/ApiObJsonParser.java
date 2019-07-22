@@ -7,16 +7,9 @@
  */
 package hu.dpc.ob.rest.parser;
 
-import hu.dpc.ob.cache.TransactionContextHolder;
-import hu.dpc.ob.config.AdapterSettings;
 import hu.dpc.ob.config.ApiSettings;
-import hu.dpc.ob.config.Binding;
-import hu.dpc.ob.config.BindingProperties;
-import hu.dpc.ob.config.Schema;
-import hu.dpc.ob.rest.internal.ApiSchema;
-import org.apache.camel.CamelContext;
+import hu.dpc.ob.model.internal.ApiSchema;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
 @Component("api-ob-parser")

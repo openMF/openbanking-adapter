@@ -8,8 +8,7 @@
 package hu.dpc.ob.rest.parser;
 
 import hu.dpc.ob.config.AccessSettings;
-import hu.dpc.ob.config.ApiSettings;
-import hu.dpc.ob.rest.internal.ApiSchema;
+import hu.dpc.ob.model.internal.ApiSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

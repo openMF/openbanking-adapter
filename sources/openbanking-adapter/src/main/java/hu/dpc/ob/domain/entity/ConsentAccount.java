@@ -12,13 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -27,12 +21,12 @@ import javax.validation.constraints.NotNull;
 @SuppressWarnings("unused")
 @Entity
 @Table(name = "consent_account", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"consent_id", "account_id"}, name = "uk_consent_account.account")})
+        @UniqueConstraint(columnNames = {"consent_id", "account_id"}, name = "uk_consent_account.accountId")})
 public class ConsentAccount extends AbstractEntity {
 
     @NotNull
     @ManyToOne(fetch= FetchType.LAZY, optional = false)
-    @JoinColumn(name = "consent_id")
+    @JoinColumn(name = "consent_id", nullable = false)
     private Consent consent;
 
     @NotNull

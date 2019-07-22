@@ -9,14 +9,16 @@ package hu.dpc.ob.rest.routebuilder;
 
 import hu.dpc.ob.config.Binding;
 import hu.dpc.ob.config.BindingProperties;
-import hu.dpc.ob.config.ListConfig;
 import hu.dpc.ob.config.SchemaSettings;
 import hu.dpc.ob.config.TenantProperties;
-import hu.dpc.ob.rest.constant.ExchangeHeader;
-import hu.dpc.ob.rest.internal.ApiSchema;
-import hu.dpc.ob.rest.internal.PspId;
+import hu.dpc.ob.domain.type.RequestSource;
+import hu.dpc.ob.model.internal.ApiSchema;
+import hu.dpc.ob.model.internal.PspId;
+import hu.dpc.ob.rest.ExchangeHeader;
 import hu.dpc.ob.util.ContextUtils;
+import liquibase.util.StringUtils;
 import org.apache.camel.CamelContext;
+import org.apache.camel.Message;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.dataformat.JsonLibrary;
@@ -43,8 +45,8 @@ public abstract class OpenbankingRouteBuilder extends RouteBuilder {
         this.appContext = appContext;
     }
 
-    protected <_B extends Binding> void buildBindingRoutes(ApiSchema schema, String tenant, SchemaSettings<?, ?, _B> settings) {
-//        BindingJsonParser<_B> parser = (BindingJsonParser<_B>) getContext().getComponent(buildId(schema, ID_PARSER));
+    protected <_B extends Binding> void buildConsumerRoutes(ApiSchema schema, String tenant, SchemaSettings<?, ?, _B> settings) {
+        @NotNull RequestSource source = settings.getSource();
         for (_B binding : settings.getBindings(schema)) {
             BindingProperties bindingProps = settings.getBinding(schema, binding);
             TenantProperties tenantProps = bindingProps.getTenant(tenant);
@@ -55,48 +57,63 @@ public abstract class OpenbankingRouteBuilder extends RouteBuilder {
 
             String instance = settings.getAdapterSettings().getInstance();
             RouteDefinition from = from(consumerEndpoint);
-            from.id(buildId(schema, tenant + '-' + binding.getConfigName(), "consumer"));
+            from.id(buildId(source, schema, tenant + '-' + binding.getConfigName(), "consumer"));
             Class bodyClass = bindingProps.getBodyClass();
             if (bodyClass != null) {
                 from.unmarshal().json(JsonLibrary.Jackson, bodyClass);
             }
             from.process(exchange -> {
+                Message in = exchange.getIn();
+                HttpServletRequest request = in.getBody(HttpServletRequest.class);
+                String pathInfo = request.getPathInfo();
                 exchange.setProperty(ExchangeHeader.PSP_ID.getKey(), new PspId(instance, tenant));
-                String pathInfo = exchange.getIn().getBody(HttpServletRequest.class).getPathInfo();
+                exchange.setProperty(ExchangeHeader.SCHEMA.getKey(), schema);
+                exchange.setProperty(ExchangeHeader.SCOPE.getKey(), binding.getScope());
+                exchange.setProperty(ExchangeHeader.SOURCE.getKey(), source);
+                exchange.setProperty(ExchangeHeader.BINDING.getKey(), binding);
                 exchange.setProperty(ExchangeHeader.PATH_PARAMS.getKey(), ContextUtils.parsePathParams(pathInfo, tenantProps.getUriPath()));
+
+                Object body = null;
+                if (bodyClass != null) {
+                    body = in.getBody(bodyClass);
+                    exchange.setProperty(ExchangeHeader.REQUEST_DTO.getKey(), body);
+                }
+                log.debug("Incoming request: " + pathInfo + ", method: " + request.getMethod() + ", \nheader: " + StringUtils.join(in.getHeaders(), ",")
+                        + ", \nbody: " + body);
             })
-                    .to("direct:" + buildId(schema, binding.getConfigName(), null))
+                    .to("direct:" + buildId(source, schema, binding.getConfigName(), null))
             ;
         }
     }
 
-    protected <_C extends ListConfig> void buildDirectRoutes(ApiSchema schema, _C[] configs) {
+    protected <_B extends Binding> void buildDirectRoutes(ApiSchema schema, SchemaSettings<?, ?, _B> settings) {
         // general prepare route and processor
-        String prepareRouteId = buildId(schema, ID_PREPARE);
+        RequestSource source = settings.getSource();
+        String prepareRouteId = buildId(source, schema, ID_PREPARE);
         from("direct:" + prepareRouteId)
                 .id(prepareRouteId)
                 .process(exchange -> {
                     log.debug("Processing " + prepareRouteId);
                 })
-                .process(buildId(schema, ID_PREPARE_PROCESSOR))
+                .process(buildId(source, schema, ID_PREPARE_PROCESSOR))
         ;
         // general validation route and processor
-        String validateRouteId = buildId(schema, ID_VALIDATE);
+        String validateRouteId = buildId(source, schema, ID_VALIDATE);
         from("direct:" + validateRouteId)
                 .id(validateRouteId)
                 .process(exchange -> {
                     log.debug("Processing " + validateRouteId);
                 })
-                .process(buildId(schema, ID_VALIDATE_PROCESSOR))
+                .process(buildId(source, schema, ID_VALIDATE_PROCESSOR))
         ;
 
-        for (_C config : configs) {
-            @NotNull String configName = config.getConfigName();
+        for (_B binding : settings.getBindings(schema)) {
+            @NotNull String configName = binding.getConfigName();
             // service dependent prepare route and processor, if not exists we fall back to general
             String actPrepareRouteId = prepareRouteId;
-            String actPrepareProcId = buildId(schema, configName, ID_PREPARE_PROCESSOR);
+            String actPrepareProcId = buildId(source, schema, configName, ID_PREPARE_PROCESSOR);
             if (appContext.containsBeanDefinition(actPrepareProcId)) {
-                actPrepareRouteId = buildId(schema, configName, ID_PREPARE);
+                actPrepareRouteId = buildId(source, schema, configName, ID_PREPARE);
                 final String aarid = actPrepareRouteId;
                 from("direct:" + actPrepareRouteId)
                         .id(actPrepareRouteId)
@@ -107,9 +124,9 @@ public abstract class OpenbankingRouteBuilder extends RouteBuilder {
             }
             // service dependent validation route and processor, if not exists we fall back to general
             String actValidateRouteId = validateRouteId;
-            String actValidateProcId = buildId(schema, configName, ID_VALIDATE_PROCESSOR);
+            String actValidateProcId = buildId(source, schema, configName, ID_VALIDATE_PROCESSOR);
             if (appContext.containsBeanDefinition(actValidateProcId)) {
-                actValidateRouteId = buildId(schema, configName, ID_PREPARE);
+                actValidateRouteId = buildId(source, schema, configName, ID_PREPARE);
                 final String avrid = actValidateRouteId;
                 from("direct:" + actValidateRouteId)
                         .id(actValidateRouteId)
@@ -118,7 +135,7 @@ public abstract class OpenbankingRouteBuilder extends RouteBuilder {
                         })
                         .process(actValidateProcId);
             }
-            String id = buildId(schema, configName, null);
+            String id = buildId(source, schema, configName, null);
             from("direct:" + id)
                     .id(id)
                     .process(exchange -> {
@@ -126,20 +143,17 @@ public abstract class OpenbankingRouteBuilder extends RouteBuilder {
                     })
                     .to("direct:" + actPrepareRouteId)
                     .to("direct:" + actValidateRouteId)
-                    .process(buildId(schema, configName, ID_PROCESSOR))
+                    .process(buildId(source, schema, configName, ID_PROCESSOR))
                     .marshal().json(JsonLibrary.Jackson)
             ;
         }
     }
 
-    @NotNull
-    protected abstract String getSource();
-
-    protected String buildId(@NotNull ApiSchema schema, String function) {
-        return buildId(schema, null, function);
+    protected String buildId(@NotNull RequestSource source, @NotNull ApiSchema schema, String function) {
+        return buildId(source, schema, null, function);
     }
 
-    protected String buildId(@NotNull ApiSchema schema, String configName, String function) {
-        return (getSource() + '-' + schema.getConfigName() + (configName == null ? "" : '-' + configName) + (function == null ? "" : '-' + function)).toLowerCase();
+    protected String buildId(@NotNull RequestSource source, @NotNull ApiSchema schema, String configName, String function) {
+        return (source.getId() + '-' + schema.getId() + (configName == null ? "" : '-' + configName) + (function == null ? "" : '-' + function)).toLowerCase();
     }
 }

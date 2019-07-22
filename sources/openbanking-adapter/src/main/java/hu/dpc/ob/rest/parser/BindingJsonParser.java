@@ -7,9 +7,8 @@
  */
 package hu.dpc.ob.rest.parser;
 
-import hu.dpc.ob.config.ApiSettings;
 import hu.dpc.ob.config.Binding;
-import hu.dpc.ob.rest.internal.ApiSchema;
+import hu.dpc.ob.model.internal.ApiSchema;
 
 public abstract class BindingJsonParser<_B extends Binding> {
 

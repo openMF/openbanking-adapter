@@ -7,32 +7,33 @@
  */
 package hu.dpc.ob.rest.processor.ob.access;
 
+import hu.dpc.ob.model.internal.PspId;
+import hu.dpc.ob.rest.ExchangeHeader;
 import hu.dpc.ob.rest.component.PspRestClient;
-import hu.dpc.ob.rest.constant.ExchangeHeader;
 import hu.dpc.ob.rest.dto.ob.access.AccountsHeldResponseDto;
 import hu.dpc.ob.rest.dto.psp.PspAccountsResponseDto;
-import hu.dpc.ob.rest.internal.PspId;
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
 @Component("access-ob-consent-accounts-processor")
-public class ConsentAccountsRequestProcessor implements Processor {
-
-    private PspRestClient pspRestClient;
+public class ConsentAccountsRequestProcessor extends AccessRequestProcessor {
 
     @Autowired
     public ConsentAccountsRequestProcessor(PspRestClient pspRestClient) {
-        this.pspRestClient = pspRestClient;
+        super(pspRestClient);
     }
 
     @Override
     public void process(Exchange exchange) throws Exception {
+        super.process(exchange);
+
         String pspUserId = exchange.getProperty(ExchangeHeader.PSP_USER_ID.getKey(), String.class);
         PspId pspId = exchange.getProperty(ExchangeHeader.PSP_ID.getKey(), PspId.class);
-        PspAccountsResponseDto pspAccounts = pspRestClient.callAccounts(pspUserId, pspId);
+
+        PspAccountsResponseDto pspAccounts = getPspRestClient().callAccounts(pspUserId, pspId);
+
         AccountsHeldResponseDto response = AccountsHeldResponseDto.transform(pspAccounts);
         exchange.getIn().setBody(response);
     }

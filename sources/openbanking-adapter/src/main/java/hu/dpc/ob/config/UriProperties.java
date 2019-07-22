@@ -43,5 +43,7 @@ public abstract class UriProperties extends BaseUriProperties {
         // empty is a valid value
         if (method == null)
             method = oProps.getMethod();
+        if (bodyClass == null)
+            bodyClass = oProps.getBodyClass();
     }
 }

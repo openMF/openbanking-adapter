@@ -8,12 +8,7 @@
 package hu.dpc.ob.rest.dto.ob.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import hu.dpc.ob.rest.dto.psp.PspAccountsGuarantorData;
-import hu.dpc.ob.rest.dto.psp.PspAccountsLoanData;
-import hu.dpc.ob.rest.dto.psp.PspAccountsResponseDto;
-import hu.dpc.ob.rest.dto.psp.PspAccountsSavingsData;
-import hu.dpc.ob.rest.dto.psp.PspAccountsShareData;
-import hu.dpc.ob.rest.dto.psp.PspIdentifiersResponseDto;
+import hu.dpc.ob.rest.dto.psp.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +29,14 @@ public class AccountsData {
 
     public AccountsData(List<AccountData> accounts) {
         this.accounts = accounts;
+    }
+
+    @NotNull
+    public static AccountsData transform(@NotNull PspAccountResponseDto pspAccount, boolean detail) {
+        List<AccountData> accounts = new ArrayList<>(1);
+        AccountData transform = AccountData.transform(pspAccount, detail);
+        accounts.add(transform);
+        return new AccountsData(accounts);
     }
 
     @NotNull

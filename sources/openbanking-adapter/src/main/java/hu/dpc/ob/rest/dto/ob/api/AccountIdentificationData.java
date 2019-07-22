@@ -8,15 +8,16 @@
 package hu.dpc.ob.rest.dto.ob.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import hu.dpc.ob.rest.dto.ob.api.type.IdentificationType;
+import hu.dpc.ob.domain.entity.AccountIdentification;
+import hu.dpc.ob.domain.type.IdentificationCode;
 import hu.dpc.ob.rest.dto.psp.PspIdentifierData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -25,33 +26,33 @@ public class AccountIdentificationData {
 
     @JsonProperty(value = "SchemeName", required = true)
     @NotEmpty
-    @Length(max = 40)
-    private IdentificationType schemeName;
+    @Size(max = 40)
+    private IdentificationCode schemeName;
 
     @JsonProperty(value = "Identification", required = true)
     @NotEmpty
-    @Length(max = 256)
+    @Size(max = 256)
     private String identification;
 
     @JsonProperty(value = "SecondaryIdentification")
-    @Length(max = 34)
+    @Size(max = 128) // OB: 34, interoperation: 128
     private String secondaryIdentification;
 
     @JsonProperty(value = "Name")
-    @Length(max = 70)
+    @Size(max = 70)
     private String name;
 
 
-    public AccountIdentificationData(@NotEmpty @Length(max = 40) IdentificationType schemeName, @NotEmpty @Length(max = 256) String identification,
-                                     @Length(max = 34) String secondaryIdentification, @Length(max = 70) String name) {
+    public AccountIdentificationData(@NotEmpty @Size(max = 40) IdentificationCode schemeName, @NotEmpty @Size(max = 256) String identification,
+                                     @Size(max = 34) String secondaryIdentification, @Size(max = 70) String name) {
         this.schemeName = schemeName;
         this.identification = identification;
         this.name = name;
         this.secondaryIdentification = secondaryIdentification;
     }
 
-    public AccountIdentificationData(@NotEmpty @Length(max = 40) IdentificationType schemeName, @NotEmpty @Length(max = 256) String identification,
-                                     @Length(max = 34) String secondaryIdentification) {
+    public AccountIdentificationData(@NotEmpty @Size(max = 40) IdentificationCode schemeName, @NotEmpty @Size(max = 256) String identification,
+                                     @Size(max = 34) String secondaryIdentification) {
         this(schemeName, identification, secondaryIdentification, null);
     }
 
@@ -59,7 +60,28 @@ public class AccountIdentificationData {
         if (identity == null)
             return null;
 
-        IdentificationType schemeName = IdentificationType.forInteropIdType(identity.getIdType());
+        IdentificationCode schemeName = IdentificationCode.forInteropIdType(identity.getIdType());
         return schemeName == null ? null : new AccountIdentificationData(schemeName, identity.getIdValue(), identity.getSubIdOrType(), null);
+    }
+
+    static AccountIdentificationData create(AccountIdentification identification) {
+        return identification == null ? null : new AccountIdentificationData(identification.getScheme(), identification.getIdentification(),
+                identification.getSecondaryIdentification(), identification.getName());
+    }
+
+    public AccountIdentification mapToEntity() {
+        return new AccountIdentification(schemeName, identification, secondaryIdentification, name);
+    }
+
+    public String updateEntity(AccountIdentification identification) {
+        if (!schemeName.equals(identification.getScheme()))
+            return "Consent schemeName " + identification.getScheme() + " does not match requested schemeName " + schemeName;
+        if (!this.identification.equals(identification.getIdentification()))
+            return "Consent identification " + identification.getIdentification() + " does not match requested identification " + this.identification;
+        if (secondaryIdentification == null ? identification.getSecondaryIdentification() != null : !secondaryIdentification.equals(identification.getSecondaryIdentification()))
+            return "Consent secondaryIdentification " + identification.getSecondaryIdentification() + " does not match requested secondaryIdentification " + secondaryIdentification;
+        if (name != null && !name.equals(identification.getName()))
+            return "Consent name " + identification.getName() + " does not match requested name " + name;
+        return null;
     }
 }

@@ -7,7 +7,7 @@
  */
 package hu.dpc.ob.config;
 
-import hu.dpc.ob.rest.internal.ApiSchema;
+import hu.dpc.ob.model.internal.ApiSchema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +34,7 @@ public class SchemaProperties<_H extends Header, _O extends Operation, _B extend
     }
 
     protected SchemaProperties(@NotNull ApiSchema schema) {
-        this(schema.getConfigName());
+        this(schema.getId());
     }
 
     @Override
@@ -47,6 +47,6 @@ public class SchemaProperties<_H extends Header, _O extends Operation, _B extend
     }
 
     public ApiSchema getSchema() {
-        return ApiSchema.forConfigName(name);
+        return ApiSchema.fromId(name);
     }
 }

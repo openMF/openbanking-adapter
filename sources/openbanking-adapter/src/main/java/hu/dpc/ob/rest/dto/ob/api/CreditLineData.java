@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -22,10 +23,11 @@ import javax.validation.constraints.NotNull;
 public class CreditLineData {
 
     @JsonProperty(value = "Included", required = true)
-    private boolean included; // Indicates whether or not the credit line is included in the balance of the account.
+    private boolean included; // Indicates whether or not the credit line is included in the balance of the accountId.
 
     @JsonProperty(value = "Amount")
     @NotNull
+    @Valid
     private AmountData amount;
 
     @JsonProperty(value = "Type")

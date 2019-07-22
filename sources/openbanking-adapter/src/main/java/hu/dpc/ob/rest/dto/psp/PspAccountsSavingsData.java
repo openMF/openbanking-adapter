@@ -28,7 +28,7 @@ public class PspAccountsSavingsData extends PspAccountsData {
     private PspAccountsSavingsStatusData status;
     private PspCurrencyData currency;
     private BigDecimal accountBalance;
-    //differentiate Individual, JLG or Group account
+    //differentiate Individual, JLG or Group accountId
     private EnumOptionData accountType;
     private PspAccountsSavingsTimelineData timeline;
     private PspAccountsSavingsSubStatusData subStatus;

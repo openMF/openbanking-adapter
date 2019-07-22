@@ -7,22 +7,25 @@
  */
 package hu.dpc.ob.rest.processor.ob.access;
 
-import hu.dpc.ob.rest.internal.ApiSchema;
-import hu.dpc.ob.rest.processor.ValidateProcessor;
+import hu.dpc.ob.model.service.ApiService;
+import hu.dpc.ob.model.service.ConsentService;
+import hu.dpc.ob.model.service.PaymentService;
+import hu.dpc.ob.rest.processor.ob.ObValidateProcessor;
 import org.apache.camel.Exchange;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
 @Component("access-ob-validate-processor")
-public class AccessValidateProcessor extends ValidateProcessor {
+public class AccessValidateProcessor extends ObValidateProcessor {
 
-
-    public ApiSchema getSchema() {
-        return ApiSchema.OB;
+    @Autowired
+    public AccessValidateProcessor(ApiService apiService, ConsentService consentService, PaymentService paymentService) {
+        super(apiService, consentService, paymentService);
     }
 
     @Override
     public void process(Exchange exchange) throws Exception {
-        // nothing
+        super.process(exchange);
     }
 }

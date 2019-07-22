@@ -7,16 +7,107 @@
  */
 package hu.dpc.ob.rest.processor;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import hu.dpc.ob.config.Binding;
+import hu.dpc.ob.domain.entity.Consent;
+import hu.dpc.ob.domain.entity.Payment;
+import hu.dpc.ob.domain.type.ApiScope;
+import hu.dpc.ob.domain.type.EventReasonCode;
+import hu.dpc.ob.model.service.ApiService;
+import hu.dpc.ob.model.service.ConsentService;
+import hu.dpc.ob.model.service.PaymentService;
+import hu.dpc.ob.rest.ExchangeHeader;
+import hu.dpc.ob.util.ContextUtils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class ValidateProcessor implements Processor {
+import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
+
+public class ValidateProcessor implements Processor {
+
+    protected final ApiService apiService;
+    protected final ConsentService consentService;
+    protected final PaymentService paymentService;
+
+    public ValidateProcessor(ApiService apiService, ConsentService consentService, PaymentService paymentService) {
+        this.apiService = apiService;
+        this.consentService = consentService;
+        this.paymentService = paymentService;
+    }
+
+    protected String getPaymentId(Exchange exchange) {
+        return ContextUtils.getPathParam(exchange, ContextUtils.PARAM_PAYMENT_ID);
+    }
+
+    protected String getClientPaymentId(Exchange exchange) {
+        return ContextUtils.getPathParam(exchange, ContextUtils.PARAM_CLIENT_PAYMENT_ID);
+    }
+
+    protected String getPartyId(Exchange exchange) {
+        return ContextUtils.getPathParam(exchange, ContextUtils.PARAM_PARTY_ID);
+    }
+
+    protected String getConsentId(Exchange exchange) {
+        return ContextUtils.getPathParam(exchange, ContextUtils.PARAM_CONSENT_ID);
+    }
+
+    protected String getAccountId(Exchange exchange) {
+        return ContextUtils.getPathParam(exchange, ContextUtils.PARAM_ACCOUNT_ID);
+    }
+
+    protected String getResourceId(Exchange exchange) {
+        String resourceId = getPaymentId(exchange);
+        if (resourceId == null)
+            resourceId = getPartyId(exchange);
+        if (resourceId == null)
+            resourceId = getConsentId(exchange);
+        if (resourceId == null)
+            resourceId = getAccountId(exchange);
+        return resourceId;
+    }
 
     @Override
+    @Transactional
     public void process(Exchange exchange) throws Exception {
-        //
+        String clientId = exchange.getProperty(ExchangeHeader.CLIENT_ID.getKey(), String.class);
+        ContextUtils.assertNotNull(clientId);
+
+        String apiUserId = exchange.getProperty(ExchangeHeader.API_USER_ID.getKey(), String.class);
+        Binding binding = exchange.getProperty(ExchangeHeader.BINDING.getKey(), Binding.class);
+        if (binding != null && binding.isUserRequest())
+            ContextUtils.assertNotNull(clientId);
+
+        @NotNull ApiScope scope = binding.getScope();
+
+        String consentId = getConsentId(exchange);
+        if (consentId != null) {
+            @NotNull Consent consent = consentService.getConsentById(consentId);
+            checkConsent(apiUserId, clientId, scope, consent);
+        }
+
+        String paymentId = getPaymentId(exchange);
+        if (paymentId != null) {
+            @NotNull Payment payment = paymentService.getPaymentByPaymentId(paymentId);
+            @NotNull Consent consent = payment.getConsent();
+            checkConsent(apiUserId, clientId, scope, consent);
+        }
+
+        String clientPaymentId = getClientPaymentId(exchange);
+        if (clientPaymentId != null) {
+            @NotNull Payment payment = paymentService.getPaymentByEndToEndId(clientPaymentId);
+            @NotNull Consent consent = payment.getConsent();
+            checkConsent(apiUserId, clientId, scope, consent);
+        }
+
+        EventReasonCode reasonCode = apiService.validateAndRegisterAction(apiUserId, clientId, binding, getAccountId(exchange), getResourceId(exchange));
+        if (reasonCode != null )
+            throw new UnsupportedOperationException(reasonCode.getDisplayText() + " for " + binding);
+    }
+
+    private void checkConsent(String apiUserId, String clientId, @NotNull ApiScope scope, @NotNull Consent consent) {
+        ContextUtils.assertEq(clientId, consent.getClientId());
+        ContextUtils.assertEq(scope, consent.getScope());
+        if (apiUserId != null && consent.getUser() != null)
+            ContextUtils.assertEq(apiUserId, consent.getUser().getApiUserId());
     }
 }

@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.SSLContext;
@@ -36,6 +37,7 @@ import java.security.cert.X509Certificate;
 
 @SpringBootApplication(scanBasePackages = "hu.dpc.ob")
 @EnableConfigurationProperties({AccessSettings.class, AdapterSettings.class, ApiSettings.class, PspSettings.class})
+@EnableTransactionManagement
 public class OpenbankingApplication {
 
 	private static Logger log = LoggerFactory.getLogger(OpenbankingApplication.class);
@@ -76,12 +78,9 @@ public class OpenbankingApplication {
 
 	@Bean
 	public Jackson2ObjectMapperBuilder objectMapperBuilder() {
-		Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder()
-		.serializationInclusion(JsonInclude.Include.NON_NULL)
-		.serializationInclusion(JsonInclude.Include.NON_EMPTY)
-		.failOnUnknownProperties(false);
-//		.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
-
-		return builder;
+		return new Jackson2ObjectMapperBuilder()
+				.serializationInclusion(JsonInclude.Include.NON_NULL)
+				.serializationInclusion(JsonInclude.Include.NON_EMPTY)
+				.failOnUnknownProperties(false);
 	}
 }

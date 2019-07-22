@@ -34,6 +34,6 @@ public class IntrospectResponseDto {
     private String userName;
     private Integer iat; // Integer timestamp, measured in seconds since January 1, 1970 UTC, indicating when the access token was issued
     private Integer nbf; // ?
-    private String realmName; // Realm name of the resource owner
-    private String uniqueSecurityName; // Unique security name of the resource owner
+    private String realmName; // Realm name of the resourceId owner
+    private String uniqueSecurityName; // Unique security name of the resourceId owner
 }

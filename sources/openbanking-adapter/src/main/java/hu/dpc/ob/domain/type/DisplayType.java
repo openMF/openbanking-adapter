@@ -7,8 +7,12 @@
  */
 package hu.dpc.ob.domain.type;
 
+import javax.validation.constraints.NotNull;
+
 public interface DisplayType {
 
+    @NotNull
     String getDisplayLabel();
+    @NotNull
     String getDisplayText();
 }

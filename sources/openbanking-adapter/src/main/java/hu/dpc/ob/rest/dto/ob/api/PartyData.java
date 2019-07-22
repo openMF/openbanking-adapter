@@ -17,10 +17,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -30,18 +30,18 @@ public class PartyData {
 
     @JsonProperty(value = "PartyId", required = true)
     @NotEmpty
-    @Length(max = 40)
+    @Size(max = 40)
     private String partyId;
 
     @JsonProperty(value = "PartyType")
     private PartyType partyType;
 
     @JsonProperty(value = "Name")
-    @Length(max = 70)
+    @Size(max = 70)
     private String name;
 
     @JsonProperty(value = "FullLegalName")
-    @Length(max = 350)
+    @Size(max = 350)
     private String fullLegalName;
 
     @JsonProperty(value = "LegalStructure")
@@ -54,7 +54,7 @@ public class PartyData {
     private PartyAccountRole accountRole;
 
     @JsonProperty(value = "EmailAddress")
-    @Length(max = 256)
+    @Size(max = 256)
     private String emailAddress;
 
     @JsonProperty(value = "Phone")
@@ -66,12 +66,12 @@ public class PartyData {
     private String mobile;
 
 //    Relationships RelationshipsObject;
-//    ArrayList < Object > Address = new ArrayList < Object > ();
+//    ArrayList < Object > DeliveryAddressData = new ArrayList < Object > ();
 
 
-    public PartyData(@NotEmpty @Length(max = 40) String partyId, PartyType partyType, @Length(max = 70) String name,
-                     @Length(max = 350) String fullLegalName, PartyLegalStructure legalStructure, boolean beneficialOwnership,
-                     PartyAccountRole accountRole, @Length(max = 256) String emailAddress, String phone, String mobile) {
+    public PartyData(@NotEmpty @Size(max = 40) String partyId, PartyType partyType, @Size(max = 70) String name,
+                     @Size(max = 350) String fullLegalName, PartyLegalStructure legalStructure, boolean beneficialOwnership,
+                     PartyAccountRole accountRole, @Size(max = 256) String emailAddress, String phone, String mobile) {
         this.partyId = partyId;
         this.partyType = partyType;
         this.name = name;
@@ -84,7 +84,7 @@ public class PartyData {
         this.mobile = mobile;
     }
 
-    public PartyData(@NotEmpty @Length(max = 40) String partyId) {
+    public PartyData(@NotEmpty @Size(max = 40) String partyId) {
         this(partyId, null, null, null, null, false, null, null, null, null);
     }
 

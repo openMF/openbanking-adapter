@@ -14,27 +14,22 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import hu.dpc.ob.rest.dto.ob.api.type.AccountStatus;
 import hu.dpc.ob.rest.dto.ob.api.type.AccountSubType;
 import hu.dpc.ob.rest.dto.ob.api.type.AccountType;
-import hu.dpc.ob.rest.dto.psp.PspAccountsGuarantorData;
-import hu.dpc.ob.rest.dto.psp.PspAccountsLoanData;
-import hu.dpc.ob.rest.dto.psp.PspAccountsSavingsData;
-import hu.dpc.ob.rest.dto.psp.PspAccountsSavingsStatusData;
-import hu.dpc.ob.rest.dto.psp.PspAccountsSavingsTimelineData;
-import hu.dpc.ob.rest.dto.psp.PspAccountsShareData;
-import hu.dpc.ob.rest.dto.psp.PspIdentifierData;
-import hu.dpc.ob.rest.dto.psp.PspIdentifiersResponseDto;
+import hu.dpc.ob.rest.dto.psp.*;
 import hu.dpc.ob.rest.parser.LocalFormatDateTimeDeserializer;
 import hu.dpc.ob.rest.parser.LocalFormatDateTimeSerializer;
+import hu.dpc.ob.util.DateUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -43,7 +38,7 @@ public class AccountData {
 
     @JsonProperty(value = "AccountId", required = true)
     @NotEmpty
-    @Length(max = 40)
+    @Size(max = 40)
     private String accountId;
 
     @JsonProperty(value = "Status")
@@ -68,16 +63,16 @@ public class AccountData {
     private AccountSubType accountSubType;
 
     @JsonProperty(value = "Nickname")
-    @Length(max = 70)
+    @Size(max = 70)
     private String nickname;
 
     @JsonProperty(value = "Account")
     private List<AccountIdentificationData> identifications;
 
 
-    AccountData(@NotEmpty @Length(max = 40) String accountId, AccountStatus status, LocalDateTime statusUpdateDateTime,
+    AccountData(@NotEmpty @Size(max = 40) String accountId, AccountStatus status, LocalDateTime statusUpdateDateTime,
                        @NotEmpty String currency, @NotNull AccountType accountType, @NotNull AccountSubType accountSubType,
-                       @Length(max = 70) String nickname, List<AccountIdentificationData> identifications) {
+                       @Size(max = 70) String nickname, List<AccountIdentificationData> identifications) {
         this.accountId = accountId;
         this.status = status;
         this.statusUpdateDateTime = statusUpdateDateTime;
@@ -88,9 +83,21 @@ public class AccountData {
         this.identifications = identifications;
     }
 
-    AccountData(@NotEmpty @Length(max = 40) String accountId, @NotEmpty String currency, @NotNull AccountType accountType,
+    AccountData(@NotEmpty @Size(max = 40) String accountId, @NotEmpty String currency, @NotNull AccountType accountType,
                        @NotNull AccountSubType accountSubType) {
         this(accountId, null, null, currency, accountType, accountSubType, null, null);
+    }
+
+    @NotNull
+    static AccountData transform(@NotNull PspAccountResponseDto pspAccount, boolean detail) {
+        AccountStatus accountStatus = pspAccount.getApiAccountStatus();
+        LocalDateTime statusUpdateDateTime = DateUtils.toLocalDateTime(pspAccount.getStatusUpdateOn());
+
+        @NotNull List<PspIdentifierData> identifiers = pspAccount.getIdentifiers();
+        List<AccountIdentificationData> ids = identifiers == null ? null : identifiers.stream().map(AccountIdentificationData::transform).collect(Collectors.toList());
+
+        return new AccountData(pspAccount.getAccountId(), accountStatus, statusUpdateDateTime, pspAccount.getCurrency(),
+                pspAccount.getApiAccountType(), AccountSubType.SAVINGS, pspAccount.getApiNickName(), ids);
     }
 
     static AccountData transform(@NotNull PspAccountsSavingsData pspAccount, PspIdentifiersResponseDto identities, boolean detail, String accountId) {

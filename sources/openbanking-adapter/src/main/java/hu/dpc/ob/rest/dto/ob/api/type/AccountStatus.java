@@ -22,4 +22,8 @@ public enum AccountStatus {
     @JsonProperty("Pending")
     PENDING,
 ;
+
+    public boolean isEnabled() {
+        return this == ENABLED;
+    }
 }

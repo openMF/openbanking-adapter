@@ -8,6 +8,7 @@
 package hu.dpc.ob.rest.dto.ob.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import hu.dpc.ob.rest.dto.psp.PspAccountResponseDto;
 import hu.dpc.ob.rest.dto.psp.PspAccountsResponseDto;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,6 +28,11 @@ public class BalancesResponseDto {
 
     BalancesResponseDto(@NotNull AccountsBalanceData data) {
         this.data = data;
+    }
+
+    public static BalancesResponseDto transform(@NotNull PspAccountResponseDto pspAccount) {
+        AccountsBalanceData transform = AccountsBalanceData.transform(pspAccount);
+        return new BalancesResponseDto(transform);
     }
 
     public static BalancesResponseDto transform(@NotNull PspAccountsResponseDto pspAccounts, String accountId) {

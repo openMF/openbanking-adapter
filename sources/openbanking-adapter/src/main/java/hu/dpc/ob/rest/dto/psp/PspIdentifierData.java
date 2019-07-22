@@ -8,14 +8,14 @@
 package hu.dpc.ob.rest.dto.psp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import hu.dpc.ob.domain.type.IdentifierType;
+import hu.dpc.ob.domain.type.InteropIdentifierType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -25,13 +25,13 @@ import javax.validation.constraints.NotNull;
 public class PspIdentifierData {
 
     @NotNull
-    @Length(max = 32)
-    private IdentifierType idType;
+    @Size(max = 32)
+    private InteropIdentifierType idType;
 
     @NotNull
-    @Length(max = 128)
+    @Size(max = 128)
     private String idValue;
 
-    @Length(max = 128)
+    @Size(max = 128)
     private String subIdOrType;
 }

@@ -7,11 +7,32 @@
  */
 package hu.dpc.ob.domain.type;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Getter
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@SuppressWarnings("unused")
 public enum ApiScope {
 
-    NONE,
-    AIS,
-    PIS,
-    AIIS,
+    AIS("ais"),
+    PIS("pis"),
+    AIIS("aiis"),
     ;
+
+
+    private static final Map<String, ApiScope> BY_ID = Arrays.stream(ApiScope.values()).collect(Collectors.toMap(ApiScope::getId, e -> e));
+
+    @NotNull
+    private final String id;
+
+    public static ApiScope fromId(String id) {
+        return BY_ID.get(id);
+    }
 }
