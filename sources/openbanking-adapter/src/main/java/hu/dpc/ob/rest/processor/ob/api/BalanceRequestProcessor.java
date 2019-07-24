@@ -33,9 +33,10 @@ public class BalanceRequestProcessor extends ApiRequestProcessor {
 
         String accountId = ContextUtils.getPathParam(exchange, ContextUtils.PARAM_ACCOUNT_ID);
         PspId pspId = exchange.getProperty(ExchangeHeader.PSP_ID.getKey(), PspId.class);
-        PspAccountResponseDto response = pspRestClient.callAccount(accountId, pspId);
 
-        BalancesResponseDto transform = BalancesResponseDto.transform(response);
-        exchange.getIn().setBody(transform);
+        PspAccountResponseDto accountResponse = pspRestClient.callAccount(accountId, pspId);
+
+        BalancesResponseDto response = BalancesResponseDto.transform(accountResponse);
+        exchange.getIn().setBody(response);
     }
 }

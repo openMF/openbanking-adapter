@@ -23,7 +23,7 @@ import javax.validation.constraints.Size;
 @SuppressWarnings("unused")
 @Entity
 @Table(name = "interop_extension")
-public class InteropExtension extends AbstractEntity {
+public final class InteropExtension extends AbstractEntity {
 
     @NotNull
     @ManyToOne(fetch= FetchType.LAZY, optional = false)

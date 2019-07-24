@@ -8,28 +8,19 @@
 package hu.dpc.ob.rest.dto.psp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import hu.dpc.ob.domain.entity.AccountIdentification;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
-@JsonIgnoreProperties(ignoreUnknown=true)
-public class PspIdentifiersResponseDto {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class PspTransactionsResponseDto {
 
-    @NotNull
-    private List<PspIdentifierData> identifiers;
-
-    @NotNull
-    public List<AccountIdentification> mapToEntities() {
-        return identifiers.stream().map(PspIdentifierData::mapToEntity).collect(Collectors.toList());
-    }
+    List<PspTransactionData> transactions;
 }

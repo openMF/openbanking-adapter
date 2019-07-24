@@ -125,12 +125,8 @@ public class ApiService {
         @NotNull Consent consent = consentService.getConsentById(data.getConsentId());
         Payment payment = consent.getPayment();
 
-        AccountIdentification debtorIdentification = payment.getDebtorIdentification();
-        if (debtorIdentification.isNew()) {
-            AccountIdentification accountIdentification = consentService.findPersistedAccountIdentification(debtorIdentification);
-            if (accountIdentification != null)
-                payment.setDebtorIdentification(accountIdentification);
-        }
+        consentService.initDebtorIdentifiers(payment, debtorInit);
+
         @Valid CreditorTrustedData trustedData = data.getCreditorTrusted();
         if (trustedData != null) {
             BigDecimal limit = trustedData.getLimit();
@@ -176,8 +172,7 @@ public class ApiService {
     }
 
     @Transactional(REQUIRES_NEW) // failed actions should be saved
-    public EventReasonCode validateAndRegisterAction(String apiUserId, @NotNull String clientId, @NotNull Binding binding,
-                                                     String accountId, String resourceId) {
+    public EventReasonCode validateAndRegisterAction(String apiUserId, @NotNull String clientId, @NotNull Binding binding, String consentId, String accountId, String resourceId) {
         if (clientId == null)
             throw new UnsupportedOperationException("Client is not specified");
         if (binding == null)
@@ -188,11 +183,12 @@ public class ApiService {
         if (apiUserId == null)
             throw new UnsupportedOperationException("User is not specified");
 
-        checkPermission(apiUserId, clientId, binding, accountId); // throws exception if not authorized
-
         @NotNull RequestSource source = binding.getSource();
         @NotNull ApiScope scope = binding.getScope();
         @NotNull ConsentActionCode actionCode = binding.getActionCode();
+
+        if (consentId == null || scope == ApiScope.AIS) // for existing PIS consent we do not check AIS permissions any more
+            checkPermission(apiUserId, clientId, binding, accountId); // throws exception if not authorized
 
         User user = userService.getUserByApiId(apiUserId);
 
@@ -201,17 +197,25 @@ public class ApiService {
         if (source != RequestSource.API)
             return eventReasonCode;
 
-        Consent consent = consentService.getActiveConsent(user, clientId, scope);
+        Consent consent;
+        if (consentId == null)
+            consent = consentService.getActiveConsent(user, clientId, scope);
+        else {
+            consent = consentService.getConsentById(consentId);
+            if (!consent.isActive() || consent.isExpired())
+                consent = null;
+        }
+
         if (consent == null)
-            throw new UnsupportedOperationException("User '" + apiUserId + "' has no consent to " + binding.getDisplayText());
+            throw new UnsupportedOperationException("User '" + apiUserId + "' has no active consent to " + binding.getDisplayText());
 
         if (eventReasonCode == null)
             eventReasonCode = consentService.calcConsentRejectReason(source, scope, consent, actionCode, resourceId);
 
         if (eventReasonCode != null)
-            consentService.rejectAction(consent, actionCode, resourceId, eventReasonCode);
+            consentService.rejectAction(consent, actionCode, resourceId, null, eventReasonCode);
         else if (!actionCode.isUpdate()) // update actions are registered in separated methods
-            consentService.acceptAction(consent, actionCode, resourceId);
+            consentService.acceptAction(consent, actionCode, resourceId, null);
 
         return eventReasonCode;
     }
@@ -247,9 +251,10 @@ public class ApiService {
             throw new UnsupportedOperationException("Operation is not specified");
 
         User user = userService.getUserByApiId(apiUserId);
-        Consent consent = consentService.getActiveConsent(user, clientId, binding.getScope());
+        Consent consent = consentService.getActiveConsent(user, clientId, ApiScope.AIS); // PIS actions must have AIS permissions
         if (consent == null) {
-            log.info("No consent exist for user: " + apiUserId + ", client: " + clientId + ", scope: " + binding.getScope());
+            log.info("No active consent exist for user: " + apiUserId + ", client: " + clientId + ", scope: " + binding.getScope());
+            return false;
         }
 
         PermissionCode[] permissions = binding.getPermissions(detail);
@@ -263,6 +268,23 @@ public class ApiService {
     }
 
     @Transactional
+    public boolean hasPermission(String apiUserId, String clientId, PermissionCode permission, String accountId) {
+        if (apiUserId == null)
+            throw new UnsupportedOperationException("User is not specified");
+        if (clientId == null)
+            throw new UnsupportedOperationException("Client is not specified");
+
+        User user = userService.getUserByApiId(apiUserId);
+        Consent consent = consentService.getActiveConsent(user, clientId, ApiScope.AIS); // PIS actions must have AIS permissions
+        if (consent == null) {
+            log.info("No active consent exist for user: " + apiUserId + ", client: " + clientId + ", scope: " + ApiScope.AIS);
+            return false;
+        }
+
+        return consentService.hasPermission(consent, permission, accountId);
+    }
+
+    @Transactional
     public boolean hasPermission(String apiUserId, String clientId, Binding binding, boolean detail) {
         return hasPermission(apiUserId, clientId, binding, detail, null);
     }
@@ -270,6 +292,22 @@ public class ApiService {
     @Transactional
     public boolean hasPermission(String apiUserId, String clientId, ApiSettings.ApiBinding binding) {
         return hasPermission(apiUserId, clientId, binding, false);
+    }
+
+    @Transactional
+    public List<ConsentAccount> getAccounts(String apiUserId, String clientId) {
+        if (apiUserId == null)
+            throw new UnsupportedOperationException("User is not specified");
+        if (clientId == null)
+            throw new UnsupportedOperationException("Client is not specified");
+
+        User user = userService.getUserByApiId(apiUserId);
+        Consent consent = consentService.getActiveConsent(user, clientId, ApiScope.AIS);
+        if (consent == null) {
+            log.info("No active consent exist for user: " + apiUserId + ", client: " + clientId + ", scope: " + ApiScope.AIS);
+            return null;
+        }
+        return consent.getAccounts();
     }
 
     @Transactional

@@ -26,7 +26,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 @Entity
 @Table(name = "address")
-public class Address extends AbstractEntity {
+public final class Address extends AbstractEntity {
 
     @Setter(AccessLevel.PUBLIC)
     @Enumerated(EnumType.STRING)
@@ -108,20 +108,17 @@ public class Address extends AbstractEntity {
         this(null, country, town, null, null, null);
     }
 
-    public AddressLine addLine(@NotNull AddressLine line) {
-        if (line.getAddress() == null) {
-            getAddressLines().add(line);
-            line.setAddress(this);
-        }
-        return line;
+    public AddressLine addLine(String line) {
+        if (Strings.isEmpty(line))
+            return null;
+
+        AddressLine addressLine = new AddressLine(this, line);
+        getAddressLines().add(addressLine);
+        return addressLine;
     }
 
     public boolean removeLine(@NotNull AddressLine line) {
         line.setAddress(null);
         return getAddressLines().remove(line);
-    }
-
-    public AddressLine addLine(String line) {
-        return Strings.isEmpty(line) ? null : addLine(new AddressLine(this, line));
     }
 }

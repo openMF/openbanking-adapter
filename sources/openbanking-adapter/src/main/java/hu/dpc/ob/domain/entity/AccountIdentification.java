@@ -12,8 +12,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.LazyToOne;
-import org.hibernate.annotations.LazyToOneOption;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -31,7 +29,7 @@ import java.util.List;
 @Entity
 @Table(name = "account_identification", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"scheme_code", "identification", "secondary_identification"}, name = "uk_account_identification.id")})
-public class AccountIdentification extends AbstractEntity {
+public final class AccountIdentification extends AbstractEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -54,8 +52,7 @@ public class AccountIdentification extends AbstractEntity {
     private String name; // Name or names of the accountId owner(s) represented at an accountId level, as displayed by the ASPSP's online channels
 
     @Setter(AccessLevel.PUBLIC)
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "account")
-    @LazyToOne(LazyToOneOption.NO_PROXY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "account")
     private TrustedBeneficiary trustedBeneficiary;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "account")

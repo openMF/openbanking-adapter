@@ -11,12 +11,11 @@ import hu.dpc.ob.domain.type.*;
 import hu.dpc.ob.model.PaymentStateMachine;
 import hu.dpc.ob.model.service.SeqNoGenerator;
 import hu.dpc.ob.util.DateUtils;
+import hu.dpc.ob.util.MathUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.LazyToOne;
-import org.hibernate.annotations.LazyToOneOption;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -30,6 +29,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static hu.dpc.ob.domain.type.PaymentActionCode.PAYMENT_CREATE;
+import static hu.dpc.ob.util.MathUtils.MATHCONTEXT;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -42,7 +42,7 @@ import static hu.dpc.ob.domain.type.PaymentActionCode.PAYMENT_CREATE;
         @UniqueConstraint(columnNames = {"end_to_end_id"}, name = "uk_payment.endtoend"),
         @UniqueConstraint(columnNames = {"consent_id"}, name = "uk_payment.consent"),
         @UniqueConstraint(columnNames = {"creditor_address_id"}, name = "uk_payment.address")})
-public class Payment extends AbstractEntity implements Comparable<Payment> {
+public final class Payment extends AbstractEntity implements Comparable<Payment> {
 
     @NotNull
     @OneToOne(fetch= FetchType.EAGER, optional = false)
@@ -79,11 +79,6 @@ public class Payment extends AbstractEntity implements Comparable<Payment> {
     @NotNull
     @Column(name = "currency", length = 3, nullable = false)
     private String currency;
-
-    @Setter(AccessLevel.PUBLIC)
-    @ManyToOne(fetch= FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "debtor_identification_id")
-    private AccountIdentification debtorIdentification;
 
     @Setter(AccessLevel.PUBLIC)
     @NotNull
@@ -126,32 +121,30 @@ public class Payment extends AbstractEntity implements Comparable<Payment> {
     private LocalDateTime performedOn;
 
     @Setter(AccessLevel.PUBLIC)
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
-    @LazyToOne(LazyToOneOption.NO_PROXY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "payment")
     private Remittance remittanceInformation; // Information supplied to enable the matching of an entry with the items that the transfer is intended to settle, such as commercial invoices in an accounts' receivable system
 
     @Setter(AccessLevel.PUBLIC)
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
-    @LazyToOne(LazyToOneOption.NO_PROXY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "payment")
     private PaymentAuthorization authorization; // The authorisation type request from the TPP.
 
     @Setter(AccessLevel.PUBLIC)
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
-    @LazyToOne(LazyToOneOption.NO_PROXY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "payment")
     private ScaSupport scaSupport; // Supporting Data provided by TPP, when requesting SCA Exemption.
 
     @Setter(AccessLevel.PUBLIC)
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
-    @LazyToOne(LazyToOneOption.NO_PROXY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "payment")
     private PaymentRisk risk;
 
     @Setter(AccessLevel.PUBLIC)
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
-    @LazyToOne(LazyToOneOption.NO_PROXY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "payment")
     private InteropPayment interopPayment;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
     private List<Charge> charges = new ArrayList<>(); // Set of elements used to provide details of a charge for the payment initiation.
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
+    private List<PaymentAccountIdentification> debtorIdentifications = new ArrayList<>(); // Used only for debtor identifiers, no need to filter
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
     @OrderBy("seqNo")
@@ -160,12 +153,10 @@ public class Payment extends AbstractEntity implements Comparable<Payment> {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "payment")
     private List<PaymentTransfer> transfers = new ArrayList<>();
 
-    Payment(@NotNull Consent consent, @NotNull String paymentId, @NotEmpty @Size(max = 36) String instructionId,
-            @NotEmpty @Size(max = 36) String endToEndId, String transactionId, LocalInstrumentCode localInstrument, @NotNull BigDecimal amount,
-            @NotNull String currency, AccountIdentification debtorIdentification, @NotNull AccountIdentification creditorIdentification,
-            Address creditorPostalAddress, Remittance remittanceInformation, PaymentAuthorization authorization, ScaSupport scaSupport,
-            PaymentRisk risk, PaymentStatusCode status, @NotNull LocalDateTime createdOn, LocalDateTime updatedOn,
-            LocalDateTime expiresOn, LocalDateTime expectedExecutionOn, LocalDateTime expectedSettlementOn, LocalDateTime performedOn) {
+    Payment(@NotNull Consent consent, @NotNull String paymentId, @NotEmpty @Size(max = 36) String instructionId, @NotEmpty @Size(max = 36) String endToEndId, String transactionId,
+            LocalInstrumentCode localInstrument, @NotNull BigDecimal amount, @NotNull String currency, @NotNull AccountIdentification creditorIdentification, Address creditorPostalAddress,
+            Remittance remittanceInformation, PaymentAuthorization authorization, ScaSupport scaSupport, PaymentRisk risk, PaymentStatusCode status, @NotNull LocalDateTime createdOn,
+            LocalDateTime updatedOn, LocalDateTime expiresOn, LocalDateTime expectedExecutionOn, LocalDateTime expectedSettlementOn, LocalDateTime performedOn) {
         this.consent = consent;
         this.paymentId = paymentId;
         this.instructionId = instructionId;
@@ -174,7 +165,6 @@ public class Payment extends AbstractEntity implements Comparable<Payment> {
         this.localInstrument = localInstrument;
         this.amount = amount;
         this.currency = currency;
-        this.debtorIdentification = debtorIdentification;
         this.creditorIdentification = creditorIdentification;
         this.creditorPostalAddress = creditorPostalAddress;
         this.remittanceInformation = remittanceInformation;
@@ -190,53 +180,41 @@ public class Payment extends AbstractEntity implements Comparable<Payment> {
         this.performedOn = performedOn;
     }
 
-    Payment(@NotNull Consent consent, @NotNull String paymentId, @NotEmpty @Size(max = 36) String instructionId,
-            @NotEmpty @Size(max = 36) String endToEndId, LocalInstrumentCode localInstrument, @NotNull BigDecimal amount,
-            @NotNull String currency, AccountIdentification debtorIdentification, @NotNull AccountIdentification creditorIdentification,
-            Address creditorPostalAddress, Remittance remittanceInformation, PaymentAuthorization authorization, ScaSupport scaSupport,
-            PaymentRisk risk, PaymentStatusCode status, @NotNull LocalDateTime createdOn, LocalDateTime expiresOn,
+    Payment(@NotNull Consent consent, @NotNull String paymentId, @NotEmpty @Size(max = 36) String instructionId, @NotEmpty @Size(max = 36) String endToEndId, LocalInstrumentCode localInstrument,
+            @NotNull BigDecimal amount, @NotNull String currency, @NotNull AccountIdentification creditorIdentification, Address creditorPostalAddress, Remittance remittanceInformation,
+            PaymentAuthorization authorization, ScaSupport scaSupport, PaymentRisk risk, PaymentStatusCode status, @NotNull LocalDateTime createdOn, LocalDateTime expiresOn,
             LocalDateTime expectedExecutionOn, LocalDateTime expectedSettlementOn) {
-        this(consent, paymentId, instructionId, endToEndId, null, localInstrument, amount, currency,
-                debtorIdentification, creditorIdentification, creditorPostalAddress, remittanceInformation, authorization,
-                scaSupport, risk, status, createdOn, null, expiresOn, expectedExecutionOn, expectedSettlementOn, null);
+        this(consent, paymentId, instructionId, endToEndId, null, localInstrument, amount, currency, creditorIdentification, creditorPostalAddress,
+                remittanceInformation, authorization, scaSupport, risk, status, createdOn, null, expiresOn, expectedExecutionOn, expectedSettlementOn,
+                null);
     }
 
-    Payment(@NotNull Consent consent, @NotNull String paymentId, @NotEmpty @Size(max = 36) String instructionId,
-            @NotEmpty @Size(max = 36) String endToEndId, @NotNull BigDecimal amount, @NotNull String currency,
-            AccountIdentification debtorIdentification, @NotNull AccountIdentification creditorIdentification, PaymentAuthorization authorization,
-            ScaSupport scaSupport, PaymentStatusCode status, @NotNull LocalDateTime createdOn) {
-        this(consent, paymentId, instructionId, endToEndId, null, amount, currency, debtorIdentification, creditorIdentification,
-                null, null, authorization, scaSupport, null, status, createdOn, null, null, null);
-    }
-
-    Payment(@NotNull Consent consent, @NotNull String paymentId, @NotEmpty @Size(max = 36) String instructionId,
-            @NotEmpty @Size(max = 36) String endToEndId, @NotNull BigDecimal amount, @NotNull String currency,
-            AccountIdentification debtorIdentification, @NotNull AccountIdentification creditorIdentification, @NotNull PaymentStatusCode status,
+    Payment(@NotNull Consent consent, @NotNull String paymentId, @NotEmpty @Size(max = 36) String instructionId, @NotEmpty @Size(max = 36) String endToEndId, @NotNull BigDecimal amount,
+            @NotNull String currency, @NotNull AccountIdentification creditorIdentification, PaymentAuthorization authorization, ScaSupport scaSupport, PaymentStatusCode status,
             @NotNull LocalDateTime createdOn) {
-        this(consent, paymentId, instructionId, endToEndId, amount, currency, debtorIdentification, creditorIdentification,
-                null, null, status, createdOn);
+        this(consent, paymentId, instructionId, endToEndId, null, amount, currency, creditorIdentification, null, null, authorization, scaSupport, null, status,
+                createdOn, null, null, null);
+    }
+
+    Payment(@NotNull Consent consent, @NotNull String paymentId, @NotEmpty @Size(max = 36) String instructionId, @NotEmpty @Size(max = 36) String endToEndId, @NotNull BigDecimal amount,
+            @NotNull String currency, @NotNull AccountIdentification creditorIdentification, @NotNull PaymentStatusCode status, @NotNull LocalDateTime createdOn) {
+        this(consent, paymentId, instructionId, endToEndId, amount, currency, creditorIdentification, null, null, status, createdOn);
     }
 
     @NotNull
-    public static Payment create(@NotNull Consent consent, @NotEmpty @Size(max = 36) String instructionIdentification,
-                                 @NotEmpty @Size(max = 36) String endToEndIdentification, @NotNull BigDecimal amount,
-                                 @NotNull String currency, AccountIdentification debtorAccount, @NotNull AccountIdentification creditorAccount,
-                                 @NotNull SeqNoGenerator seqNoGenerator) {
-        @NotNull Payment payment = new Payment(consent, UUID.randomUUID().toString(), instructionIdentification, endToEndIdentification,
-                amount, currency, debtorAccount, creditorAccount, null, DateUtils.getLocalDateTimeOfTenant());
-        payment.action(PaymentActionCode.PAYMENT_CREATE, EventStatusCode.ACCEPTED, consent.getLastEvent(ConsentActionCode.CREATE),
-                null, null, seqNoGenerator);
+    public static Payment create(@NotNull Consent consent, @NotEmpty @Size(max = 36) String instructionIdentification, @NotEmpty @Size(max = 36) String endToEndIdentification,
+                                 @NotNull BigDecimal amount, @NotNull String currency, @NotNull AccountIdentification creditorAccount, @NotNull SeqNoGenerator seqNoGenerator) {
+        @NotNull Payment payment = new Payment(consent, UUID.randomUUID().toString(), instructionIdentification, endToEndIdentification, amount, currency, creditorAccount,
+                null, DateUtils.getLocalDateTimeOfTenant());
+        payment.action(PaymentActionCode.PAYMENT_CREATE, EventStatusCode.ACCEPTED, consent.getLastEvent(ConsentActionCode.CREATE), null, null, seqNoGenerator);
         return payment;
     }
 
     @NotNull
-    public static Payment create(@NotNull Consent consent, @NotEmpty @Size(max = 36) String instructionIdentification,
-                                 @NotEmpty @Size(max = 36) String endToEndIdentification, LocalInstrumentCode localInstrument,
-                                 @NotNull BigDecimal amount, @NotNull String currency, AccountIdentification debtorAccount,
-                                 @NotNull AccountIdentification creditorAccount, Address creditorPostalAddress,
-                                 @NotNull SeqNoGenerator seqNoGenerator) {
-        @NotNull Payment payment = create(consent, instructionIdentification, endToEndIdentification, amount, currency,
-                debtorAccount, creditorAccount, seqNoGenerator);
+    public static Payment create(@NotNull Consent consent, @NotEmpty @Size(max = 36) String instructionIdentification, @NotEmpty @Size(max = 36) String endToEndIdentification,
+                                 LocalInstrumentCode localInstrument, @NotNull BigDecimal amount, @NotNull String currency, @NotNull AccountIdentification creditorAccount,
+                                 Address creditorPostalAddress, @NotNull SeqNoGenerator seqNoGenerator) {
+        @NotNull Payment payment = create(consent, instructionIdentification, endToEndIdentification, amount, currency, creditorAccount, seqNoGenerator);
         payment.setLocalInstrument(localInstrument);
         payment.setCreditorPostalAddress(creditorPostalAddress);
         return payment;
@@ -313,11 +291,8 @@ public class Payment extends AbstractEntity implements Comparable<Payment> {
     }
 
     private boolean addEvent(@NotNull PaymentEvent event, @NotNull SeqNoGenerator seqNoGenerator) {
-        boolean added = true;
-        if (event.getPayment() == null) {
-            added = getEvents().add(event);
-            event.setPayment(this);
-        }
+        boolean added = getEvents().add(event);
+        event.setPayment(this);
         if (added) {
             if (getAuthorization() != null)
                 authorization.paymentEventAdded(event);
@@ -357,28 +332,19 @@ public class Payment extends AbstractEntity implements Comparable<Payment> {
         return false;
     }
 
-    public boolean addCharge(Charge charge) {
-        if (charge == null)
-            return false;
-
-        boolean added = true;
-        if (charge.getPayment() == null) {
-            added = getCharges().add(charge);
-            charge.setPayment(this);
-        }
+    public boolean addCharge(@NotNull Charge charge) {
+        boolean added = getCharges().add(charge);
+        charge.setPayment(this);
         return added;
     }
 
-    public boolean addTransfer(PaymentTransfer transfer) {
-        if (transfer == null)
-            return false;
+    public PaymentTransfer addTransfer(String transferId) {
+        if (transferId == null)
+            return null;
 
-        boolean added = true;
-        if (transfer.getPayment() == null) {
-            added = getTransfers().add(transfer);
-            transfer.setPayment(this);
-        }
-        return added;
+        PaymentTransfer transfer = new PaymentTransfer(this, transferId);
+        getTransfers().add(transfer);
+        return transfer;
     }
 
     public PaymentTransfer getTransfer(String transferId) {
@@ -392,9 +358,74 @@ public class Payment extends AbstractEntity implements Comparable<Payment> {
         return null;
     }
 
+    public AccountIdentification getOrigDebtorIdentification() {
+        for (PaymentAccountIdentification accountIdentification : getDebtorIdentifications()) {
+            if (accountIdentification.isOrig())
+                return accountIdentification.getAccountIdentification();
+        }
+        return null;
+    }
+
+    public PaymentAccountIdentification getPaymentIdentification(IdentificationCode code) {
+        if (code == null)
+            return null;
+        for (PaymentAccountIdentification accountIdentification : getDebtorIdentifications()) {
+            @NotNull AccountIdentification identification = accountIdentification.getAccountIdentification();
+            if (identification.getScheme() == code)
+                return accountIdentification;
+        }
+        return null;
+    }
+
+    public AccountIdentification getDebtorIdentification(IdentificationCode code) {
+        PaymentAccountIdentification paymentIdentification = getPaymentIdentification(code);
+        return paymentIdentification == null ? null : paymentIdentification.getAccountIdentification();
+    }
+
+    public String getDebtorIdentificationValue(IdentificationCode code) {
+        AccountIdentification debtorIdentification = getDebtorIdentification(code);
+        return debtorIdentification == null ? null : debtorIdentification.getIdentification();
+    }
+
+    public AccountIdentification getDebtorIdentification(InteropIdentifierType identifierType) {
+        return getDebtorIdentification(IdentificationCode.forInteropIdType(identifierType));
+    }
+
+    public String getDebtorIdentificationValue(InteropIdentifierType identifierType) {
+        AccountIdentification debtorIdentification = getDebtorIdentification(identifierType);
+        return debtorIdentification == null ? null : debtorIdentification.getIdentification();
+    }
+
     public String getDebtorAccountId() {
-        List<ConsentAccount> accounts = getConsent().getAccounts();
-        return accounts.isEmpty() ? null : accounts.get(0).getAccountId();
+        return getDebtorIdentificationValue(InteropIdentifierType.ACCOUNT_ID);
+    }
+
+    public boolean removeDebtorIdentification(AccountIdentification identification) {
+        if (identification == null)
+            return false;
+
+        PaymentAccountIdentification paymentIdentification = getPaymentIdentification(identification.getScheme());
+        if (paymentIdentification == null)
+            return false;
+        paymentIdentification.setPayment(null);
+        return debtorIdentifications.remove(paymentIdentification);
+    }
+
+    public PaymentAccountIdentification addDebtorIdentification(AccountIdentification identification, boolean orig) {
+        if (identification == null)
+            return null;
+
+        PaymentAccountIdentification pai = new PaymentAccountIdentification(this, identification, true, orig);
+        getDebtorIdentifications().add(pai);
+        return pai;
+    }
+
+    public BigDecimal getRequiredAmount() {
+        @NotNull BigDecimal amount = getAmount();
+        for (Charge charge : getCharges()) {
+            amount = MathUtils.add(amount, charge.getAmount(), MATHCONTEXT);
+        }
+        return amount;
     }
 
     @Override

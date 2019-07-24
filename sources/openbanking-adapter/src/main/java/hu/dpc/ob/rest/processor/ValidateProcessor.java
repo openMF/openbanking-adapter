@@ -55,17 +55,6 @@ public class ValidateProcessor implements Processor {
         return ContextUtils.getPathParam(exchange, ContextUtils.PARAM_ACCOUNT_ID);
     }
 
-    protected String getResourceId(Exchange exchange) {
-        String resourceId = getPaymentId(exchange);
-        if (resourceId == null)
-            resourceId = getPartyId(exchange);
-        if (resourceId == null)
-            resourceId = getConsentId(exchange);
-        if (resourceId == null)
-            resourceId = getAccountId(exchange);
-        return resourceId;
-    }
-
     @Override
     @Transactional
     public void process(Exchange exchange) throws Exception {
@@ -79,27 +68,45 @@ public class ValidateProcessor implements Processor {
 
         @NotNull ApiScope scope = binding.getScope();
 
+        String resourceId = null;
+        String accountId = getAccountId(exchange);
+
         String consentId = getConsentId(exchange);
         if (consentId != null) {
+            resourceId = consentId;
             @NotNull Consent consent = consentService.getConsentById(consentId);
             checkConsent(apiUserId, clientId, scope, consent);
         }
 
         String paymentId = getPaymentId(exchange);
         if (paymentId != null) {
+            resourceId = paymentId;
             @NotNull Payment payment = paymentService.getPaymentByPaymentId(paymentId);
             @NotNull Consent consent = payment.getConsent();
             checkConsent(apiUserId, clientId, scope, consent);
+
+            String debtorAccountId = payment.getDebtorAccountId();
+            if (debtorAccountId != null)
+                accountId = debtorAccountId;
         }
 
         String clientPaymentId = getClientPaymentId(exchange);
         if (clientPaymentId != null) {
             @NotNull Payment payment = paymentService.getPaymentByEndToEndId(clientPaymentId);
+            resourceId = payment.getPaymentId();
             @NotNull Consent consent = payment.getConsent();
             checkConsent(apiUserId, clientId, scope, consent);
-        }
 
-        EventReasonCode reasonCode = apiService.validateAndRegisterAction(apiUserId, clientId, binding, getAccountId(exchange), getResourceId(exchange));
+            String debtorAccountId = payment.getDebtorAccountId();
+            if (debtorAccountId != null)
+                accountId = debtorAccountId;
+        }
+        if (resourceId == null)
+            resourceId = getPartyId(exchange);
+        if (resourceId == null)
+            resourceId = accountId;
+
+        EventReasonCode reasonCode = apiService.validateAndRegisterAction(apiUserId, clientId, binding, consentId, accountId, resourceId);
         if (reasonCode != null )
             throw new UnsupportedOperationException(reasonCode.getDisplayText() + " for " + binding);
     }

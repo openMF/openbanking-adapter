@@ -24,7 +24,7 @@ import java.math.BigDecimal;
 @SuppressWarnings("unused")
 @Entity
 @Table(name = "charge")
-public class Charge extends AbstractEntity {
+public final class Charge extends AbstractEntity {
 
     @NotNull
     @ManyToOne(fetch= FetchType.LAZY, optional = false)

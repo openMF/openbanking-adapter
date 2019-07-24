@@ -23,7 +23,7 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "remittance", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"payment_id"}, name = "uk_remittance.payment")})
-public class Remittance extends AbstractEntity {
+public final class Remittance extends AbstractEntity {
 
     @NotNull
     @OneToOne(fetch = FetchType.LAZY, optional = false)

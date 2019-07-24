@@ -9,8 +9,11 @@ package hu.dpc.ob.util;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 
 public class MathUtils {
+
+    public final static MathContext MATHCONTEXT  = new MathContext(23, RoundingMode.HALF_EVEN);
 
     public static Long nullToZero(Long value) {
         return nullToDefault(value, 0L);

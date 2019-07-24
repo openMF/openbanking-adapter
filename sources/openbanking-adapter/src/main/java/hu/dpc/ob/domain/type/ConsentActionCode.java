@@ -49,6 +49,7 @@ public enum ConsentActionCode implements PersistentType<ConsentActionCode, Strin
     // --- Query actions ---
     QUERY_ACCOUNT("QueryAccount"),
     QUERY_BALANCE("QueryBalance"),
+    QUERY_TRANSACTION("QueryTransaction"),
     QUERY_PARTY("QueryParty"),
     QUERY_CONSENT("QueryConsent"),
     QUERY_PAYMENT("QueryPayment"),

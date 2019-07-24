@@ -9,11 +9,13 @@ package hu.dpc.ob.rest.dto.psp;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import hu.dpc.ob.config.PspSettings;
 import hu.dpc.ob.domain.entity.InteropExtension;
 import hu.dpc.ob.domain.entity.InteropPayment;
 import hu.dpc.ob.domain.entity.Payment;
 import hu.dpc.ob.domain.entity.PaymentRisk;
 import hu.dpc.ob.domain.type.InteropAmountType;
+import hu.dpc.ob.domain.type.InteropIdentifierType;
 import hu.dpc.ob.rest.dto.ob.api.AmountData;
 import hu.dpc.ob.rest.dto.ob.api.ExtensionData;
 import hu.dpc.ob.rest.dto.ob.api.GeoCodeData;
@@ -112,7 +114,8 @@ public class PspTransactionCreateRequestDto {
         List<InteropExtension> extensions = interopPayment.getExtensions();
         List<ExtensionData> extensionList = extensions.isEmpty() ? null : extensions.stream().map(ExtensionData::create).collect(Collectors.toList());
 
-        InteropPartyData debtor = InteropPartyData.create(payment.getDebtorIdentification(), null);
+        InteropIdentifierType requestIdentifier = PspSettings.getRequestAccountIdentifier();
+        InteropPartyData debtor = InteropPartyData.create(payment.getDebtorIdentification(requestIdentifier == null ? InteropIdentifierType.ACCOUNT_ID : requestIdentifier), null);
 
         PaymentRisk risk = payment.getRisk();
         String merchantClassificationCode = risk == null ? null : risk.getMerchantCustomerIdentification();

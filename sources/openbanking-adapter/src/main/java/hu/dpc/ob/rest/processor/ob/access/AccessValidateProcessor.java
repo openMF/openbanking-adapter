@@ -15,6 +15,8 @@ import org.apache.camel.Exchange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
+
 
 @Component("access-ob-validate-processor")
 public class AccessValidateProcessor extends ObValidateProcessor {
@@ -25,6 +27,7 @@ public class AccessValidateProcessor extends ObValidateProcessor {
     }
 
     @Override
+    @Transactional
     public void process(Exchange exchange) throws Exception {
         super.process(exchange);
     }

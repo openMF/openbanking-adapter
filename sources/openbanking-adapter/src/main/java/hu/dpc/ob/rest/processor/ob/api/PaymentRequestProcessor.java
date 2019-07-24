@@ -22,14 +22,14 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
 
-@Component("api-ob-pis-client-payment-processor")
-public class PisClientPaymentRequestProcessor extends ApiRequestProcessor {
+@Component("api-ob-pis-payment-processor")
+public class PaymentRequestProcessor extends ApiRequestProcessor {
 
     private final PspRestClient pspRestClient;
     private final PaymentService paymentService;
 
     @Autowired
-    public PisClientPaymentRequestProcessor(PspRestClient pspRestClient, PaymentService paymentService) {
+    public PaymentRequestProcessor(PspRestClient pspRestClient, PaymentService paymentService) {
         this.pspRestClient = pspRestClient;
         this.paymentService = paymentService;
     }
@@ -40,8 +40,8 @@ public class PisClientPaymentRequestProcessor extends ApiRequestProcessor {
     public void process(Exchange exchange) throws Exception {
         super.process(exchange);
 
-        String clientPaymentId = ContextUtils.getPathParam(exchange, ContextUtils.PARAM_CLIENT_PAYMENT_ID);
-        @NotNull Payment payment = paymentService.getPaymentByEndToEndId(clientPaymentId);
+        String paymentId = ContextUtils.getPathParam(exchange, ContextUtils.PARAM_PAYMENT_ID);
+        @NotNull Payment payment = paymentService.getPaymentByPaymentId(paymentId);
 
         PspId pspId = exchange.getProperty(ExchangeHeader.PSP_ID.getKey(), PspId.class);
         paymentService.updateTransferState(pspRestClient, payment, pspId);

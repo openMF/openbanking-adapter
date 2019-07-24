@@ -35,7 +35,7 @@ public class ContextUtils {
 
     public static final String PARAM_PARTY_ID = "partyId";
     public static final String PARAM_CONSENT_ID = "consentId";
-    public static final String PARAM_ACCOUNT_ID = "resourceId";
+    public static final String PARAM_ACCOUNT_ID = "accountId";
     public static final String PARAM_PAYMENT_ID = "paymentId";
     public static final String PARAM_CLIENT_PAYMENT_ID = "clientPaymentId";
 

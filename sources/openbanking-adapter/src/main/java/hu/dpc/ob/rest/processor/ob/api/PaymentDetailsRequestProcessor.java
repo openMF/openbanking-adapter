@@ -12,7 +12,7 @@ import hu.dpc.ob.model.internal.PspId;
 import hu.dpc.ob.model.service.PaymentService;
 import hu.dpc.ob.rest.ExchangeHeader;
 import hu.dpc.ob.rest.component.PspRestClient;
-import hu.dpc.ob.rest.dto.ob.api.PaymentResponseDto;
+import hu.dpc.ob.rest.dto.ob.api.PaymentDetailsResponseDto;
 import hu.dpc.ob.util.ContextUtils;
 import org.apache.camel.Exchange;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +22,14 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
 
-@Component("api-ob-pis-payment-processor")
-public class PisPaymentRequestProcessor extends ApiRequestProcessor {
+@Component("api-ob-pis-payment-details-processor")
+public class PaymentDetailsRequestProcessor extends ApiRequestProcessor {
 
     private final PspRestClient pspRestClient;
     private final PaymentService paymentService;
 
     @Autowired
-    public PisPaymentRequestProcessor(PspRestClient pspRestClient, PaymentService paymentService) {
+    public PaymentDetailsRequestProcessor(PspRestClient pspRestClient, PaymentService paymentService) {
         this.pspRestClient = pspRestClient;
         this.paymentService = paymentService;
     }
@@ -46,7 +46,7 @@ public class PisPaymentRequestProcessor extends ApiRequestProcessor {
         PspId pspId = exchange.getProperty(ExchangeHeader.PSP_ID.getKey(), PspId.class);
         paymentService.updateTransferState(pspRestClient, payment, pspId);
 
-        PaymentResponseDto response = PaymentResponseDto.create(payment);
+        PaymentDetailsResponseDto response = PaymentDetailsResponseDto.create(payment);
         exchange.getIn().setBody(response);
     }
 }

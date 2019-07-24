@@ -9,6 +9,7 @@ package hu.dpc.ob.rest.dto.ob.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import hu.dpc.ob.domain.entity.*;
+import hu.dpc.ob.domain.type.InteropIdentifierType;
 import hu.dpc.ob.domain.type.LocalInstrumentCode;
 import hu.dpc.ob.model.service.SeqNoGenerator;
 import lombok.AccessLevel;
@@ -88,13 +89,13 @@ public class PisInitiationData {
 
     @NotNull
     public static PisInitiationData create(@NotNull Payment payment) {
-        AccountIdentificationData deptor = AccountIdentificationData.create(payment.getDebtorIdentification());
+        AccountIdentificationData debtor = AccountIdentificationData.create(payment.getDebtorIdentification(InteropIdentifierType.ACCOUNT_ID));
         AccountIdentificationData creditor = AccountIdentificationData.create(payment.getCreditorIdentification());
         PostalAddressData postalAddress = PostalAddressData.create(payment.getCreditorPostalAddress());
         RemittanceData remittanceData = RemittanceData.create(payment.getRemittanceInformation());
         @NotNull SupplementaryData supplementaryData = SupplementaryData.create(payment.getInteropPayment());
         return new PisInitiationData(payment.getInstructionId(), payment.getEndToEndId(), payment.getLocalInstrument(),
-                AmountData.create(payment), deptor, creditor, postalAddress, remittanceData, supplementaryData);
+                AmountData.create(payment), debtor, creditor, postalAddress, remittanceData, supplementaryData);
     }
 
     public Payment mapToEntity(@NotNull Consent consent, @NotNull SeqNoGenerator seqNoGenerator) {
@@ -104,7 +105,9 @@ public class PisInitiationData {
         Address creditorAddress = creditorPostalAddress == null ? null : creditorPostalAddress.mapToEntity();
 
         Payment payment = Payment.create(consent, instructionIdentification, endToEndIdentification, localInstrument,
-                instructedAmount.getAmount(), instructedAmount.getCurrency(), debtor, creditor, creditorAddress, seqNoGenerator);
+                instructedAmount.getAmount(), instructedAmount.getCurrency(), creditor, creditorAddress, seqNoGenerator);
+
+        payment.addDebtorIdentification(debtor, true);
 
         Remittance remittance = getRemittanceInformation() == null ? null : remittanceInformation.mapToEntity(payment);
         payment.setRemittanceInformation(remittance);
@@ -126,7 +129,7 @@ public class PisInitiationData {
         if (failureReason != null)
             return failureReason;
         if (debtorAccount != null) {
-            failureReason = debtorAccount.updateEntity(payment.getDebtorIdentification());
+            failureReason = debtorAccount.updateEntity(payment.getDebtorIdentification(debtorAccount.getSchemeName()));
             if (failureReason != null)
                 return failureReason;
         }

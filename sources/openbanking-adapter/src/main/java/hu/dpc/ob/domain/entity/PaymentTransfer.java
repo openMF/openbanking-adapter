@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "payment_transfer", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"transfer_id"}, name = "uk_payment_transfer.transfer")})
-public class PaymentTransfer extends AbstractEntity {
+public final class PaymentTransfer extends AbstractEntity {
 
     @NotNull
     @ManyToOne(fetch= FetchType.LAZY, optional = false)
@@ -83,7 +83,7 @@ public class PaymentTransfer extends AbstractEntity {
         this.performedOn = performedOn;
     }
 
-    public PaymentTransfer(@NotNull Payment payment, @NotNull String transferId) {
+    PaymentTransfer(@NotNull Payment payment, @NotNull String transferId) {
         this(payment, transferId, payment.getStatus(), null, null, null, null, null, null);
     }
 

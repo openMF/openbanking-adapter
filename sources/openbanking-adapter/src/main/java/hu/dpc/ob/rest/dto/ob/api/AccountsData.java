@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -37,6 +38,12 @@ public class AccountsData {
         AccountData transform = AccountData.transform(pspAccount, detail);
         accounts.add(transform);
         return new AccountsData(accounts);
+    }
+
+    @NotNull
+    public static AccountsData transform(@NotNull List<PspAccountResponseDto> accounts, boolean detail) {
+        List<AccountData> list = accounts.stream().map(a -> AccountData.transform(a, detail)).collect(Collectors.toList());
+        return new AccountsData(list);
     }
 
     @NotNull
@@ -79,11 +86,6 @@ public class AccountsData {
             }
         }
         return new AccountsData(accounts);
-    }
-
-    @NotNull
-    public static AccountsData transform(@NotNull PspAccountsResponseDto pspAccounts, Map<String, PspIdentifiersResponseDto> idMap, boolean detail) {
-        return transform(pspAccounts, idMap, detail, null);
     }
 
     @NotNull

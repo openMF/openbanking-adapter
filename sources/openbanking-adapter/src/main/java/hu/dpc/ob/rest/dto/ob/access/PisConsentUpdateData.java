@@ -47,14 +47,16 @@ public class PisConsentUpdateData extends ConsentUpdateData {
 
     public String updateEntity(@NotNull Consent consent) {
         Payment payment = consent.getPayment();
-        if (payment.getDebtorIdentification() == null) {
+        if (payment.getDebtorAccountId() == null) {
             if (debtorAccount == null)
                 return "Debtor account must be specified for consent " + getConsentId();
-
             AccountIdentification deptorIdentification = debtorAccount.mapToEntity();
-            payment.setDebtorIdentification(deptorIdentification);
+            payment.addDebtorIdentification(deptorIdentification, true);
         }
-
-        return null;
+        String failureReason = null;
+        if (debtorAccount != null) {
+            failureReason = debtorAccount.updateEntity(payment.getDebtorIdentification(debtorAccount.getSchemeName()));
+        }
+        return failureReason;
     }
 }

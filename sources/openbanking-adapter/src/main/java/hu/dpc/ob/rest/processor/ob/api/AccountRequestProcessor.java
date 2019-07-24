@@ -35,18 +35,17 @@ public class AccountRequestProcessor extends ApiRequestProcessor {
     public void process(Exchange exchange) throws Exception {
         super.process(exchange);
 
-        String pspUserId = exchange.getProperty(ExchangeHeader.PSP_USER_ID.getKey(), String.class);
-        PspId pspId = exchange.getProperty(ExchangeHeader.PSP_ID.getKey(), PspId.class);
         String accountId = ContextUtils.getPathParam(exchange, ContextUtils.PARAM_ACCOUNT_ID);
+        PspId pspId = exchange.getProperty(ExchangeHeader.PSP_ID.getKey(), PspId.class);
 
-        PspAccountResponseDto response = pspRestClient.callAccount(accountId, pspId);
+        PspAccountResponseDto accountResponse = pspRestClient.callAccount(accountId, pspId);
 
         String apiUserId = exchange.getProperty(ExchangeHeader.API_USER_ID.getKey(), String.class);
         String clientId = exchange.getProperty(ExchangeHeader.CLIENT_ID.getKey(), String.class);
 
-        boolean detail = apiService.hasPermission(apiUserId, clientId, ApiSettings.ApiBinding.ACCOUNTS, true);
+        boolean detail = apiService.hasPermission(apiUserId, clientId, ApiSettings.ApiBinding.ACCOUNT, true);
 
-        AccountsResponseDto transform = AccountsResponseDto.transform(response, detail);
-        exchange.getIn().setBody(transform);
+        AccountsResponseDto response = AccountsResponseDto.transform(accountResponse, detail);
+        exchange.getIn().setBody(response);
     }
 }

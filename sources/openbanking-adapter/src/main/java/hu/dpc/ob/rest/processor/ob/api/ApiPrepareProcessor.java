@@ -24,6 +24,8 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
+
 
 @Component("api-ob-prepare-processor")
 public class ApiPrepareProcessor extends ObPrepareProcessor {
@@ -42,6 +44,7 @@ public class ApiPrepareProcessor extends ObPrepareProcessor {
     }
 
     @Override
+    @Transactional
     public void process(Exchange exchange) throws Exception {
         super.process(exchange);
 

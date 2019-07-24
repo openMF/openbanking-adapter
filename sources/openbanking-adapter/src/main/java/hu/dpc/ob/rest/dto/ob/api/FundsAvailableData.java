@@ -17,27 +17,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.Digits;
-import java.math.BigDecimal;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CreditorTrustedData {
+@SuppressWarnings("unused")
+public class FundsAvailableData {
 
-
-    @JsonProperty(value = "Limit")
-    @Digits(integer = 18, fraction = 5) // OB: (18,5), interoperation: (22,4), CN: (15,5), 1.2: (19,6)! -> we support (23,5)
-    private BigDecimal limit;
-
-    @JsonProperty(value = "ExpirationDateTime")
+    @JsonProperty(value = "FundsAvailableDateTime", required = true)
     @JsonSerialize(using = LocalFormatDateTimeSerializer.class)
     @JsonDeserialize(using = LocalFormatDateTimeDeserializer.class)
-    private LocalDateTime expirationDateTime;
+    @NotNull
+    private LocalDateTime fundsDateTime;
 
-    public CreditorTrustedData(@Digits(integer = 23, fraction = 5) BigDecimal limit, LocalDateTime expirationDateTime) {
-        this.limit = limit;
-        this.expirationDateTime = expirationDateTime;
+    @JsonProperty(value = "FundsAvailable")
+    private boolean fundsAvailable;
+
+    public FundsAvailableData(@NotNull LocalDateTime fundsDateTime, boolean fundsAvailable) {
+        this.fundsDateTime = fundsDateTime;
+        this.fundsAvailable = fundsAvailable;
+    }
+
+    @NotNull
+    static FundsAvailableData create(@NotNull LocalDateTime fundsDateTime, boolean fundsAvailable) {
+        return new FundsAvailableData(fundsDateTime, fundsAvailable);
     }
 }

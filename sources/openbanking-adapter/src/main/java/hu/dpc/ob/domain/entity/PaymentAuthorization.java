@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "payment_authorization", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"payment_id"}, name = "uk_payment_authorization.payment")})
-public class PaymentAuthorization extends AbstractEntity {
+public final class PaymentAuthorization extends AbstractEntity {
 
     @NotNull
     @OneToOne(fetch= FetchType.LAZY, optional = false)

@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "trusted_beneficiary", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"account_identification_id"}, name = "uk_trusted_beneficiary.account")})
-public class TrustedBeneficiary extends AbstractEntity {
+public final class TrustedBeneficiary extends AbstractEntity {
 
     @NotNull
     @OneToOne(fetch= FetchType.LAZY, optional = false)

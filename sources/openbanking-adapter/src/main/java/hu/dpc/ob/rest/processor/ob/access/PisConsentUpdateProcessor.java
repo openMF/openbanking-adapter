@@ -48,7 +48,7 @@ public class PisConsentUpdateProcessor extends AccessRequestProcessor {
         String consentId = ContextUtils.getPathParam(exchange, ContextUtils.PARAM_CONSENT_ID);
         @NotNull Consent consent = consentService.getConsentById(consentId);
         Payment payment = consent.getPayment();
-        boolean init = payment.getDebtorIdentification() == null;
+        boolean init = payment.getDebtorAccountId() == null;
 
         PisConsentUpdateRequestDto request = exchange.getProperty(ExchangeHeader.REQUEST_DTO.getKey(), PisConsentUpdateRequestDto.class);
         String failedReason = request.updateEntity(consent);

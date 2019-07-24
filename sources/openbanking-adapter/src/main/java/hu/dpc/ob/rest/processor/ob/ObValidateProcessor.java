@@ -14,7 +14,7 @@ import hu.dpc.ob.rest.processor.ValidateProcessor;
 import org.apache.camel.Exchange;
 
 
-public class ObValidateProcessor extends ValidateProcessor {
+public abstract class ObValidateProcessor extends ValidateProcessor {
 
     public ObValidateProcessor(ApiService apiService, ConsentService consentService, PaymentService paymentService) {
         super(apiService, consentService, paymentService);

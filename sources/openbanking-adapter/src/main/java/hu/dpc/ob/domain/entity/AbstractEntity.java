@@ -17,6 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import java.util.Objects;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -32,5 +33,23 @@ public abstract class AbstractEntity implements Persistable<Long> {
     @Override
     public boolean isNew() {
         return id == null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractEntity that = (AbstractEntity) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id == null ? super.hashCode() : id.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + (id == null ? Integer.toHexString(hashCode()) : id) + ')';
     }
 }

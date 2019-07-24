@@ -15,8 +15,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.LazyToOne;
-import org.hibernate.annotations.LazyToOneOption;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -33,7 +31,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "consent", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"consent_id"}, name = "uk_consent.consent")})
-public class Consent extends AbstractEntity implements Comparable<Consent> {
+public final class Consent extends AbstractEntity implements Comparable<Consent> {
 
     @NotNull
     @Column(name = "consent_id", nullable = false, length = 128)
@@ -79,8 +77,7 @@ public class Consent extends AbstractEntity implements Comparable<Consent> {
     private LocalDateTime transactionTo;
 
     @Setter(AccessLevel.PUBLIC)
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "consent")
-    @LazyToOne(LazyToOneOption.NO_PROXY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "consent")
     private Payment payment;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "consent")
@@ -195,11 +192,8 @@ public class Consent extends AbstractEntity implements Comparable<Consent> {
     }
 
     private boolean addEvent(@NotNull ConsentEvent event, @NotNull SeqNoGenerator seqNoGenerator) {
-        boolean added = true;
-        if (event.getConsent() == null) {
-            added = getEvents().add(event);
-            event.setConsent(this);
-        }
+        boolean added = getEvents().add(event);
+        event.setConsent(this);
         if (added && getPayment() != null) {
             payment.consentEventAdded(event, seqNoGenerator);
         }
@@ -251,9 +245,8 @@ public class Consent extends AbstractEntity implements Comparable<Consent> {
     }
 
     public ConsentPermission addPermission(@NotNull PermissionCode apiPermission, @NotNull ConsentEvent event) {
-        List<ConsentPermission> permissions = getPermissions();
         ConsentPermission permission = new ConsentPermission(this, apiPermission, event);
-        permissions.add(permission);
+        getPermissions().add(permission);
         return permission;
     }
 
@@ -286,9 +279,8 @@ public class Consent extends AbstractEntity implements Comparable<Consent> {
     }
 
     public ConsentAccount addAccount(@NotNull String accountid, @NotNull ConsentEvent event) {
-        List<ConsentAccount> accounts = getAccounts();
         ConsentAccount account = new ConsentAccount(this, accountid, event);
-        accounts.add(account);
+        getAccounts().add(account);
         return account;
     }
 

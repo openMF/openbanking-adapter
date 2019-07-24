@@ -9,7 +9,10 @@ package hu.dpc.ob.model.service;
 
 import hu.dpc.ob.config.AdapterSettings;
 import hu.dpc.ob.domain.entity.*;
-import hu.dpc.ob.domain.repository.*;
+import hu.dpc.ob.domain.repository.AccountIdentificationRepository;
+import hu.dpc.ob.domain.repository.ConsentEventRepository;
+import hu.dpc.ob.domain.repository.ConsentRepository;
+import hu.dpc.ob.domain.repository.PaymentRepository;
 import hu.dpc.ob.domain.type.*;
 import hu.dpc.ob.model.ConsentStateMachine;
 import hu.dpc.ob.rest.dto.ob.access.*;
@@ -49,21 +52,18 @@ public class ConsentService {
 
     private final ConsentRepository consentRepository;
     private final ConsentEventRepository consentEventRepository;
-    private final ConsentAccountRepository consentAccountRepository;
     private final PaymentRepository paymentRepository;
     private final AccountIdentificationRepository accountIdentificationRepository;
 
     private final SeqNoGenerator seqNoGenerator;
 
     @Autowired
-    public ConsentService(AdapterSettings adapterSettings, PaymentService paymentService, ConsentRepository consentRepository,
-                          ConsentEventRepository consentEventRepository, ConsentAccountRepository consentAccountRepository, PaymentRepository paymentRepository,
-                          AccountIdentificationRepository accountIdentificationRepository, SeqNoGenerator seqNoGenerator) {
+    public ConsentService(AdapterSettings adapterSettings, PaymentService paymentService, ConsentRepository consentRepository, ConsentEventRepository consentEventRepository,
+                          PaymentRepository paymentRepository, AccountIdentificationRepository accountIdentificationRepository, SeqNoGenerator seqNoGenerator) {
         this.adapterSettings = adapterSettings;
         this.paymentService = paymentService;
         this.consentRepository = consentRepository;
         this.consentEventRepository = consentEventRepository;
-        this.consentAccountRepository = consentAccountRepository;
         this.paymentRepository = paymentRepository;
         this.accountIdentificationRepository = accountIdentificationRepository;
         this.seqNoGenerator = seqNoGenerator;
@@ -83,7 +83,7 @@ public class ConsentService {
     public Consent getActiveConsent(User user, String clientId, ApiScope scope) {
         List<Consent> consents = user.getConsents();
         for (Consent consent : consents) {
-            if (consent.getClientId().equals(clientId) && consent.getScope() == scope && consent.getStatus().isActive())
+            if (consent.getClientId().equals(clientId) && consent.getScope() == scope && consent.isActive() && !consent.isExpired())
                 return consent;
         }
         return null;
@@ -112,19 +112,22 @@ public class ConsentService {
     Consent createConsent(@NotNull String clientId, @NotNull PisConsentCreateRequestDto request, @NotNull ApiScope scope) {
         @NotNull Consent consent = Consent.create(clientId, scope, seqNoGenerator);
         consentRepository.save(consent);
+
         Payment payment = request.mapToEntity(consent, seqNoGenerator);
 
-        AccountIdentification debtorIdentification = payment.getDebtorIdentification();
-        if (debtorIdentification != null) {
-            AccountIdentification accountIdentification = findPersistedAccountIdentification(debtorIdentification);
-            if (accountIdentification != null)
-                payment.setDebtorIdentification(accountIdentification);
+        AccountIdentification debtorSearch = payment.getOrigDebtorIdentification();
+        if (debtorSearch != null && debtorSearch.isNew()) {
+            AccountIdentification persisted = findPersistedAccountIdentification(debtorSearch);
+            if (persisted != null) {
+                payment.removeDebtorIdentification(debtorSearch);
+                payment.addDebtorIdentification(persisted, true);
+            }
         }
 
-        AccountIdentification creditorIdentification = payment.getCreditorIdentification();
-        AccountIdentification accountIdentification = findPersistedAccountIdentification(creditorIdentification);
-        if (accountIdentification != null) {
-            payment.setCreditorIdentification(accountIdentification);
+        AccountIdentification creditorSearch = payment.getCreditorIdentification();
+        AccountIdentification persisted = findPersistedAccountIdentification(creditorSearch);
+        if (persisted != null) {
+            payment.setCreditorIdentification(persisted);
         }
 
         if (payment.getExpiresOn() == null) {
@@ -161,24 +164,26 @@ public class ConsentService {
 
         ConsentEvent consentEvent;
         if (debtorInit.failedReason != null) {
-            rejectAction(consent, ConsentActionCode.PREPARE, consentId, debtorInit.failedReason);
-            consentEvent = registerAction(consent, ConsentActionCode.REJECT, EventStatusCode.ACCEPTED, consentId, debtorInit.failedReason);
-            paymentService.rejectAction(payment, PaymentActionCode.PAYMENT_REJECT, consentEvent, debtorInit.failedReason);
+            String failedCode = debtorInit.failedReason.getId();
+            String failedMsg = debtorInit.failedMsg == null ? debtorInit.failedReason.getDisplayText() : debtorInit.failedMsg;
+            ConsentEvent prepareEvent = registerAction(consent, ConsentActionCode.PREPARE, EventStatusCode.REJECTED, consentId, null, failedCode, failedMsg);
+            consentEvent = acceptAction(consent, ConsentActionCode.REJECT, consentId, prepareEvent);
+            paymentService.rejectAction(payment, PaymentActionCode.PAYMENT_REJECT, consentEvent, null);
         }
         else {
-            consentEvent = acceptAction(consent, ConsentActionCode.PREPARE, consentId);
+            consentEvent = acceptAction(consent, ConsentActionCode.PREPARE, consentId, null);
             paymentService.acceptAction(payment, PaymentActionCode.PAYMENT_VALIDATE, consentEvent);
 
-            if (debtorInit.accountId != null)
-                consent.addAccount(debtorInit.accountId, consentEvent);
+            initDebtorIdentifiers(payment, debtorInit);
 
-            if (payment.getDebtorAccountId() != null)
+            if (debtorInit.getAccountId() != null)
                 paymentService.acceptAction(payment, PaymentActionCode.DEBTOR_ACCOUNT_RESOLVE, consentEvent);
+
+            paymentService.acceptAction(payment, PaymentActionCode.DEBTOR_FOUNDS_CHECK, consentEvent);
 
             if (debtorInit.charge != null)
                 payment.addCharge(debtorInit.charge);
 
-            paymentService.acceptAction(payment, PaymentActionCode.DEBTOR_FOUNDS_CHECK, consentEvent);
             paymentService.acceptAction(payment, PaymentActionCode.DEBTOR_QUOTES, consentEvent);
 
             EventReasonCode scaReason = paymentService.calcScaReason(user, payment);
@@ -209,6 +214,27 @@ public class ConsentService {
         return consent;
     }
 
+    @Transactional(MANDATORY)
+    void initDebtorIdentifiers(@NotNull Payment payment, AccessRequestProcessor.DebtorInit debtorInit) {
+        if (debtorInit == null || debtorInit.identifierMap == null)
+            return;
+
+        for (InteropIdentifierType type : debtorInit.identifierMap.keySet()) {
+            AccountIdentification debtorIdentification = payment.getDebtorIdentification(type);
+            if (debtorIdentification != null && !debtorIdentification.isNew())
+                continue;
+
+            AccountIdentification search = debtorInit.identifierMap.get(type);
+            AccountIdentification persisted = findPersistedAccountIdentification(search);
+            if (debtorIdentification == null)
+                payment.addDebtorIdentification(persisted == null ? search : persisted, false);
+            else if (persisted != null) {
+                payment.removeDebtorIdentification(debtorIdentification);
+                payment.addDebtorIdentification(persisted, false);
+            }
+        }
+    }
+
     @Transactional
     public void deleteConsent(@NotNull String clientId, @NotNull ApiScope scope, String consentId) {
         @NotNull Consent consent = getConsentById(consentId);
@@ -237,7 +263,6 @@ public class ConsentService {
             return consent;
         }
 
-        consentEventRepository.save(event);
         if (event.isAccepted()) {
             // no need to implement update of already authorized consent - revoke and create new
             for (Consent userConsent : user.getConsents()) {
@@ -312,7 +337,7 @@ public class ConsentService {
         @NotNull Consent consent = getConsentById(consentId);
         @NotNull PaymentEvent event = paymentService.createPayment(consent.getPayment(), request);
         if (!event.isAccepted())
-            registerAction(consent, ConsentActionCode.REJECT, EventStatusCode.ACCEPTED, consentId, event.getReason(), event.getReasonDesc());
+            registerAction(consent, ConsentActionCode.REJECT, EventStatusCode.ACCEPTED, consentId, null, event.getReason(), event.getReasonDesc());
 
         return event;
     }
@@ -451,12 +476,13 @@ public class ConsentService {
         List<ConsentEvent> limitEvents = consent.getEvents(action);
 
         Short maxNo = adapterSettings.getMaxNumber(AdapterSettings.LIMIT_CONSENT);
-        Long expiration = adapterSettings.getExpiration(AdapterSettings.LIMIT_CONSENT);
         if (resourceId != null)
             limitEvents = limitEvents.stream().filter(e -> resourceId.equals(e.getResourceId())).collect(Collectors.toList());
 
         if (maxNo != null && limitEvents.size() >= maxNo)
             return LIMIT_NUMBER;
+
+        Long expiration = adapterSettings.getExpiration(AdapterSettings.LIMIT_CONSENT);
         if (expiration != null && !limitEvents.isEmpty() && DateUtils.isBeforeDateTimeOfTenant(limitEvents.get(0).getCreatedOn().plusSeconds(expiration)))
             return LIMIT_EXPIRATION;
 
@@ -484,32 +510,33 @@ public class ConsentService {
 
         EventReasonCode eventReasonCode = calcConsentRejectReason(RequestSource.ACCESS, scope, consent, action, consentId);
         if (eventReasonCode == null)
-            return registerAction(consent, action, EventStatusCode.ACCEPTED, consentId, request.getReasonCode(), request.getReasonDesc());
+            return registerAction(consent, action, EventStatusCode.ACCEPTED, consentId, null, request.getReasonCode(), request.getReasonDesc());
         else
-            return registerAction(consent, action, EventStatusCode.REJECTED, consentId, eventReasonCode.getId(), request.getReasonDesc());
+            return registerAction(consent, action, EventStatusCode.REJECTED, consentId, null, eventReasonCode.getId(), request.getReasonDesc());
     }
 
     @Transactional(MANDATORY)
     ConsentEvent registerAction(@NotNull Consent consent, @NotNull ConsentActionCode actionCode, @NotNull EventStatusCode status,
-                                String resourceId, String reasonCode, String reasonDesc) {
-        ConsentEvent event = consent.action(actionCode, status, resourceId, reasonCode, reasonDesc, seqNoGenerator);
-        consentRepository.save(consent);
+                                String resourceId, ConsentEvent cause, String reasonCode, String reasonDesc) {
+        ConsentEvent event = consent.action(actionCode, status, resourceId, cause, reasonCode, reasonDesc, seqNoGenerator);
+        consentEventRepository.save(event);
         return event;
     }
 
     @Transactional(MANDATORY)
     ConsentEvent registerAction(@NotNull Consent consent, @NotNull ConsentActionCode actionCode, @NotNull EventStatusCode status,
-                                String resourceId, @NotNull EventReasonCode reasonCode) {
-        return registerAction(consent, actionCode, status, resourceId, reasonCode.getId(), reasonCode.getDisplayText());
+                                String resourceId, ConsentEvent cause, @NotNull EventReasonCode reasonCode) {
+        return registerAction(consent, actionCode, status, resourceId, cause, reasonCode.getId(), reasonCode.getDisplayText());
     }
 
     @Transactional(MANDATORY)
-    ConsentEvent rejectAction(@NotNull Consent consent, @NotNull ConsentActionCode actionCode, String resourceId, @NotNull EventReasonCode reasonCode) {
-        return registerAction(consent, actionCode, EventStatusCode.REJECTED, resourceId, reasonCode.getId(), reasonCode.getDisplayText());
+    ConsentEvent rejectAction(@NotNull Consent consent, @NotNull ConsentActionCode actionCode, String resourceId, ConsentEvent cause,
+                              @NotNull EventReasonCode reasonCode) {
+        return registerAction(consent, actionCode, EventStatusCode.REJECTED, resourceId, cause, reasonCode.getId(), reasonCode.getDisplayText());
     }
 
     @Transactional(MANDATORY)
-    ConsentEvent acceptAction(@NotNull Consent consent, @NotNull ConsentActionCode actionCode, String resourceId) {
-        return registerAction(consent, actionCode, EventStatusCode.ACCEPTED, resourceId, null, null);
+    ConsentEvent acceptAction(@NotNull Consent consent, @NotNull ConsentActionCode actionCode, String resourceId, ConsentEvent cause) {
+        return registerAction(consent, actionCode, EventStatusCode.ACCEPTED, resourceId, cause, null, null);
     }
 }

@@ -10,22 +10,27 @@ package hu.dpc.ob.rest.processor.ob.api;
 import hu.dpc.ob.model.service.ApiService;
 import hu.dpc.ob.model.service.ConsentService;
 import hu.dpc.ob.model.service.PaymentService;
-import hu.dpc.ob.rest.processor.ob.ObValidateProcessor;
+import hu.dpc.ob.rest.ExchangeHeader;
+import hu.dpc.ob.rest.dto.ob.api.PaymentCreateRequestDto;
 import org.apache.camel.Exchange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 
-
-@Component("api-ob-validate-processor")
-public class ApiValidateProcessor extends ObValidateProcessor {
+@Component("api-ob-pis-payment-create-validate-processor")
+public class PaymentCreateValidateProcessor extends ApiValidateProcessor {
 
     @Autowired
-    public ApiValidateProcessor(ApiService apiService, ConsentService consentService, PaymentService paymentService) {
+    public PaymentCreateValidateProcessor(ApiService apiService, ConsentService consentService, PaymentService paymentService) {
         super(apiService, consentService, paymentService);
     }
 
+    @Override
+    protected String getConsentId(Exchange exchange) {
+        PaymentCreateRequestDto request = exchange.getProperty(ExchangeHeader.REQUEST_DTO.getKey(), PaymentCreateRequestDto.class);
+        return request.getData().getConsentId();
+    }
 
     @Override
     @Transactional

@@ -30,7 +30,7 @@ public class AmountData {
 
     @JsonProperty(value = "Amount", required = true)
     @JsonFormat(pattern = "^\\d{1,13}\\.\\d{1,5}$")
-    @Digits(integer = 23, fraction = 5) // OB: (18,5), interoperation: (22,4), CN: (15,5), 1.2: (19,6)! -> we support (23,5)
+    @Digits(integer = 18, fraction = 5) // OB: (18,5), interoperation: (22,4), CN: (15,5), 1.2: (19,6)! -> we support (23,5)
     @NotNull
     private BigDecimal amount;
 

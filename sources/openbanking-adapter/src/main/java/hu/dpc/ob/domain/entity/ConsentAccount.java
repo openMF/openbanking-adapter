@@ -22,7 +22,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "consent_account", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"consent_id", "account_id"}, name = "uk_consent_account.accountId")})
-public class ConsentAccount extends AbstractEntity {
+public final class ConsentAccount extends AbstractEntity {
 
     @NotNull
     @ManyToOne(fetch= FetchType.LAZY, optional = false)

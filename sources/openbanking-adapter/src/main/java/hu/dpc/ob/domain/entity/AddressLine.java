@@ -22,7 +22,7 @@ import javax.validation.constraints.Size;
 @SuppressWarnings("unused")
 @Entity
 @Table(name = "address_line")
-public class AddressLine extends AbstractEntity {
+public final class AddressLine extends AbstractEntity {
 
     @NotNull
     @ManyToOne(fetch= FetchType.LAZY, optional = false)
@@ -35,7 +35,7 @@ public class AddressLine extends AbstractEntity {
     @Column(name = "line", length = 70, nullable = false)
     private String line;
 
-    public AddressLine(@NotNull Address address, @NotNull @Size(max = 70) String line) {
+    AddressLine(@NotNull Address address, @NotNull @Size(max = 70) String line) {
         this.address = address;
         this.line = line;
     }

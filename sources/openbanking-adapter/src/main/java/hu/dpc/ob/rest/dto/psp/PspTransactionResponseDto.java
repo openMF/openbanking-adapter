@@ -59,8 +59,7 @@ public class PspTransactionResponseDto {
     public String updateEntity(@NotNull Payment payment) {
         PaymentTransfer transfer = payment.getTransfer(transferId);
         if (transfer == null && getTransferId() != null) {
-            transfer = new PaymentTransfer(payment, transferId);
-            payment.addTransfer(transfer);
+            payment.addTransfer(transferId);
         }
         if (transfer == null)
             return null;

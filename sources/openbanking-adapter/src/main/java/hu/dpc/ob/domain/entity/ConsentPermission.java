@@ -23,7 +23,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "consent_permission", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"consent_id", "permission_code"}, name = "uk_consent_permission.permission")})
-public class ConsentPermission extends AbstractEntity {
+public final class ConsentPermission extends AbstractEntity {
 
     @NotNull
     @ManyToOne(fetch= FetchType.LAZY, optional = false)
@@ -40,7 +40,7 @@ public class ConsentPermission extends AbstractEntity {
     @JoinColumn(name = "event_id", nullable = false)
     private ConsentEvent event;
 
-    public ConsentPermission(@NotNull Consent consent, @NotNull PermissionCode permission, @NotNull ConsentEvent event) {
+    ConsentPermission(@NotNull Consent consent, @NotNull PermissionCode permission, @NotNull ConsentEvent event) {
         this.consent = consent;
         this.permission = permission;
         this.event = event;

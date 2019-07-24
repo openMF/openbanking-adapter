@@ -19,6 +19,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+      dialect: org.hibernate.dialect.MySQLDialect
+      jdbc:
+        batch_size: 30
+        rewriteBatchedStatements: true
+        cachePrepStmts: true
+        prepStmtCacheSize: 1000
+        prepStmtCacheSqlLimit: 1000
+        useServerPrepStmts: true
+      ejb:
+        use_class_enhancer: true
   liquibase:
     enabled: false
     change-log: classpath:/db/liquibase-changelog.yml
@@ -64,7 +74,7 @@ api-settings:
   cors-enabled: true
   schemas:
   - name: OB
-    permissions: ReadAccountsBasic, ReadAccountsDetail, ReadBalances, ReadParty, ReadPartyPSU
+    permissions: ReadAccountsBasic, ReadAccountsDetail, ReadBalances, ReadTransactionsBasic, ReadTransactionsDetail, ReadTransactionsCredits, ReadTransactionsDebits, ReadParty, ReadPartyPSU
     headers:
     - name: auth-date
       key: x-fapi-auth-date
@@ -103,15 +113,19 @@ api-settings:
     - name: balance #get account balance information
       path: accounts/{accountId}/balances
       method: GET
+    - name: transactions #get transactions of owned accounts
+      path: /accounts/transactions
+      method: GET
+    - name: transaction #get account transaction information
+      path: /accounts/{accountId}/transactions
+      method: GET
     - name: psu-party #get party information on the PSU logged in
       path: party
       method: GET
     - name: account-party #get party information of the account owner
       path: accounts/{accountId}/party
       method: GET
-#    - name: payment #get account payment information
-#      path: accounts/{accountId}/payments
-#      method: GET
+
     - name: pis-consent-create
       path: domestic-payment-consents
       method: POST
@@ -181,6 +195,9 @@ access-settings:
       path: consents/{consentId}
       method: PUT
       body-class: hu.dpc.ob.rest.dto.ob.access.AisConsentUpdateRequestDto
+    - name: pis-consent #get user consent
+      path: pis-consents/{consentId}
+      method: GET
     - name: pis-consent-init #initialize user payment consent
       path: pis-consents/{consentId}
       method: POST
@@ -199,16 +216,16 @@ psp-settings:
   - name: tenant
     key: Fineract-Platform-TenantId
   - name: transaction-tenant
-    key: x-tenant-identifier
+    key: X-Tenant-Identifier
   operations: #adapter -> psp
   - name: operation-basic-settings
     user: mifos
     password: password
     tenants:
     - name: tn01
-      host: http://localhost # http://buffalo.mlabs.dpc.hu
+      host: http://buffalo.mlabs.dpc.hu # http://localhost
     - name: tn02
-      host: http://localhost # http://lion.mlabs.dpc.hu
+      host: http://lion.mlabs.dpc.hu # http://localhost
     port: 80 # 8080
     base: fineract-provider/api/v1
   - name: auth #login
@@ -223,6 +240,9 @@ psp-settings:
     method: GET
   - name: account
     path: interoperation/accounts/{accountId}
+    method: GET
+  - name: account-transactions
+    path: interoperation/accounts/{accountId}/transactions
     method: GET
   - name: identifiers
     path: interoperation/accounts/{accountId}/identifiers

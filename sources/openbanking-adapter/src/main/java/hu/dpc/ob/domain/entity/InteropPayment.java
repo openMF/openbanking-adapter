@@ -28,7 +28,7 @@ import java.util.List;
 @Entity
 @Table(name = "interop_payment", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"payment_id"}, name = "uk_interop_payment.payment")})
-public class InteropPayment extends AbstractEntity {
+public final class InteropPayment extends AbstractEntity {
 
     @NotNull
     @OneToOne(fetch= FetchType.LAZY, optional = false)
@@ -123,9 +123,8 @@ public class InteropPayment extends AbstractEntity {
     }
 
     public boolean addExtension(@NotNull String key, @NotNull String value) {
-        List<InteropExtension> extensions = getExtensions();
         InteropExtension extension = new InteropExtension(this, key, value);
-        extensions.add(extension);
+        getExtensions().add(extension);
         return true;
     }
 

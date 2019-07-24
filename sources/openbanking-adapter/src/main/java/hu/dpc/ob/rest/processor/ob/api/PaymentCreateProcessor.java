@@ -28,12 +28,12 @@ import javax.validation.constraints.NotNull;
 
 
 @Component("api-ob-pis-payment-create-processor")
-public class PisPaymentCreateProcessor extends AccessRequestProcessor {
+public class PaymentCreateProcessor extends AccessRequestProcessor {
 
     private final ApiService apiService;
 
     @Autowired
-    public PisPaymentCreateProcessor(PspRestClient pspRestClient, ApiService apiService) {
+    public PaymentCreateProcessor(PspRestClient pspRestClient, ApiService apiService) {
         super(pspRestClient);
         this.apiService = apiService;
     }

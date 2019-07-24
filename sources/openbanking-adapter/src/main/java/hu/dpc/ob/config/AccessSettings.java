@@ -90,6 +90,7 @@ public class AccessSettings extends SchemaSettings<AccessSettings.AccessHeader, 
         PARTY("consent-party", ApiScope.AIS, ConsentActionCode.QUERY_PARTY, true, "Read PSP user details"),
         AIS_CONSENT("ais-consent", ApiScope.AIS, ConsentActionCode.QUERY_CONSENT, true, "Read user consent resourceId details"),
         AIS_CONSENT_UPDATE("ais-consent-update", ApiScope.AIS, ConsentActionCode.AUTHORIZE, true, "Authorize user consent"),
+        PIS_CONSENT("pis-consent", ApiScope.PIS, ConsentActionCode.QUERY_CONSENT, true, "Read user payment consent"),
         PIS_CONSENT_INIT("pis-consent-init", ApiScope.PIS, ConsentActionCode.PREPARE, true, "Prepare user payment consent"),
         PIS_CONSENT_UPDATE("pis-consent-update", ApiScope.PIS, ConsentActionCode.AUTHORIZE, true, "Authorize user payment consent"),
         ;

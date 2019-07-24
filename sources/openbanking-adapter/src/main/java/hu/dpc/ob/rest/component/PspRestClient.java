@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,6 +78,27 @@ public class PspRestClient {
         return JsonUtils.toPojo(responseJson, PspAccountResponseDto.class); // TODO: response class for CN
     }
 
+    public PspTransactionsResponseDto callTransactions(String accountId, PspId pspId, boolean debit, boolean credit, LocalDateTime fromBookingDateTime, LocalDateTime toBookingDateTime) {
+        OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.ACCOUNT_TRANSACTIONS);
+        @NotNull HttpMethod method = opProps.getHttpMethod();
+        log.debug(String.format("Call PSP " + method + " /" + opProps.getName() + ". account: %s", accountId));
+
+        String tenant = pspId.getTenant();
+        TenantProperties tenantProps = opProps.getTenant(tenant);
+        String url = ContextUtils.resolvePathParams(tenantProps.getUrl(), accountId) + "?debit=" + debit + "&credit=" + credit;
+        if (fromBookingDateTime != null)
+            url += "&fromBookingDateTime=" + fromBookingDateTime;
+        if (toBookingDateTime != null)
+            url += "&toBookingDateTime=" + toBookingDateTime;
+
+        Map<String, String> headers = getHeaders(tenant);
+
+        String responseJson = restClient.call(url, HttpMethod.GET, headers, null);
+
+        log.debug(String.format("Response PSP  " + method + " /" + opProps.getName() + ", account: %s, payload: %s", accountId, responseJson));
+        return JsonUtils.toPojo(responseJson, PspTransactionsResponseDto.class); // TODO: response class for CN
+    }
+
     public PspAccountsResponseDto callAccounts(String pspUserId, PspId pspId) {
         OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.ACCOUNTS);
         @NotNull HttpMethod method = opProps.getHttpMethod();
@@ -94,10 +116,10 @@ public class PspRestClient {
         return JsonUtils.toPojo(responseJson, PspAccountsResponseDto.class); // TODO: response class for CN
     }
 
-    public PspIdentifiersResponseDto callIdentifiers(String pspUserId, String accountId, PspId pspId) {
+    public PspIdentifiersResponseDto callIdentifiers(String accountId, PspId pspId) {
         OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.IDENTIFIERS);
         @NotNull HttpMethod method = opProps.getHttpMethod();
-        log.debug(String.format("Call " + method + " /" + opProps.getName() + ", user: %s, accountId: %s", pspUserId, accountId));
+        log.debug(String.format("Call " + method + " /" + opProps.getName() + ", psp: %s, accountId: %s", pspId, accountId));
 
         String tenant = pspId.getTenant();
         TenantProperties tenantProps = opProps.getTenant(tenant);
@@ -107,7 +129,7 @@ public class PspRestClient {
 
         String responseJson = restClient.call(url, method, headers, null);
 
-        log.debug(String.format("Response PSP " + method + " /" + opProps.getName() + ", user: %s, accountId: %s, payload: %s", pspUserId, accountId, responseJson));
+        log.debug(String.format("Response PSP " + method + " /" + opProps.getName() + ", psp: %s, accountId: %s, payload: %s", pspId, accountId, responseJson));
         return JsonUtils.toPojo(responseJson, PspIdentifiersResponseDto.class);
     }
 

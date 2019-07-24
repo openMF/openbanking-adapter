@@ -25,7 +25,7 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "sca_support", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"payment_id"}, name = "uk_authorization.payment")})
-public class ScaSupport extends AbstractEntity {
+public final class ScaSupport extends AbstractEntity {
 
     @NotNull
     @OneToOne(fetch= FetchType.LAZY, optional = false)

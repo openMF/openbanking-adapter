@@ -8,6 +8,8 @@
 package hu.dpc.ob.rest.dto.psp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import hu.dpc.ob.domain.entity.AccountIdentification;
+import hu.dpc.ob.domain.type.IdentificationCode;
 import hu.dpc.ob.domain.type.InteropIdentifierType;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,4 +36,8 @@ public class PspIdentifierData {
 
     @Size(max = 128)
     private String subIdOrType;
+
+    AccountIdentification mapToEntity() {
+        return new AccountIdentification(IdentificationCode.forInteropIdType(idType), idValue, subIdOrType, null);
+    }
 }

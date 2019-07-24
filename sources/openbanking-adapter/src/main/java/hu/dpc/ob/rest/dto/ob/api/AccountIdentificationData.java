@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Getter
@@ -69,11 +70,14 @@ public class AccountIdentificationData {
                 identification.getSecondaryIdentification(), identification.getName());
     }
 
+    @NotNull
     public AccountIdentification mapToEntity() {
         return new AccountIdentification(schemeName, identification, secondaryIdentification, name);
     }
 
     public String updateEntity(AccountIdentification identification) {
+        if (identification == null)
+            return null;
         if (!schemeName.equals(identification.getScheme()))
             return "Consent schemeName " + identification.getScheme() + " does not match requested schemeName " + schemeName;
         if (!this.identification.equals(identification.getIdentification()))

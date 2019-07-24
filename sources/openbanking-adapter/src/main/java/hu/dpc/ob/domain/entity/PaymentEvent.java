@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "payment_event", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"seq_no"}, name = "uk_payment_event.seq")})
-public class PaymentEvent extends AbstractEntity implements Comparable<PaymentEvent> {
+public final class PaymentEvent extends AbstractEntity implements Comparable<PaymentEvent> {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

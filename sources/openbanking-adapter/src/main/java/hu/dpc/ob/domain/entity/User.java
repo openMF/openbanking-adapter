@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Table(name = "user", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"api_user_id"}, name = "uk_user.api_user"),
         @UniqueConstraint(columnNames = {"psp_user_id"}, name = "uk_user.psp_user")})
-public class User extends AbstractEntity {
+public final class User extends AbstractEntity {
 
     @NotNull
     @Column(name = "api_user_id", nullable = false, length = 128)

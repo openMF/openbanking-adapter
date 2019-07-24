@@ -7,10 +7,7 @@
  */
 package hu.dpc.ob.config;
 
-import hu.dpc.ob.domain.type.ApiScope;
-import hu.dpc.ob.domain.type.ConsentActionCode;
-import hu.dpc.ob.domain.type.PermissionCode;
-import hu.dpc.ob.domain.type.RequestSource;
+import hu.dpc.ob.domain.type.*;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -46,6 +43,11 @@ public class PspSettings extends UriSettings<PspSettings.PspHeader, PspSettings.
     @Override
     public RequestSource getSource() {
         return RequestSource.PSP;
+    }
+
+    /** @return the identifier type which can be used for deptor account to start payment, null if there is no special need */
+    public static InteropIdentifierType getRequestAccountIdentifier() {
+        return InteropIdentifierType.MSISDN;
     }
 
     @Getter
