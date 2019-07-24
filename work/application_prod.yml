@@ -223,9 +223,9 @@ psp-settings:
     password: password
     tenants:
     - name: tn01
-      host: http://buffalo.mlabs.dpc.hu # http://localhost
+      host: http://localhost # http://buffalo.mlabs.dpc.hu
     - name: tn02
-      host: http://lion.mlabs.dpc.hu # http://localhost
+      host: http://localhost # http://lion.mlabs.dpc.hu
     port: 80 # 8080
     base: fineract-provider/api/v1
   - name: auth #login

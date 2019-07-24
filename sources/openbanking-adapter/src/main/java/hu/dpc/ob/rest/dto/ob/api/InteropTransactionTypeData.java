@@ -47,7 +47,7 @@ public class InteropTransactionTypeData {
     @JsonFormat(pattern = "^[1-9]\\d{2}$")
     private String balanceOfPayments; // 3 digits number, see https://www.imf.org/external/np/sta/bopcode/
 
-    public InteropTransactionTypeData(@Size(max = 32) @NotNull InteropScenario scenario, @Size(max = 128) String subScenario,
+    InteropTransactionTypeData(@Size(max = 32) @NotNull InteropScenario scenario, @Size(max = 128) String subScenario,
                                       @Size(max = 32) @NotNull InteropTransactionRole initiator, @Size(max = 32) @NotNull InteropInitiatorType initiatorType,
                                       @Valid InteropRefundData refundInfo, String balanceOfPayments) {
         this.scenario = scenario;

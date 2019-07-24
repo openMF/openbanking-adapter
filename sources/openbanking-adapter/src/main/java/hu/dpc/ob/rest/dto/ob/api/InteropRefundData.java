@@ -37,7 +37,7 @@ public class InteropRefundData {
 
     @NotNull
     public static InteropRefundData create(InteropPayment interopPayment) {
-        return interopPayment == null ? null : new InteropRefundData(interopPayment.getRefundTransactionId(), interopPayment.getRefundReason());
+        return interopPayment == null || interopPayment.getRefundTransactionId() == null ? null : new InteropRefundData(interopPayment.getRefundTransactionId(), interopPayment.getRefundReason());
     }
 
     String updateEntity(@NotNull InteropPayment payment) {

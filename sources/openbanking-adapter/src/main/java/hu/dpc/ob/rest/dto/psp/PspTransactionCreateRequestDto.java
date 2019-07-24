@@ -16,7 +16,6 @@ import hu.dpc.ob.domain.entity.Payment;
 import hu.dpc.ob.domain.entity.PaymentRisk;
 import hu.dpc.ob.domain.type.InteropAmountType;
 import hu.dpc.ob.domain.type.InteropIdentifierType;
-import hu.dpc.ob.rest.dto.ob.api.AmountData;
 import hu.dpc.ob.rest.dto.ob.api.ExtensionData;
 import hu.dpc.ob.rest.dto.ob.api.GeoCodeData;
 import hu.dpc.ob.rest.dto.ob.api.InteropTransactionTypeData;
@@ -78,7 +77,7 @@ public class PspTransactionCreateRequestDto {
     @NotNull
     private InteropAmountType amountType;
     @NotNull
-    private AmountData amount;
+    private PspAmountData amount;
     @NotNull
     private InteropTransactionTypeData transactionType;
 
@@ -92,7 +91,7 @@ public class PspTransactionCreateRequestDto {
     private List<ExtensionData> extensionList;
 
     PspTransactionCreateRequestDto(@Size(max = 36) String clientRefId, @NotNull InteropPartyData payer, @NotNull InteropPartyData payee,
-                                   @NotNull InteropAmountType amountType, @NotNull AmountData amount, @NotNull InteropTransactionTypeData transactionType,
+                                   @NotNull InteropAmountType amountType, @NotNull PspAmountData amount, @NotNull InteropTransactionTypeData transactionType,
                                    GeoCodeData geoCode, String note, LocalDateTime expiration, List<ExtensionData> extensionList) {
         this.clientRefId = clientRefId;
         this.payer = payer;
@@ -122,7 +121,7 @@ public class PspTransactionCreateRequestDto {
         InteropPartyData creditor = InteropPartyData.create(payment.getCreditorIdentification(), merchantClassificationCode);
 
         return new PspTransactionCreateRequestDto(payment.getPaymentId(), debtor, creditor, interopPayment.getAmountType(),
-                AmountData.create(payment), InteropTransactionTypeData.create(interopPayment), GeoCodeData.create(interopPayment),
+                PspAmountData.create(payment), InteropTransactionTypeData.create(interopPayment), GeoCodeData.create(interopPayment),
                 interopPayment.getNote(), payment.getExpiresOn(), extensionList);
     }
 
