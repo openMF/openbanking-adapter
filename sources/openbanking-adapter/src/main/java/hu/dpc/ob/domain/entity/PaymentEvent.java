@@ -117,6 +117,6 @@ public final class PaymentEvent extends AbstractEntity implements Comparable<Pay
 
     @Override
     public int compareTo(PaymentEvent o) {
-        return (int) (getSeqNo() - o.getSeqNo());
+        return Long.signum(getSeqNo() - o.getSeqNo());
     }
 }

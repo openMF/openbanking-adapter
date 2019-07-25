@@ -9,6 +9,7 @@ package hu.dpc.ob.rest.processor.ob.api;
 
 import hu.dpc.ob.config.ApiSettings;
 import hu.dpc.ob.domain.type.PermissionCode;
+import hu.dpc.ob.model.internal.ApiSchema;
 import hu.dpc.ob.model.internal.PspId;
 import hu.dpc.ob.model.service.ApiService;
 import hu.dpc.ob.model.service.ConsentService;
@@ -17,7 +18,9 @@ import hu.dpc.ob.rest.component.PspRestClient;
 import hu.dpc.ob.rest.dto.ob.api.TransactionsResponseDto;
 import hu.dpc.ob.rest.dto.psp.PspTransactionsResponseDto;
 import hu.dpc.ob.util.ContextUtils;
+import hu.dpc.ob.util.DateUtils;
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,11 +29,13 @@ import java.time.LocalDateTime;
 @Component("api-ob-transaction-processor")
 public class TransactionRequestProcessor extends ApiRequestProcessor {
 
+    private ApiSettings apiSettings;
     private PspRestClient pspRestClient;
     private ApiService apiService;
 
     @Autowired
-    public TransactionRequestProcessor(PspRestClient pspRestClient, ApiService apiService, ConsentService consentService) {
+    public TransactionRequestProcessor(ApiSettings apiSettings, PspRestClient pspRestClient, ApiService apiService, ConsentService consentService) {
+        this.apiSettings = apiSettings;
         this.pspRestClient = pspRestClient;
         this.apiService = apiService;
     }
@@ -47,8 +52,11 @@ public class TransactionRequestProcessor extends ApiRequestProcessor {
 
         boolean debit = apiService.hasPermission(apiUserId, clientId, PermissionCode.READ_TRANSACTIONS_DEBITS, accountId);
         boolean credit = apiService.hasPermission(apiUserId, clientId, PermissionCode.READ_TRANSACTIONS_CREDITS, accountId);
-        LocalDateTime fromBookingDateTime = null;
-        LocalDateTime toBookingDateTime = null; // TODO
+        Message in = exchange.getIn();
+        String transactionsFrom = in.getHeader(apiSettings.getHeader(ApiSchema.OB, ApiSettings.ApiHeader.TRANSACTIONS_FROM).getKey(), String.class);
+        LocalDateTime fromBookingDateTime = DateUtils.parseIsoDateTime(transactionsFrom);
+        String transactionsTo = in.getHeader(apiSettings.getHeader(ApiSchema.OB, ApiSettings.ApiHeader.TRANSACTIONS_TO).getKey(), String.class);
+        LocalDateTime toBookingDateTime = DateUtils.parseIsoDateTime(transactionsTo);
 
         PspTransactionsResponseDto transactionResponse = pspRestClient.callTransactions(accountId, pspId, debit, credit, fromBookingDateTime, toBookingDateTime);
 

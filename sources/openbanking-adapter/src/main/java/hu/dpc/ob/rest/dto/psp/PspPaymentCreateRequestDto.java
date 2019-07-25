@@ -7,7 +7,6 @@
  */
 package hu.dpc.ob.rest.dto.psp;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import hu.dpc.ob.config.PspSettings;
 import hu.dpc.ob.domain.entity.InteropExtension;
@@ -19,7 +18,6 @@ import hu.dpc.ob.domain.type.InteropIdentifierType;
 import hu.dpc.ob.rest.dto.ob.api.ExtensionData;
 import hu.dpc.ob.rest.dto.ob.api.GeoCodeData;
 import hu.dpc.ob.rest.dto.ob.api.InteropTransactionTypeData;
-import hu.dpc.ob.rest.parser.LocalFormatDateTimeDeserializer;
 import hu.dpc.ob.rest.parser.LocalFormatDateTimeSerializer;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -66,7 +64,7 @@ import java.util.stream.Collectors;
 @Setter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
-public class PspTransactionCreateRequestDto {
+public class PspPaymentCreateRequestDto {
 
     @Size(max = 36)
     private String clientRefId;
@@ -85,14 +83,13 @@ public class PspTransactionCreateRequestDto {
 
     private String note;
     @JsonSerialize(using = LocalFormatDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalFormatDateTimeDeserializer.class)
     private LocalDateTime expiration;
 
     private List<ExtensionData> extensionList;
 
-    PspTransactionCreateRequestDto(@Size(max = 36) String clientRefId, @NotNull InteropPartyData payer, @NotNull InteropPartyData payee,
-                                   @NotNull InteropAmountType amountType, @NotNull PspAmountData amount, @NotNull InteropTransactionTypeData transactionType,
-                                   GeoCodeData geoCode, String note, LocalDateTime expiration, List<ExtensionData> extensionList) {
+    PspPaymentCreateRequestDto(@Size(max = 36) String clientRefId, @NotNull InteropPartyData payer, @NotNull InteropPartyData payee,
+                               @NotNull InteropAmountType amountType, @NotNull PspAmountData amount, @NotNull InteropTransactionTypeData transactionType,
+                               GeoCodeData geoCode, String note, LocalDateTime expiration, List<ExtensionData> extensionList) {
         this.clientRefId = clientRefId;
         this.payer = payer;
         this.payee = payee;
@@ -105,7 +102,7 @@ public class PspTransactionCreateRequestDto {
         this.extensionList = extensionList;
     }
 
-    public static PspTransactionCreateRequestDto create(@NotNull Payment payment) {
+    public static PspPaymentCreateRequestDto create(@NotNull Payment payment) {
         InteropPayment interopPayment = payment.getInteropPayment();
         if (interopPayment == null)
             return null;
@@ -120,7 +117,7 @@ public class PspTransactionCreateRequestDto {
         String merchantClassificationCode = risk == null ? null : risk.getMerchantCustomerIdentification();
         InteropPartyData creditor = InteropPartyData.create(payment.getCreditorIdentification(), merchantClassificationCode);
 
-        return new PspTransactionCreateRequestDto(payment.getPaymentId(), debtor, creditor, interopPayment.getAmountType(),
+        return new PspPaymentCreateRequestDto(payment.getPaymentId(), debtor, creditor, interopPayment.getAmountType(),
                 PspAmountData.create(payment), InteropTransactionTypeData.create(interopPayment), GeoCodeData.create(interopPayment),
                 interopPayment.getNote(), payment.getExpiresOn(), extensionList);
     }

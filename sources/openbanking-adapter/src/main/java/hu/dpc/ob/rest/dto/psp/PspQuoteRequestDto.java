@@ -7,6 +7,7 @@
  */
 package hu.dpc.ob.rest.dto.psp;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import hu.dpc.ob.domain.entity.InteropExtension;
 import hu.dpc.ob.domain.entity.InteropPayment;
 import hu.dpc.ob.domain.entity.Payment;
@@ -14,6 +15,7 @@ import hu.dpc.ob.domain.type.InteropAmountType;
 import hu.dpc.ob.domain.type.InteropTransactionRole;
 import hu.dpc.ob.rest.dto.ob.api.ExtensionData;
 import hu.dpc.ob.rest.dto.ob.api.GeoCodeData;
+import hu.dpc.ob.rest.parser.LocalFormatDateTimeSerializer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,7 +50,7 @@ public class PspQuoteRequestDto {
     private String note;
 
     private GeoCodeData geoCode;
-
+    @JsonSerialize(using = LocalFormatDateTimeSerializer.class)
     private LocalDateTime expiration;
 
     private List<ExtensionData> extensionList;

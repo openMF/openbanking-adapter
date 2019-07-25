@@ -7,6 +7,7 @@
  */
 package hu.dpc.ob.rest.processor.ob.api;
 
+import hu.dpc.ob.config.AdapterSettings;
 import hu.dpc.ob.model.service.ApiService;
 import hu.dpc.ob.model.service.ConsentService;
 import hu.dpc.ob.model.service.PaymentService;
@@ -22,8 +23,8 @@ import javax.transaction.Transactional;
 public class PaymentCreateValidateProcessor extends ApiValidateProcessor {
 
     @Autowired
-    public PaymentCreateValidateProcessor(ApiService apiService, ConsentService consentService, PaymentService paymentService) {
-        super(apiService, consentService, paymentService);
+    public PaymentCreateValidateProcessor(AdapterSettings adapterSettings, ApiService apiService, ConsentService consentService, PaymentService paymentService) {
+        super(adapterSettings, apiService, consentService, paymentService);
     }
 
     @Override

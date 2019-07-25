@@ -7,6 +7,7 @@
  */
 package hu.dpc.ob.rest.processor.ob.access;
 
+import hu.dpc.ob.config.AdapterSettings;
 import hu.dpc.ob.model.service.ApiService;
 import hu.dpc.ob.model.service.ConsentService;
 import hu.dpc.ob.model.service.PaymentService;
@@ -26,8 +27,8 @@ import javax.validation.constraints.NotNull;
 public class AisConsentUpdateValidateProcessor extends AccessValidateProcessor {
 
     @Autowired
-    public AisConsentUpdateValidateProcessor(ApiService apiService, ConsentService consentService, PaymentService paymentService) {
-        super(apiService, consentService, paymentService);
+    public AisConsentUpdateValidateProcessor(AdapterSettings adapterSettings, ApiService apiService, ConsentService consentService, PaymentService paymentService) {
+        super(adapterSettings, apiService, consentService, paymentService);
     }
 
     @Override

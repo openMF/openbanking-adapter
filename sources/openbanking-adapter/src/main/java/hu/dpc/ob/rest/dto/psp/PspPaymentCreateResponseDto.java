@@ -21,7 +21,7 @@ import javax.validation.constraints.Size;
 @Setter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
-public class PspTransactionCreateResponseDto {
+public class PspPaymentCreateResponseDto {
 
     @Size(max = 36)
     @NotEmpty

@@ -7,6 +7,7 @@
  */
 package hu.dpc.ob.rest.processor.ob;
 
+import hu.dpc.ob.config.AdapterSettings;
 import hu.dpc.ob.model.service.ApiService;
 import hu.dpc.ob.model.service.ConsentService;
 import hu.dpc.ob.model.service.PaymentService;
@@ -16,8 +17,8 @@ import org.apache.camel.Exchange;
 
 public abstract class ObValidateProcessor extends ValidateProcessor {
 
-    public ObValidateProcessor(ApiService apiService, ConsentService consentService, PaymentService paymentService) {
-        super(apiService, consentService, paymentService);
+    public ObValidateProcessor(AdapterSettings adapterSettings, ApiService apiService, ConsentService consentService, PaymentService paymentService) {
+        super(adapterSettings, apiService, consentService, paymentService);
     }
 
     @Override

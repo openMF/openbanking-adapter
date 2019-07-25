@@ -82,6 +82,10 @@ api-settings:
       key: x-fapi-customer-ip-address
     - name: interaction-id
       key: x-fapi-interaction-id
+    - name: transactions_from
+      key: fromBookingDateTime
+    - name: transactions_to
+      key: toBookingDateTime
     bindings: #tpp -> adapter
     - name: binding-basic-settings
       tenants:

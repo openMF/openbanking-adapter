@@ -60,7 +60,7 @@ adapter-settings:
   tenants: tn02
   # default limits, may be overwritten in request
   event-limits: # request must be rejected if any of the limits was reached
-    frequency: 10 # per day
+    frequency: 100 # per day
 #  consent-limits: # consent must be rejected if any of the limits was reached
 #    expiration: 36000 #sec = 10h
   payment-limits: # payment is not valid if any of the limits was reached
@@ -86,6 +86,10 @@ api-settings:
       key: x-fapi-customer-ip-address
     - name: interaction-id
       key: x-fapi-interaction-id
+    - name: transactions_from
+      key: fromBookingDateTime
+    - name: transactions_to
+      key: toBookingDateTime
     bindings: #tpp -> adapter
     - name: binding-basic-settings
       tenants:
@@ -227,10 +231,10 @@ psp-settings:
     password: password
     tenants:
     - name: tn01
-      host: http://buffalo.mlabs.dpc.hu
+      host: http://localhost
     - name: tn02
-      host: http://lion.mlabs.dpc.hu
-    port: 80 # 8080
+      host: http://localhost
+    port: 8080 # 8080
     base: fineract-provider/api/v1
   - name: auth #login
     path: authentication

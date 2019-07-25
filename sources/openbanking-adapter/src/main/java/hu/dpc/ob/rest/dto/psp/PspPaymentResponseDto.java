@@ -10,7 +10,6 @@ package hu.dpc.ob.rest.dto.psp;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import hu.dpc.ob.domain.entity.Payment;
 import hu.dpc.ob.domain.entity.PaymentTransfer;
 import hu.dpc.ob.domain.type.EventStatusCode;
@@ -18,7 +17,6 @@ import hu.dpc.ob.domain.type.PaymentActionCode;
 import hu.dpc.ob.model.PaymentStateMachine;
 import hu.dpc.ob.rest.dto.psp.type.TransferState;
 import hu.dpc.ob.rest.parser.LocalFormatDateTimeDeserializer;
-import hu.dpc.ob.rest.parser.LocalFormatDateTimeSerializer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,21 +32,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class PspTransactionResponseDto {
+public class PspPaymentResponseDto {
 
     @JsonProperty("clientRefId")
     @Size(max = 40)
     @NotEmpty
     private String paymentId;
 
-    @JsonProperty("savingTransactionId")
     @Size(max = 36)
     @NotEmpty
     private String transactionId;
 
     private String transferId;
 
-    @JsonSerialize(using = LocalFormatDateTimeSerializer.class)
     @JsonDeserialize(using = LocalFormatDateTimeDeserializer.class)
     private LocalDateTime completedTimestamp;
 

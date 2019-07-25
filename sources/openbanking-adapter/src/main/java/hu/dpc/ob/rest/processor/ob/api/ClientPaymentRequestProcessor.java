@@ -34,7 +34,6 @@ public class ClientPaymentRequestProcessor extends ApiRequestProcessor {
         this.paymentService = paymentService;
     }
 
-
     @Override
     @Transactional
     public void process(Exchange exchange) throws Exception {
@@ -44,7 +43,9 @@ public class ClientPaymentRequestProcessor extends ApiRequestProcessor {
         @NotNull Payment payment = paymentService.getPaymentByEndToEndId(clientPaymentId);
 
         PspId pspId = exchange.getProperty(ExchangeHeader.PSP_ID.getKey(), PspId.class);
-        paymentService.updateTransferState(pspRestClient, payment, pspId);
+        boolean updated = updateTransferState(pspRestClient, payment, pspId);
+        if (updated)
+            paymentService.transferStateChanged(payment);
 
         PaymentResponseDto response = PaymentResponseDto.create(payment);
         exchange.getIn().setBody(response);

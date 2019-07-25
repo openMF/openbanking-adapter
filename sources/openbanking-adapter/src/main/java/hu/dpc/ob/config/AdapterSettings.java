@@ -79,6 +79,10 @@ public class AdapterSettings implements ApplicationSettings {
         return limits == null ? null : limits.calcExpiresOn();
     }
 
+    public boolean isTestEnv() {
+        return "test".equals(env);
+    }
+
     private LimitProperties getLimits(int limitType) {
         switch (limitType) {
             case LIMIT_EVENT:

@@ -12,6 +12,7 @@ import hu.dpc.ob.domain.type.InteropIdentifierType;
 import hu.dpc.ob.model.internal.PspId;
 import hu.dpc.ob.rest.dto.psp.*;
 import hu.dpc.ob.util.ContextUtils;
+import hu.dpc.ob.util.DateUtils;
 import hu.dpc.ob.util.JsonUtils;
 import lombok.NoArgsConstructor;
 import org.eclipse.jetty.http.HttpHeader;
@@ -87,9 +88,9 @@ public class PspRestClient {
         TenantProperties tenantProps = opProps.getTenant(tenant);
         String url = ContextUtils.resolvePathParams(tenantProps.getUrl(), accountId) + "?debit=" + debit + "&credit=" + credit;
         if (fromBookingDateTime != null)
-            url += "&fromBookingDateTime=" + fromBookingDateTime;
+            url += "&fromBookingDateTime=" + DateUtils.formatIsoDateTime(fromBookingDateTime);
         if (toBookingDateTime != null)
-            url += "&toBookingDateTime=" + toBookingDateTime;
+            url += "&toBookingDateTime=" + DateUtils.formatIsoDateTime(toBookingDateTime);
 
         Map<String, String> headers = getHeaders(tenant);
 
@@ -190,7 +191,7 @@ public class PspRestClient {
         return JsonUtils.toPojo(responseJson, PspQuoteResponseDto.class);
     }
 
-    public PspTransactionCreateResponseDto callTransactionCreate(@NotNull PspTransactionCreateRequestDto request, PspId pspId) {
+    public PspPaymentCreateResponseDto callTransactionCreate(@NotNull PspPaymentCreateRequestDto request, PspId pspId) {
         OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.TRANSACTION_CREATE);
         @NotNull HttpMethod method = opProps.getHttpMethod();
         log.debug(String.format("Call " + method + " /" + opProps.getName() + ", psp: %s, paymentId: %s", pspId, request.getClientRefId()));
@@ -206,10 +207,10 @@ public class PspRestClient {
 
         log.debug(String.format("Response PSP " + opProps.getMethod() + " /" + opProps.getName() + ", psp: %s, paymentId: %s, " +
                 "payload: %s", pspId, request.getClientRefId(), responseJson));
-        return JsonUtils.toPojo(responseJson, PspTransactionCreateResponseDto.class);
+        return JsonUtils.toPojo(responseJson, PspPaymentCreateResponseDto.class);
     }
 
-    public PspTransactionResponseDto callTransaction(@NotNull String transactionId, PspId pspId) {
+    public PspPaymentResponseDto callTransaction(@NotNull String transactionId, PspId pspId) {
         OperationProperties opProps = pspSettings.getOperation(PspSettings.PspOperation.TRANSACTION);
         @NotNull HttpMethod method = opProps.getHttpMethod();
         log.debug(String.format("Call " + method + " /" + opProps.getName() + ", psp: %s, transactionId: %s", pspId, transactionId));
@@ -225,7 +226,7 @@ public class PspRestClient {
 
         log.debug(String.format("Response PSP " + opProps.getMethod() + " /" + opProps.getName() + ", psp: %s, transactionId: %s, " +
                 "payload: %s", pspId, transactionId, responseJson));
-        return JsonUtils.toPojo(responseJson, PspTransactionResponseDto.class);
+        return JsonUtils.toPojo(responseJson, PspPaymentResponseDto.class);
     }
 
     private Map<String, String> getHeaders(String tenant) {

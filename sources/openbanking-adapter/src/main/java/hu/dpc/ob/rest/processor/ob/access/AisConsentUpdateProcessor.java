@@ -7,6 +7,7 @@
  */
 package hu.dpc.ob.rest.processor.ob.access;
 
+import hu.dpc.ob.config.AdapterSettings;
 import hu.dpc.ob.domain.entity.Consent;
 import hu.dpc.ob.model.service.ApiService;
 import hu.dpc.ob.rest.ExchangeHeader;
@@ -24,11 +25,13 @@ import javax.validation.constraints.NotNull;
 @Component("access-ob-ais-consent-update-processor")
 public class AisConsentUpdateProcessor extends AccessRequestProcessor {
 
+    private final AdapterSettings adapterSettings;
     private final ApiService apiService;
 
     @Autowired
-    public AisConsentUpdateProcessor(PspRestClient pspRestClient, ApiService apiService) {
+    public AisConsentUpdateProcessor(PspRestClient pspRestClient, AdapterSettings adapterSettings, ApiService apiService) {
         super(pspRestClient);
+        this.adapterSettings = adapterSettings;
         this.apiService = apiService;
     }
 
@@ -42,7 +45,7 @@ public class AisConsentUpdateProcessor extends AccessRequestProcessor {
 
         AisConsentUpdateRequestDto request = exchange.getProperty(ExchangeHeader.REQUEST_DTO.getKey(), AisConsentUpdateRequestDto.class);
 
-        @NotNull Consent consent = apiService.updateConsent(apiUserId, clientId, request);
+        @NotNull Consent consent = apiService.updateConsent(apiUserId, clientId, request, adapterSettings.isTestEnv());
 
         AisAccessConsentResponseDto response = AisAccessConsentResponseDto.create(consent);
         exchange.getIn().setBody(response);

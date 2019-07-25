@@ -133,6 +133,6 @@ public final class ConsentEvent extends AbstractEntity implements Comparable<Con
 
     @Override
     public int compareTo(ConsentEvent o) {
-        return (int) (getSeqNo() - o.getSeqNo());
+        return Long.signum(getSeqNo() - o.getSeqNo());
     }
 }

@@ -7,6 +7,7 @@
  */
 package hu.dpc.ob.rest.processor.ob.access;
 
+import hu.dpc.ob.config.AdapterSettings;
 import hu.dpc.ob.domain.entity.Consent;
 import hu.dpc.ob.domain.entity.Payment;
 import hu.dpc.ob.domain.type.ApiScope;
@@ -29,12 +30,14 @@ import javax.validation.constraints.NotNull;
 @Component("access-ob-pis-consent-update-processor")
 public class PisConsentUpdateProcessor extends AccessRequestProcessor {
 
+    private final AdapterSettings adapterSettings;
     private final ApiService apiService;
     private final ConsentService consentService;
 
     @Autowired
-    public PisConsentUpdateProcessor(PspRestClient pspRestClient, ApiService apiService, ConsentService consentService) {
+    public PisConsentUpdateProcessor(PspRestClient pspRestClient, AdapterSettings adapterSettings, ApiService apiService, ConsentService consentService) {
         super(pspRestClient);
+        this.adapterSettings = adapterSettings;
         this.apiService = apiService;
         this.consentService = consentService;
     }
@@ -62,7 +65,7 @@ public class PisConsentUpdateProcessor extends AccessRequestProcessor {
         ApiScope scope = exchange.getProperty(ExchangeHeader.SCOPE.getKey(), ApiScope.class); // PIS
 
         DebtorInit debtorInit = init ? calcDebtorInit(payment, pspId) : null;
-        apiService.updateConsent(apiUserId, clientId, request, debtorInit, scope);
+        apiService.updateConsent(apiUserId, clientId, request, debtorInit, scope, adapterSettings.isTestEnv());
 
         PisAccessConsentResponseDto response = PisAccessConsentResponseDto.create(consent);
         exchange.getIn().setBody(response);

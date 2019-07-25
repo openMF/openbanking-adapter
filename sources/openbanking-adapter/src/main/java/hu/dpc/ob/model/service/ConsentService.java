@@ -248,7 +248,7 @@ public class ConsentService {
     }
 
     @Transactional
-    public Consent authorizeConsent(@NotNull User user, @NotNull AisConsentUpdateRequestDto request) {
+    public Consent authorizeConsent(@NotNull User user, @NotNull AisConsentUpdateRequestDto request, boolean test) {
         @NotNull AisConsentUpdateData data = request.getData();
         @NotNull Consent consent = getConsentById(data.getConsentId());
 
@@ -258,7 +258,7 @@ public class ConsentService {
                 throw new UnsupportedOperationException("Attempt to add unsupported Permission " + permission + " to Consent " + consent.getConsentId());
         }
 
-        @NotNull ConsentEvent event = registerUpdateAction(ApiScope.AIS, user, data);
+        @NotNull ConsentEvent event = registerUpdateAction(ApiScope.AIS, user, data, test);
         if (event == null) {
             return consent;
         }
@@ -287,25 +287,25 @@ public class ConsentService {
     }
 
     @Transactional(MANDATORY)
-    Consent rejectConsent(@NotNull User user, @NotNull AisConsentUpdateRequestDto request) {
+    Consent rejectConsent(@NotNull User user, @NotNull AisConsentUpdateRequestDto request, boolean test) {
         @NotNull AisConsentUpdateData data = request.getData();
-        ConsentEvent event = registerUpdateAction(ApiScope.AIS, user, data);
+        ConsentEvent event = registerUpdateAction(ApiScope.AIS, user, data, test);
         return event == null ? getConsentById(data.getConsentId()) : event.getConsent();
     }
 
     @Transactional(MANDATORY)
-    Consent revokeConsent(@NotNull User user, @NotNull AisConsentUpdateRequestDto request) {
+    Consent revokeConsent(@NotNull User user, @NotNull AisConsentUpdateRequestDto request, boolean test) {
         @NotNull AisConsentUpdateData data = request.getData();
-        ConsentEvent event = registerUpdateAction(ApiScope.AIS, user, data);
+        ConsentEvent event = registerUpdateAction(ApiScope.AIS, user, data, test);
         return event == null ? getConsentById(data.getConsentId()) : event.getConsent();
     }
 
     @Transactional(MANDATORY)
-    Consent authorizeConsent(@NotNull User user, @NotNull PisConsentUpdateRequestDto request) {
+    Consent authorizeConsent(@NotNull User user, @NotNull PisConsentUpdateRequestDto request, boolean test) {
         @NotNull PisConsentUpdateData data = request.getData();
         @NotNull Consent consent = getConsentById(data.getConsentId());
 
-        @NotNull ConsentEvent event = registerUpdateAction(ApiScope.PIS, user, data);
+        @NotNull ConsentEvent event = registerUpdateAction(ApiScope.PIS, user, data, test);
         if (event == null)
             return consent;
 
@@ -317,25 +317,25 @@ public class ConsentService {
     }
 
     @Transactional(MANDATORY)
-    Consent rejectConsent(@NotNull User user, @NotNull PisConsentUpdateRequestDto request) {
+    Consent rejectConsent(@NotNull User user, @NotNull PisConsentUpdateRequestDto request, boolean test) {
         @NotNull PisConsentUpdateData data = request.getData();
-        ConsentEvent event = registerUpdateAction(ApiScope.PIS, user, data);
+        ConsentEvent event = registerUpdateAction(ApiScope.PIS, user, data, test);
         return event == null ? getConsentById(data.getConsentId()) : event.getConsent();
     }
 
     @Transactional(MANDATORY)
-    Consent revokeConsent(@NotNull User user, @NotNull PisConsentUpdateRequestDto request) {
+    Consent revokeConsent(@NotNull User user, @NotNull PisConsentUpdateRequestDto request, boolean test) {
         @NotNull PisConsentUpdateData data = request.getData();
-        ConsentEvent event = registerUpdateAction(ApiScope.PIS, user, data);
+        ConsentEvent event = registerUpdateAction(ApiScope.PIS, user, data, test);
         return event == null ? getConsentById(data.getConsentId()) : event.getConsent();
     }
 
     @Transactional(MANDATORY)
     @NotNull
-    PaymentEvent createPayment(@NotNull User user, @NotNull PaymentCreateRequestDto request) {
+    PaymentEvent createPayment(@NotNull User user, @NotNull PaymentCreateRequestDto request, boolean test) {
         @NotEmpty String consentId = request.getData().getConsentId();
         @NotNull Consent consent = getConsentById(consentId);
-        @NotNull PaymentEvent event = paymentService.createPayment(consent.getPayment(), request);
+        @NotNull PaymentEvent event = paymentService.createPayment(consent.getPayment(), request, test);
         if (!event.isAccepted())
             registerAction(consent, ConsentActionCode.REJECT, EventStatusCode.ACCEPTED, consentId, null, event.getReason(), event.getReasonDesc());
 
@@ -417,11 +417,12 @@ public class ConsentService {
     /** Should call each time when an API action is performed to validate the event.
      * Limit is calculated /client/user/scope/action/[resourceId] */
     @Transactional(MANDATORY)
-    EventReasonCode calcEventRejectReason(@NotNull User user, @NotNull String clientId, @NotNull RequestSource source, @NotNull ApiScope scope, @NotNull ConsentActionCode action, String resourceId) {
+    EventReasonCode calcEventRejectReason(@NotNull User user, @NotNull String clientId, @NotNull RequestSource source, @NotNull ApiScope scope,
+                                          @NotNull ConsentActionCode action, String resourceId, boolean test) {
         if (!user.isActive())
             return USER_INACTIVE;
 
-        if (source != RequestSource.API)
+        if (test || source != RequestSource.API)
             return null;
 
         // TODO: amount is not supported because money change is not supported
@@ -456,7 +457,8 @@ public class ConsentService {
     /** Should call each time when an action is performed on an existing consent to validate the event.
      * Limit is calculated /consent/action/[resourceId] */
     @Transactional(MANDATORY)
-    EventReasonCode calcConsentRejectReason(@NotNull RequestSource source, @NotNull ApiScope scope, @NotNull Consent consent, @NotNull ConsentActionCode action, String resourceId) {
+    EventReasonCode calcConsentRejectReason(@NotNull RequestSource source, @NotNull ApiScope scope, @NotNull Consent consent,
+                                            @NotNull ConsentActionCode action, String resourceId, boolean test) {
         @NotNull ConsentStatusCode status = consent.getStatus();
         if (!ConsentStateMachine.isValidAction(status, action))
             return ACTION_STATE_INVALID;
@@ -470,7 +472,7 @@ public class ConsentService {
                 return CONSENT_EXPIRED;
         }
 
-        if (source != RequestSource.API)
+        if (test || source != RequestSource.API)
             return null;
 
         List<ConsentEvent> limitEvents = consent.getEvents(action);
@@ -500,7 +502,7 @@ public class ConsentService {
     }
 
     @Transactional(MANDATORY)
-    ConsentEvent registerUpdateAction(@NotNull ApiScope scope, @NotNull User user, @NotNull ConsentUpdateData request) {
+    ConsentEvent registerUpdateAction(@NotNull ApiScope scope, @NotNull User user, @NotNull ConsentUpdateData request, boolean test) {
         @NotEmpty String consentId = request.getConsentId();
         if (user == null)
             throw new UnsupportedOperationException("User is not specified on Reject Consent " + consentId);
@@ -508,7 +510,7 @@ public class ConsentService {
         @NotNull Consent consent = getConsentById(consentId);
         @NotNull ConsentActionCode action = request.getAction();
 
-        EventReasonCode eventReasonCode = calcConsentRejectReason(RequestSource.ACCESS, scope, consent, action, consentId);
+        EventReasonCode eventReasonCode = calcConsentRejectReason(RequestSource.ACCESS, scope, consent, action, consentId, test);
         if (eventReasonCode == null)
             return registerAction(consent, action, EventStatusCode.ACCEPTED, consentId, null, request.getReasonCode(), request.getReasonDesc());
         else

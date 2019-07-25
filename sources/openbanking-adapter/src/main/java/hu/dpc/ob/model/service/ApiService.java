@@ -90,7 +90,8 @@ public class ApiService {
 
     @Transactional
     @NotNull
-    public Consent updateConsent(@NotNull String apiUserId, @NotNull String clientId, @NotNull AisConsentUpdateRequestDto request) {
+    public Consent updateConsent(@NotNull String apiUserId, @NotNull String clientId, @NotNull AisConsentUpdateRequestDto request,
+                                 boolean test) {
         if (apiUserId == null)
             throw new UnsupportedOperationException("User is not specified");
         if (clientId == null)
@@ -100,11 +101,11 @@ public class ApiService {
         @NotNull ConsentActionCode action = request.getData().getAction();
         switch (action) {
             case AUTHORIZE:
-                return consentService.authorizeConsent(user, request);
+                return consentService.authorizeConsent(user, request, test);
             case REJECT:
-                return consentService.rejectConsent(user, request);
+                return consentService.rejectConsent(user, request, test);
             case REVOKE:
-                return consentService.revokeConsent(user, request);
+                return consentService.revokeConsent(user, request, test);
             default:
                 throw new UnsupportedOperationException("Unsupported Consent update action " + action);
         }
@@ -113,7 +114,7 @@ public class ApiService {
     @Transactional
     @NotNull
     public Consent updateConsent(@NotNull String apiUserId, @NotNull String clientId, @NotNull PisConsentUpdateRequestDto request,
-                                 AccessRequestProcessor.DebtorInit debtorInit, @NotNull ApiScope scope) {
+                                 AccessRequestProcessor.DebtorInit debtorInit, @NotNull ApiScope scope, boolean test) {
         if (apiUserId == null)
             throw new UnsupportedOperationException("User is not specified");
         if (clientId == null)
@@ -146,33 +147,34 @@ public class ApiService {
 
         @NotNull ConsentActionCode action = data.getAction();
         if (action == ConsentActionCode.REJECT)
-            return consentService.rejectConsent(user, request);
+            return consentService.rejectConsent(user, request, test);
         if (action == ConsentActionCode.REVOKE)
-            return consentService.revokeConsent(user, request);
+            return consentService.revokeConsent(user, request, test);
 
         if (debtorInit != null) {
             consent = consentService.initConsent(user, data.getConsentId(), debtorInit, scope);
             if (!consent.isAlive())
                 return consent;
         }
-        return consentService.authorizeConsent(user, request);
+        return consentService.authorizeConsent(user, request, test);
     }
 
     @Transactional
     @NotNull
     public PaymentEvent createPayment(@NotNull String apiUserId, @NotNull String clientId, @NotNull PaymentCreateRequestDto request,
-                                      @NotNull ApiScope scope) {
+                                      @NotNull ApiScope scope, boolean test) {
         if (apiUserId == null)
             throw new UnsupportedOperationException("User is not specified");
         if (clientId == null)
             throw new UnsupportedOperationException("Client is not specified");
         User user = userService.getUserByApiId(apiUserId);
 
-        return consentService.createPayment(user, request);
+        return consentService.createPayment(user, request, test);
     }
 
     @Transactional(REQUIRES_NEW) // failed actions should be saved
-    public EventReasonCode validateAndRegisterAction(String apiUserId, @NotNull String clientId, @NotNull Binding binding, String consentId, String accountId, String resourceId) {
+    public EventReasonCode validateAndRegisterAction(String apiUserId, @NotNull String clientId, @NotNull Binding binding,
+                                                     String consentId, String accountId, String resourceId, boolean test) {
         if (clientId == null)
             throw new UnsupportedOperationException("Client is not specified");
         if (binding == null)
@@ -192,7 +194,8 @@ public class ApiService {
 
         User user = userService.getUserByApiId(apiUserId);
 
-        EventReasonCode eventReasonCode = consentService.calcEventRejectReason(user, clientId, source, scope, actionCode, resourceId);
+        EventReasonCode eventReasonCode = consentService.calcEventRejectReason(user, clientId, source, scope, actionCode,
+                resourceId, test);
 
         if (source != RequestSource.API)
             return eventReasonCode;
@@ -210,7 +213,7 @@ public class ApiService {
             throw new UnsupportedOperationException("User '" + apiUserId + "' has no active consent to " + binding.getDisplayText());
 
         if (eventReasonCode == null)
-            eventReasonCode = consentService.calcConsentRejectReason(source, scope, consent, actionCode, resourceId);
+            eventReasonCode = consentService.calcConsentRejectReason(source, scope, consent, actionCode, resourceId, test);
 
         if (eventReasonCode != null)
             consentService.rejectAction(consent, actionCode, resourceId, null, eventReasonCode);

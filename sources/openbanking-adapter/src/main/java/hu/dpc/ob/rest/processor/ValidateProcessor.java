@@ -7,6 +7,7 @@
  */
 package hu.dpc.ob.rest.processor;
 
+import hu.dpc.ob.config.AdapterSettings;
 import hu.dpc.ob.config.Binding;
 import hu.dpc.ob.domain.entity.Consent;
 import hu.dpc.ob.domain.entity.Payment;
@@ -25,11 +26,14 @@ import javax.validation.constraints.NotNull;
 
 public class ValidateProcessor implements Processor {
 
+    protected final AdapterSettings adapterSettings;
+
     protected final ApiService apiService;
     protected final ConsentService consentService;
     protected final PaymentService paymentService;
 
-    public ValidateProcessor(ApiService apiService, ConsentService consentService, PaymentService paymentService) {
+    public ValidateProcessor(AdapterSettings adapterSettings, ApiService apiService, ConsentService consentService, PaymentService paymentService) {
+        this.adapterSettings = adapterSettings;
         this.apiService = apiService;
         this.consentService = consentService;
         this.paymentService = paymentService;
@@ -106,7 +110,8 @@ public class ValidateProcessor implements Processor {
         if (resourceId == null)
             resourceId = accountId;
 
-        EventReasonCode reasonCode = apiService.validateAndRegisterAction(apiUserId, clientId, binding, consentId, accountId, resourceId);
+        EventReasonCode reasonCode = apiService.validateAndRegisterAction(apiUserId, clientId, binding, consentId, accountId,
+                resourceId, adapterSettings.isTestEnv());
         if (reasonCode != null )
             throw new UnsupportedOperationException(reasonCode.getDisplayText() + " for " + binding);
     }

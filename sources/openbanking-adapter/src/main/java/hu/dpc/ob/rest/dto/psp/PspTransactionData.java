@@ -8,6 +8,9 @@
 package hu.dpc.ob.rest.dto.psp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import hu.dpc.ob.rest.dto.psp.type.TransactionType;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,7 +19,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter(AccessLevel.PROTECTED)
@@ -28,6 +31,7 @@ public class PspTransactionData {
     @NotNull
     private String accountId;
     @NotNull
+    @JsonProperty("savingTransactionId")
     private String transactionId;
     @NotNull
     private TransactionType transactionType;
@@ -40,9 +44,11 @@ public class PspTransactionData {
     @NotNull
     private BigDecimal accountBalance;
     @NotNull
-    private LocalDateTime bookingDateTime;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate bookingDateTime;
     @NotNull
-    private LocalDateTime valueDateTime;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    private LocalDate valueDateTime;
 
     private String note;
 }

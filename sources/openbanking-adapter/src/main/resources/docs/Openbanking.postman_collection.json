@@ -347,6 +347,88 @@
 					"response": []
 				},
 				{
+					"name": "Get Transactions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/transactions?fromBookingDateTime=2019-06-01T05:00:00&toBookingDateTime=2019-07-01T17:04:12",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "fromBookingDateTime",
+									"value": "2019-06-01T05:00:00"
+								},
+								{
+									"key": "toBookingDateTime",
+									"value": "2019-07-01T17:04:12"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account Transactions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts/{{accountId}}/transactions",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"accounts",
+								"{{accountId}}",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get PSU Party",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -793,7 +875,7 @@
 							{
 								"key": "Authorization",
 								"type": "text",
-								"value": "Bearer {{userToken}}"
+								"value": "Bearer {{clientToken}}"
 							},
 							{
 								"key": "Accept",
@@ -1109,7 +1191,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"Data\": {\n        \"Permissions\": [\n        \t\"ReadAccountsBasic\",\n            \"ReadAccountsDetail\",\n            \"ReadBalances\",\n            \"ReadParty\",\n            \"ReadPartyPSU\"\n        ],\n        \"ConsentId\": \"{{consentId}}\",\n        \"Action\": \"Authorize\",\n        \"Account\": [\n        \t{\n            \"AccountId\": \"{{accountId}}\"\n        \t},\n        \t{\n            \"AccountId\": \"83c4ed1c074b484e85cc79\"\n        \t}\n        ]\n    }\n}"
+							"raw": "{\n    \"Data\": {\n        \"Permissions\": [\n            \"ReadAccountsBasic\",\n            \"ReadAccountsDetail\",\n            \"ReadBalances\",\n            \"ReadTransactionsCredits\",\n            \"ReadTransactionsDebits\",\n            \"ReadTransactionsDetail\",\n            \"ReadParty\",\n            \"ReadPartyPSU\"\n        ],\n        \"ConsentId\": \"{{consentId}}\",\n        \"Action\": \"Authorize\",\n        \"Account\": [\n        \t{\n            \"AccountId\": \"{{accountId}}\"\n        \t},\n        \t{\n            \"AccountId\": \"83c4ed1c074b484e85cc79\"\n        \t}\n        ]\n    }\n}"
 						},
 						"url": {
 							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}",

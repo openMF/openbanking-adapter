@@ -58,7 +58,7 @@ public class ApiPrepareProcessor extends ObPrepareProcessor {
         ApiSchema schema = exchange.getProperty(ExchangeHeader.SCHEMA.getKey(), ApiSchema.class);
 
         String clientId;
-        if ("test".equals(adapterSettings.getEnv())) {
+        if (adapterSettings.isTestEnv()) {
             clientId = pspId.getId();
             apiUserId = clientId + "_user";
         } else {

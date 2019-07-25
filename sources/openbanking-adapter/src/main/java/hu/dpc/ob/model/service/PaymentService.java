@@ -16,10 +16,7 @@ import hu.dpc.ob.domain.repository.TrustedUserBeneficiaryRepository;
 import hu.dpc.ob.domain.type.EventReasonCode;
 import hu.dpc.ob.domain.type.EventStatusCode;
 import hu.dpc.ob.domain.type.PaymentActionCode;
-import hu.dpc.ob.model.internal.PspId;
-import hu.dpc.ob.rest.component.PspRestClient;
 import hu.dpc.ob.rest.dto.ob.api.PaymentCreateRequestDto;
-import hu.dpc.ob.rest.dto.psp.PspTransactionResponseDto;
 import hu.dpc.ob.util.DateUtils;
 import hu.dpc.ob.util.MathUtils;
 import org.slf4j.Logger;
@@ -97,11 +94,11 @@ public class PaymentService {
 
     @Transactional(MANDATORY)
     @NotNull
-    PaymentEvent createPayment(@NotNull Payment payment, @NotNull PaymentCreateRequestDto request) {
+    PaymentEvent createPayment(@NotNull Payment payment, @NotNull PaymentCreateRequestDto request, boolean test) {
         String reasonCode = null;
         String reasonDesc = request.updateEntity(payment);
         if (reasonDesc == null) {
-            EventReasonCode rejectReason = calcPaymentRejectReason(payment, PaymentActionCode.PAYMENT_ACCEPT);
+            EventReasonCode rejectReason = calcPaymentRejectReason(payment, PaymentActionCode.PAYMENT_ACCEPT, test);
             if (rejectReason != null) {
                 reasonCode = rejectReason.getId();
                 reasonDesc = rejectReason.getDisplayText();
@@ -115,23 +112,15 @@ public class PaymentService {
                 : registerAction(payment, PaymentActionCode.PAYMENT_ACCEPT, null, EventStatusCode.REJECTED, reasonCode, reasonDesc);
     }
 
-    @Transactional
-    public boolean updateTransferState(PspRestClient pspRestClient, @NotNull Payment payment, @NotNull PspId pspId) {
-        String transactionId = payment.getTransactionId();
-        if (transactionId != null && !payment.getStatus().isComplete()) {
-            PspTransactionResponseDto transactionResponse = pspRestClient.callTransaction(transactionId, pspId);
-            @NotNull String failedReason = transactionResponse.updateEntity(payment); // TODO
-            return payment.transferStateChanged(seqNoGenerator);
-        }
-        return false;
-    }
-
     /** Should call each time when an action is performed on an existing payment to validate the event.
      *  Internal use. Limit is calculated /payment/action */
     @Transactional(MANDATORY)
-    EventReasonCode calcPaymentRejectReason(@NotNull Payment payment, @NotNull PaymentActionCode action) {
+    EventReasonCode calcPaymentRejectReason(@NotNull Payment payment, @NotNull PaymentActionCode action, boolean test) {
         if (payment.isExpired())
             return TRANSACTION_EXPIRED;
+
+        if (test)
+            return null;
 
         List<PaymentEvent> limitEvents = payment.getEvents(action);
 
@@ -229,6 +218,11 @@ public class PaymentService {
         if (event != null)
             paymentEventRepository.save(event);
         return event;
+    }
+
+    @Transactional(MANDATORY)
+    public boolean transferStateChanged(@NotNull Payment payment) {
+        return payment.transferStateChanged(seqNoGenerator);
     }
 
     @Transactional(MANDATORY)

@@ -100,9 +100,10 @@ public class TransactionData {
     @Valid
     private SupplementaryData supplementaryData;
 
-    public TransactionData(@NotEmpty @Size(max = 40) String accountId, @Size(max = 210) String transactionId, @Size(max = 35) String transactionReference, @Size(max = 35) String statementReference,
-                           @Size(max = 35) CreditDebitType creditDebit, @NotNull TransactionStatus status, @NotNull LocalDateTime bookingDateTime, LocalDateTime valueDateTime,
-                           @Size(max = 500) String transactionInformation, @Size(max = 70) String addressLine, @NotNull @Valid AmountData amount, @Valid AmountData chargeAmount,
+    public TransactionData(@NotEmpty @Size(max = 40) String accountId, @Size(max = 210) String transactionId, @Size(max = 35) String transactionReference,
+                           @Size(max = 35) String statementReference, @Size(max = 35) CreditDebitType creditDebit, @NotNull TransactionStatus status,
+                           @NotNull LocalDateTime bookingDateTime, LocalDateTime valueDateTime, @Size(max = 500) String transactionInformation,
+                           @Size(max = 70) String addressLine, @NotNull @Valid AmountData amount, @Valid AmountData chargeAmount,
                            @Valid SupplementaryData supplementaryData) {
         this.accountId = accountId;
         this.transactionId = transactionId;
@@ -122,6 +123,7 @@ public class TransactionData {
     @NotNull
     public static TransactionData transform(@NotNull PspTransactionData transaction, boolean detail) {
         return new TransactionData(transaction.getAccountId(), transaction.getTransactionId(), null, null, transaction.getTransactionType().toCreditDebitType(),
-                TransactionStatus.BOOKED, transaction.getBookingDateTime(), transaction.getValueDateTime(), transaction.getNote(), null, null, null, null);
+                TransactionStatus.BOOKED, transaction.getBookingDateTime().atStartOfDay(), transaction.getValueDateTime().atStartOfDay(), transaction.getNote(),
+                null, null, null, null);
     }
 }

@@ -23,9 +23,6 @@ import java.util.TimeZone;
 
 public class DateUtils {
 
-    public final static String ISO8601_DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    public final static DateTimeFormatter ISO8601_UTC_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern(ISO8601_DATE_TIME_PATTERN);
-
     private final static SimpleDateFormat LOCAL_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     @NotNull
@@ -285,6 +282,20 @@ public class DateUtils {
 
     public static String formatLocalFormatDateTime(LocalDateTime date) {
         return date == null ? null : LOCAL_DATE_TIME_FORMAT.format(Date.from(date.toInstant(ZoneOffset.UTC)));
+    }
+
+    public static LocalDateTime parseIsoDateTime(String date) {
+        if (date == null)
+            return null;
+
+        if (date.length() > 10 && date.charAt(10) == 'T' && date.endsWith("Z"))
+            return LocalDateTime.ofInstant(Instant.parse(date), ZoneOffset.UTC);
+
+        return date.length() == 0 ? null : LocalDateTime.parse(date, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    }
+
+    public static String formatIsoDateTime(LocalDateTime date) {
+        return date == null ? null : DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(date);
     }
 
     public static void main(String[] args) throws ParseException {

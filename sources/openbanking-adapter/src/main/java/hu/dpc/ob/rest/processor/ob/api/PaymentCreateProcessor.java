@@ -7,6 +7,7 @@
  */
 package hu.dpc.ob.rest.processor.ob.api;
 
+import hu.dpc.ob.config.AdapterSettings;
 import hu.dpc.ob.domain.entity.Payment;
 import hu.dpc.ob.domain.entity.PaymentEvent;
 import hu.dpc.ob.domain.type.ApiScope;
@@ -16,8 +17,8 @@ import hu.dpc.ob.rest.ExchangeHeader;
 import hu.dpc.ob.rest.component.PspRestClient;
 import hu.dpc.ob.rest.dto.ob.api.PaymentCreateRequestDto;
 import hu.dpc.ob.rest.dto.ob.api.PaymentResponseDto;
-import hu.dpc.ob.rest.dto.psp.PspTransactionCreateRequestDto;
-import hu.dpc.ob.rest.dto.psp.PspTransactionCreateResponseDto;
+import hu.dpc.ob.rest.dto.psp.PspPaymentCreateRequestDto;
+import hu.dpc.ob.rest.dto.psp.PspPaymentCreateResponseDto;
 import hu.dpc.ob.rest.processor.ob.access.AccessRequestProcessor;
 import org.apache.camel.Exchange;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +31,13 @@ import javax.validation.constraints.NotNull;
 @Component("api-ob-pis-payment-create-processor")
 public class PaymentCreateProcessor extends AccessRequestProcessor {
 
+    private final AdapterSettings adapterSettings;
     private final ApiService apiService;
 
     @Autowired
-    public PaymentCreateProcessor(PspRestClient pspRestClient, ApiService apiService) {
+    public PaymentCreateProcessor(PspRestClient pspRestClient, AdapterSettings adapterSettings, ApiService apiService) {
         super(pspRestClient);
+        this.adapterSettings = adapterSettings;
         this.apiService = apiService;
     }
 
@@ -50,14 +53,14 @@ public class PaymentCreateProcessor extends AccessRequestProcessor {
         String apiUserId = exchange.getProperty(ExchangeHeader.API_USER_ID.getKey(), String.class);
         ApiScope scope = exchange.getProperty(ExchangeHeader.SCOPE.getKey(), ApiScope.class); // PIS
 
-        @NotNull PaymentEvent event = apiService.createPayment(apiUserId, clientId, request, scope);
+        @NotNull PaymentEvent event = apiService.createPayment(apiUserId, clientId, request, scope, adapterSettings.isTestEnv());
         PaymentResponseDto response = null;
         if (event.isAccepted()) {
             @NotNull Payment payment = event.getPayment();
-            PspTransactionCreateRequestDto transactionRequest = PspTransactionCreateRequestDto.create(payment);
+            PspPaymentCreateRequestDto transactionRequest = PspPaymentCreateRequestDto.create(payment);
             PspId pspId = exchange.getProperty(ExchangeHeader.PSP_ID.getKey(), PspId.class);
 
-            PspTransactionCreateResponseDto transactionResponse = getPspRestClient().callTransactionCreate(transactionRequest, pspId);
+            PspPaymentCreateResponseDto transactionResponse = getPspRestClient().callTransactionCreate(transactionRequest, pspId);
             //TODO handle failed response
             transactionResponse.mapToEntity(payment);
             response = PaymentResponseDto.create(payment);

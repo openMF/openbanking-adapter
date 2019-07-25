@@ -74,6 +74,8 @@ public class ApiSettings extends SchemaSettings<ApiSettings.ApiHeader, ApiSettin
         AUTH_DATE("auth-date"),
         CUSTOMER_IP_ADDRESS("customer-ip-address"),
         INTERACTION_ID("interaction-id"),
+        TRANSACTIONS_FROM("transactions_from"),
+        TRANSACTIONS_TO("transactions_to"),
         ;
 
         private @NotNull final String configName;
