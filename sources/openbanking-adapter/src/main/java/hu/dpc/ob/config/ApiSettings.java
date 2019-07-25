@@ -108,7 +108,7 @@ public class ApiSettings extends SchemaSettings<ApiSettings.ApiHeader, ApiSettin
         PIS_PAYMENT_CREATE("pis-payment-create", ApiScope.PIS, ConsentActionCode.PAYMENT, true, "Initiate domestic payment",
                 new PermissionCode[]{READ_BALANCES, READ_TRANSACTIONS_BASIC, READ_TRANSACTIONS_DETAIL}),
         PIS_PAYMENT("pis-payment", ApiScope.PIS, ConsentActionCode.QUERY_PAYMENT, false, "Retrieve a domestic PIS resourceId"),
-        PIS_CLIENT_PAYMENT("pis-client-payment", ApiScope.PIS, ConsentActionCode.QUERY_PAYMENT, true, "Retrieve a domestic PIS resourceId by client reference identifier",
+        PIS_CLIENT_PAYMENT("pis-client-payment", ApiScope.PIS, ConsentActionCode.QUERY_PAYMENT, false, "Retrieve a domestic PIS resourceId by client reference identifier",
                 new PermissionCode[]{READ_BALANCES, READ_TRANSACTIONS_BASIC, READ_TRANSACTIONS_DETAIL}),
         PIS_PAYMENT_DETAILS("pis-payment-details", ApiScope.PIS, ConsentActionCode.QUERY_PAYMENT, false, "Retrieve a domestic PIS details"),
         ;

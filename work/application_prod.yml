@@ -114,7 +114,7 @@ api-settings:
       path: accounts/{accountId}/balances
       method: GET
     - name: transactions #get transactions of owned accounts
-      path: /accounts/transactions
+      path: transactions
       method: GET
     - name: transaction #get account transaction information
       path: /accounts/{accountId}/transactions

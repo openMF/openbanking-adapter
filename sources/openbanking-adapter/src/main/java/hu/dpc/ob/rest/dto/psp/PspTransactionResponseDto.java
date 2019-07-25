@@ -41,7 +41,7 @@ public class PspTransactionResponseDto {
     @NotEmpty
     private String paymentId;
 
-    @JsonProperty("transactionId")
+    @JsonProperty("savingTransactionId")
     @Size(max = 36)
     @NotEmpty
     private String transactionId;
