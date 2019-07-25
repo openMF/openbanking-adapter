@@ -57,7 +57,7 @@ public abstract class AccessRequestProcessor extends ObRequestProcessor {
         AccountIdentification idIdentification = payment.getDebtorIdentification(InteropIdentifierType.ACCOUNT_ID);
         Map<InteropIdentifierType, AccountIdentification> identificationMap = null;
         String accountId = null;
-        if (idIdentification != null)
+        if (idIdentification != null && idIdentification.getSecondaryIdentification() == null)
             accountId = idIdentification.getIdentification();
         else {
             identificationMap = calcAccountIdIdentifications(payment.getOrigDebtorIdentification(), pspId);
@@ -137,7 +137,7 @@ public abstract class AccessRequestProcessor extends ObRequestProcessor {
 
         String accountId;
         InteropIdentifierType idType = InteropIdentifierType.ACCOUNT_ID;
-        if (interopType == idType)
+        if (interopType == idType && identification.getSecondaryIdentification() == null)
             accountId = identification.getIdentification();
         else {
             PspPartyByIdentifierResponseDto partyResponse = pspRestClient.callPartyByIdentitier(interopType, identification.getIdentification(),
