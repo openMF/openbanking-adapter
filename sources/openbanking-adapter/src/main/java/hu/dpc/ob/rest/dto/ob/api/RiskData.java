@@ -50,9 +50,11 @@ public class RiskData {
         this.deliveryAddress = deliveryAddress;
     }
 
+    @NotNull
     public static RiskData create(PaymentRisk risk) {
-        return risk == null ? null : new RiskData(risk.getPaymentContext(), risk.getMerchantCategory(), risk.getMerchantCustomerIdentification(),
-                DeliveryAddressData.create(risk.getDeliveryAddress()));
+        return risk == null
+                ? new RiskData(null, null, null, null)
+                : new RiskData(risk.getPaymentContext(), risk.getMerchantCategory(), risk.getMerchantCustomerIdentification(), DeliveryAddressData.create(risk.getDeliveryAddress()));
     }
 
     public PaymentRisk mapToEntity(@NotNull Payment payment) {
