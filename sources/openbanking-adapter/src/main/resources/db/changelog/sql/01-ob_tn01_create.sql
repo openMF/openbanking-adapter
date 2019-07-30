@@ -285,6 +285,16 @@ CREATE TABLE `interop_extension`
     CONSTRAINT `fk_interop_extension.payment` FOREIGN KEY (`interop_payment_id`) REFERENCES `interop_payment` (`id`)
 );
 
+CREATE TABLE `trusted_client`
+(
+    `id`                        BIGINT(20)   NOT NULL AUTO_INCREMENT,
+    `client_id`                 VARCHAR(128)   NOT NULL,
+    `created_on`                TIMESTAMP(3) NOT NULL,
+    `expires_on`                TIMESTAMP(3) NULL DEFAULT NULL,
+    CONSTRAINT `pk_trusted_client` PRIMARY KEY (id),
+    CONSTRAINT `uk_trusted_client.client` UNIQUE (`client_id`)
+);
+
 CREATE TABLE `trusted_beneficiary`
 (
     `id`                        BIGINT(20)   NOT NULL AUTO_INCREMENT,

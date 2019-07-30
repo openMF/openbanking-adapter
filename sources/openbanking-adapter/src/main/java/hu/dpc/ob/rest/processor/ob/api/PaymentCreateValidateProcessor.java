@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 
-@Component("api-ob-pis-payment-create-validate-processor")
+@Component("api-ob-payment-create-validate-processor")
 public class PaymentCreateValidateProcessor extends ApiValidateProcessor {
 
     @Autowired

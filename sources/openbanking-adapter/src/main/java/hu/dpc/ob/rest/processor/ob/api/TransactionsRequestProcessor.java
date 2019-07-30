@@ -57,9 +57,9 @@ public class TransactionsRequestProcessor extends ApiRequestProcessor {
         boolean debit = apiService.hasPermission(apiUserId, clientId, PermissionCode.READ_TRANSACTIONS_DEBITS, null);
         boolean credit = apiService.hasPermission(apiUserId, clientId, PermissionCode.READ_TRANSACTIONS_CREDITS, null);
         Message in = exchange.getIn();
-        String transactionsFrom = in.getHeader(apiSettings.getHeader(ApiSchema.OB, ApiSettings.ApiHeader.TRANSACTIONS_FROM).getKey(), String.class);
+        String transactionsFrom = in.getHeader(apiSettings.getHeaderProps(ApiSchema.OB, ApiSettings.ApiHeader.TRANSACTIONS_FROM).getKey(), String.class);
         LocalDateTime fromBookingDateTime = DateUtils.parseIsoDateTime(transactionsFrom);
-        String transactionsTo = in.getHeader(apiSettings.getHeader(ApiSchema.OB, ApiSettings.ApiHeader.TRANSACTIONS_TO).getKey(), String.class);
+        String transactionsTo = in.getHeader(apiSettings.getHeaderProps(ApiSchema.OB, ApiSettings.ApiHeader.TRANSACTIONS_TO).getKey(), String.class);
         LocalDateTime toBookingDateTime = DateUtils.parseIsoDateTime(transactionsTo);
 
         boolean detail = apiService.hasPermission(apiUserId, clientId, ApiSettings.ApiBinding.TRANSACTION, true);

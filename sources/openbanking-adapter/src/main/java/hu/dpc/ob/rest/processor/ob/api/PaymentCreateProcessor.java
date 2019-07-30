@@ -28,7 +28,7 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
 
-@Component("api-ob-pis-payment-create-processor")
+@Component("api-ob-payment-create-processor")
 public class PaymentCreateProcessor extends AccessRequestProcessor {
 
     private final AdapterSettings adapterSettings;

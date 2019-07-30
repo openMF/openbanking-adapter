@@ -8,7 +8,7 @@
 package hu.dpc.ob.rest.processor;
 
 import hu.dpc.ob.config.AdapterSettings;
-import hu.dpc.ob.config.Binding;
+import hu.dpc.ob.config.type.Binding;
 import hu.dpc.ob.domain.entity.Consent;
 import hu.dpc.ob.domain.entity.Payment;
 import hu.dpc.ob.domain.type.ApiScope;
@@ -68,7 +68,7 @@ public class ValidateProcessor implements Processor {
         String apiUserId = exchange.getProperty(ExchangeHeader.API_USER_ID.getKey(), String.class);
         Binding binding = exchange.getProperty(ExchangeHeader.BINDING.getKey(), Binding.class);
         if (binding != null && binding.isUserRequest())
-            ContextUtils.assertNotNull(clientId);
+            ContextUtils.assertNotNull(apiUserId);
 
         @NotNull ApiScope scope = binding.getScope();
 

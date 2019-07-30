@@ -7,15 +7,17 @@
  */
 package hu.dpc.ob.rest.routebuilder;
 
-import hu.dpc.ob.config.Binding;
 import hu.dpc.ob.config.BindingProperties;
 import hu.dpc.ob.config.SchemaSettings;
-import hu.dpc.ob.config.TenantProperties;
+import hu.dpc.ob.config.TenantConfig;
+import hu.dpc.ob.config.UriProperties;
+import hu.dpc.ob.config.type.Binding;
 import hu.dpc.ob.domain.type.RequestSource;
 import hu.dpc.ob.model.internal.ApiSchema;
 import hu.dpc.ob.model.internal.PspId;
 import hu.dpc.ob.rest.ExchangeHeader;
 import hu.dpc.ob.util.ContextUtils;
+import hu.dpc.ob.util.ThreadLocalContext;
 import liquibase.util.StringUtils;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Message;
@@ -29,6 +31,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import static hu.dpc.ob.util.ContextUtils.*;
@@ -45,11 +48,12 @@ public abstract class OpenbankingRouteBuilder extends RouteBuilder {
         this.appContext = appContext;
     }
 
-    protected <_B extends Binding> void buildConsumerRoutes(ApiSchema schema, String tenant, SchemaSettings<?, ?, _B> settings) {
+    protected <_B extends Binding> void buildConsumerRoutes(ApiSchema schema, TenantConfig tenant, SchemaSettings<?, ?, _B> settings) {
         @NotNull RequestSource source = settings.getSource();
+        @NotEmpty String tenantName = tenant.getName();
         for (_B binding : settings.getBindings(schema)) {
-            BindingProperties bindingProps = settings.getBinding(schema, binding);
-            TenantProperties tenantProps = bindingProps.getTenant(tenant);
+            BindingProperties bindingProps = settings.getBindingProps(schema, binding);
+            UriProperties tenantProps = bindingProps.getTenantProps(tenantName);
             HttpMethod method = bindingProps.getHttpMethod();
             String url = tenantProps.getUrl();
 
@@ -57,7 +61,7 @@ public abstract class OpenbankingRouteBuilder extends RouteBuilder {
 
             String instance = settings.getAdapterSettings().getInstance();
             RouteDefinition from = from(consumerEndpoint);
-            from.id(buildId(source, schema, tenant + '-' + binding.getConfigName(), "consumer"));
+            from.id(buildId(source, schema, tenantName + '-' + binding.getConfigName(), "consumer"));
             Class bodyClass = bindingProps.getBodyClass();
             if (bodyClass != null) {
                 from.unmarshal().json(JsonLibrary.Jackson, bodyClass);
@@ -66,12 +70,14 @@ public abstract class OpenbankingRouteBuilder extends RouteBuilder {
                 Message in = exchange.getIn();
                 HttpServletRequest request = in.getBody(HttpServletRequest.class);
                 String pathInfo = request.getPathInfo();
-                exchange.setProperty(ExchangeHeader.PSP_ID.getKey(), new PspId(instance, tenant));
+                exchange.setProperty(ExchangeHeader.PSP_ID.getKey(), new PspId(instance, tenantName));
                 exchange.setProperty(ExchangeHeader.SCHEMA.getKey(), schema);
                 exchange.setProperty(ExchangeHeader.SCOPE.getKey(), binding.getScope());
                 exchange.setProperty(ExchangeHeader.SOURCE.getKey(), source);
                 exchange.setProperty(ExchangeHeader.BINDING.getKey(), binding);
                 exchange.setProperty(ExchangeHeader.PATH_PARAMS.getKey(), ContextUtils.parsePathParams(pathInfo, tenantProps.getUriPath()));
+
+                ThreadLocalContext.setTenant(tenant);
 
                 Object body = null;
                 if (bodyClass != null) {

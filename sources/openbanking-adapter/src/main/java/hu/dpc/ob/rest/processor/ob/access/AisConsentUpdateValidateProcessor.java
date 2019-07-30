@@ -36,11 +36,17 @@ public class AisConsentUpdateValidateProcessor extends AccessValidateProcessor {
     public void process(Exchange exchange) throws Exception {
         super.process(exchange);
 
+        String clientId = exchange.getProperty(ExchangeHeader.CLIENT_ID.getKey(), String.class);
         String consentId = ContextUtils.getPathParam(exchange, ContextUtils.PARAM_CONSENT_ID);
         AisConsentUpdateRequestDto request = exchange.getProperty(ExchangeHeader.REQUEST_DTO.getKey(), AisConsentUpdateRequestDto.class);
         @NotNull AisConsentUpdateData data = request.getData();
         ContextUtils.assertEq(consentId, data.getConsentId());
 
-        consentService.validatePermissions(data.getPermissions());
+        if (data.isAuthorize()) {
+            if (data.getAccounts() == null && !consentService.isTrustedClient(clientId))
+                throw new UnsupportedOperationException("Consent accounts must be specified");
+
+            consentService.validatePermissions(clientId, data.getPermissions());
+        }
     }
 }

@@ -26,14 +26,14 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@Component("api-ob-pis-funds-processor")
-public class PisFundsRequestProcessor extends ApiRequestProcessor {
+@Component("api-ob-funds-processor")
+public class FundsRequestProcessor extends ApiRequestProcessor {
 
     private PspRestClient pspRestClient;
     private ConsentService consentService;
 
     @Autowired
-    public PisFundsRequestProcessor(PspRestClient pspRestClient, ConsentService consentService) {
+    public FundsRequestProcessor(PspRestClient pspRestClient, ConsentService consentService) {
         this.pspRestClient = pspRestClient;
         this.consentService = consentService;
     }

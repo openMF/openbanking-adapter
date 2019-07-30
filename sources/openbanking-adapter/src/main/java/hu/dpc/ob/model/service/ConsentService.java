@@ -9,13 +9,12 @@ package hu.dpc.ob.model.service;
 
 import hu.dpc.ob.config.AdapterSettings;
 import hu.dpc.ob.domain.entity.*;
-import hu.dpc.ob.domain.repository.AccountIdentificationRepository;
-import hu.dpc.ob.domain.repository.ConsentEventRepository;
-import hu.dpc.ob.domain.repository.ConsentRepository;
-import hu.dpc.ob.domain.repository.PaymentRepository;
+import hu.dpc.ob.domain.repository.*;
 import hu.dpc.ob.domain.type.*;
 import hu.dpc.ob.model.ConsentStateMachine;
 import hu.dpc.ob.rest.dto.ob.access.*;
+import hu.dpc.ob.rest.dto.ob.api.AccountData;
+import hu.dpc.ob.rest.dto.ob.api.AccountsData;
 import hu.dpc.ob.rest.dto.ob.api.PaymentCreateRequestDto;
 import hu.dpc.ob.rest.dto.ob.api.PisConsentCreateRequestDto;
 import hu.dpc.ob.rest.processor.ob.access.AccessRequestProcessor;
@@ -54,18 +53,21 @@ public class ConsentService {
     private final ConsentEventRepository consentEventRepository;
     private final PaymentRepository paymentRepository;
     private final AccountIdentificationRepository accountIdentificationRepository;
+    private final TrustedClientRepository trustedClientRepository;
 
     private final SeqNoGenerator seqNoGenerator;
 
     @Autowired
-    public ConsentService(AdapterSettings adapterSettings, PaymentService paymentService, ConsentRepository consentRepository, ConsentEventRepository consentEventRepository,
-                          PaymentRepository paymentRepository, AccountIdentificationRepository accountIdentificationRepository, SeqNoGenerator seqNoGenerator) {
+    public ConsentService(AdapterSettings adapterSettings, PaymentService paymentService, ConsentRepository consentRepository,
+                          ConsentEventRepository consentEventRepository, PaymentRepository paymentRepository, AccountIdentificationRepository accountIdentificationRepository,
+                          TrustedClientRepository trustedClientRepository, SeqNoGenerator seqNoGenerator) {
         this.adapterSettings = adapterSettings;
         this.paymentService = paymentService;
         this.consentRepository = consentRepository;
         this.consentEventRepository = consentEventRepository;
         this.paymentRepository = paymentRepository;
         this.accountIdentificationRepository = accountIdentificationRepository;
+        this.trustedClientRepository = trustedClientRepository;
         this.seqNoGenerator = seqNoGenerator;
     }
 
@@ -104,6 +106,10 @@ public class ConsentService {
                                  LocalDateTime transactionToDateTime, List<PermissionCode> permissions) {
         @NotNull Consent consent = Consent.create(clientId, scope, expirationDateTime, transactionFromDateTime, transactionToDateTime,
                 permissions, seqNoGenerator);
+
+        if (consent.getExpiresOn() == null && !isTrustedClient(clientId))
+            consent.setExpiresOn(adapterSettings.calcExpiresOn(AdapterSettings.LIMIT_CONSENT, consent.getCreatedOn()));
+
         consentRepository.save(consent);
         return consent;
     }
@@ -186,20 +192,22 @@ public class ConsentService {
 
             paymentService.acceptAction(payment, PaymentActionCode.DEBTOR_QUOTES, consentEvent);
 
-            EventReasonCode scaReason = paymentService.calcScaReason(user, payment);
-            ScaExemptionCode exemptionCode = null;
-            AuthenticationApproachCode approachCode = CA;
-            if (scaReason != null) {
-                exemptionCode = ScaExemptionCode.PARTY_TO_PARTY; // TODO: what code?
-                approachCode = AuthenticationApproachCode.SCA;
-            }
             ScaSupport scaSupport = payment.getScaSupport();
+            if (scaSupport == null || scaSupport.getAuthenticationApproach() == AuthenticationApproachCode.SCA) {
+                EventReasonCode scaReason = paymentService.calcScaReason(user, payment);
+                ScaExemptionCode exemptionCode = null;
+                AuthenticationApproachCode approachCode = CA;
+                if (scaReason != null) {
+                    exemptionCode = ScaExemptionCode.PARTY_TO_PARTY; // TODO: what code?
+                    approachCode = AuthenticationApproachCode.SCA;
+                }
 
-            if (scaSupport == null)
-                payment.setScaSupport(new ScaSupport(payment, exemptionCode, approachCode, null));
-            else if (approachCode == CA && approachCode != scaSupport.getAuthenticationApproach()) {
-                scaSupport.setAuthenticationApproach(CA);
-                scaSupport.setScaExemptionCode(exemptionCode);
+                if (scaSupport == null)
+                    payment.setScaSupport(new ScaSupport(payment, exemptionCode, approachCode, null));
+                else if (approachCode == CA) {
+                    scaSupport.setAuthenticationApproach(CA);
+                    scaSupport.setScaExemptionCode(exemptionCode);
+                }
             }
         }
         if (consentEvent != null) {
@@ -248,14 +256,32 @@ public class ConsentService {
     }
 
     @Transactional
-    public Consent authorizeConsent(@NotNull User user, @NotNull AisConsentUpdateRequestDto request, boolean test) {
+    public Consent authorizeConsent(@NotNull User user, @NotNull AisConsentUpdateRequestDto request, @NotNull AccountsData accountsData, boolean test) {
         @NotNull AisConsentUpdateData data = request.getData();
         @NotNull Consent consent = getConsentById(data.getConsentId());
 
         List<PermissionCode> permissions = data.getPermissions();
-        for (PermissionCode permission : permissions) {
-            if (!consent.hasPermission(permission))
-                throw new UnsupportedOperationException("Attempt to add unsupported Permission " + permission + " to Consent " + consent.getConsentId());
+        if (permissions != null) {
+            for (PermissionCode permission : permissions) {
+                if (!consent.hasPermission(permission))
+                    throw new UnsupportedOperationException("Attempt to add unsupported Permission " + permission + " to Consent " + consent.getConsentId());
+            }
+        }
+
+        if (accountsData == null)
+            throw new UnsupportedOperationException("Can not register accounts to Consent " + consent.getConsentId());
+
+        List<ConsentAccountData> accounts = data.getAccounts();
+        List<String> apiAccounts;
+        if (accounts == null) {
+            apiAccounts = accountsData.getAccounts().stream().map(AccountData::getAccountId).collect(Collectors.toList());
+        } else {
+            for (ConsentAccountData account : accounts) {
+                AccountData apiAccount = accountsData.getAccount(account.getAccountId());
+                if (apiAccount == null || (apiAccount.getStatus() != null && !apiAccount.getStatus().isEnabled()))
+                    throw new UnsupportedOperationException("Attempt to add unsupported Account " + account.getAccountId() + " to Consent " + consent.getConsentId());
+            }
+            apiAccounts = accounts.stream().map(ConsentAccountData::getAccountId).collect(Collectors.toList());
         }
 
         @NotNull ConsentEvent event = registerUpdateAction(ApiScope.AIS, user, data, test);
@@ -276,10 +302,7 @@ public class ConsentService {
             consent.setUser(user);
             if (consent.isActive()) {
                 consent.mergePermissions(permissions, event);
-                if (data.getAccounts() != null) {
-                    List<String> apiAccounts = data.getAccounts().stream().map(ConsentAccountData::getAccountId).collect(Collectors.toList());
-                    consent.mergeAccounts(apiAccounts, event);
-                }
+                consent.mergeAccounts(apiAccounts, event);
             }
         }
         consentRepository.save(consent);
@@ -335,14 +358,20 @@ public class ConsentService {
     PaymentEvent createPayment(@NotNull User user, @NotNull PaymentCreateRequestDto request, boolean test) {
         @NotEmpty String consentId = request.getData().getConsentId();
         @NotNull Consent consent = getConsentById(consentId);
-        @NotNull PaymentEvent event = paymentService.createPayment(consent.getPayment(), request, test);
+        @NotNull PaymentEvent event = paymentService.createPayment(consent.getPayment(), request, isTrustedClient(consent.getClientId()), test);
         if (!event.isAccepted())
             registerAction(consent, ConsentActionCode.REJECT, EventStatusCode.ACCEPTED, consentId, null, event.getReason(), event.getReasonDesc());
 
         return event;
     }
 
-    public void validatePermissions(@NotNull List<PermissionCode> permissions) {
+    public void validatePermissions(@NotNull String clientId, List<PermissionCode> permissions) {
+        if (permissions == null) {
+            if (isTrustedClient(clientId))
+                return;
+            throw new UnsupportedOperationException("Permissions must be specified");
+        }
+
         if (!permissions.contains(READ_ACCOUNTS_BASIC) && !permissions.contains(READ_ACCOUNTS_DETAIL))
             throw new UnsupportedOperationException("The permissions must contain at least " + READ_ACCOUNTS_BASIC + " or " + READ_ACCOUNTS_DETAIL);
 
@@ -380,6 +409,12 @@ public class ConsentService {
 
     public static List<PermissionCode> getPermissions(Consent consent) {
         return consent == null ? null : consent.getPermissions().stream().map(ConsentPermission::getPermission).collect(Collectors.toList());
+    }
+
+    @Transactional(MANDATORY)
+    public boolean isTrustedClient(@NotNull String clientId) {
+        TrustedClient trusted = trustedClientRepository.findByClientId(clientId);
+        return trusted != null && !trusted.isExpired();
     }
 
     @Transactional
@@ -425,17 +460,20 @@ public class ConsentService {
         if (test || source != RequestSource.API)
             return null;
 
+        if (isTrustedClient(clientId))
+            return null; // TODO: maybe we would like to keep some restrictions
+
         // TODO: amount is not supported because money change is not supported
         Short maxNo = adapterSettings.getMaxNumber(AdapterSettings.LIMIT_EVENT);
-        Long expiration = adapterSettings.getExpiration(AdapterSettings.LIMIT_EVENT);
+        boolean expiration = adapterSettings.hasExpiration(AdapterSettings.LIMIT_EVENT);
         List<ConsentEvent> limitEvents = null;
-        if (maxNo != null || expiration != null)  {
+        if (maxNo != null || expiration)  {
             limitEvents = resourceId == null
                     ? consentEventRepository.findLimitEvents(user, clientId, scope, action)
                     : consentEventRepository.findLimitEvents(user, clientId, scope, action, resourceId);
             if (maxNo != null && limitEvents.size() >= maxNo)
                 return LIMIT_NUMBER;
-            if (expiration != null && !limitEvents.isEmpty() && DateUtils.isBeforeDateTimeOfTenant(limitEvents.get(0).getCreatedOn().plusSeconds(expiration)))
+            if (expiration && !limitEvents.isEmpty() && DateUtils.isBeforeDateTimeOfTenant(adapterSettings.calcExpiresOn(AdapterSettings.LIMIT_EVENT, limitEvents.get(0).getCreatedOn())))
                 return LIMIT_EXPIRATION;
         }
         Short maxFrequency = adapterSettings.getMaxFrequency(AdapterSettings.LIMIT_EVENT);
@@ -475,6 +513,9 @@ public class ConsentService {
         if (test || source != RequestSource.API)
             return null;
 
+        if (isTrustedClient(consent.getClientId()))
+            return null; // TODO: maybe we would like to keep some restrictions
+
         List<ConsentEvent> limitEvents = consent.getEvents(action);
 
         Short maxNo = adapterSettings.getMaxNumber(AdapterSettings.LIMIT_CONSENT);
@@ -484,8 +525,10 @@ public class ConsentService {
         if (maxNo != null && limitEvents.size() >= maxNo)
             return LIMIT_NUMBER;
 
-        Long expiration = adapterSettings.getExpiration(AdapterSettings.LIMIT_CONSENT);
-        if (expiration != null && !limitEvents.isEmpty() && DateUtils.isBeforeDateTimeOfTenant(limitEvents.get(0).getCreatedOn().plusSeconds(expiration)))
+        LocalDateTime expiresOn;
+        if (!limitEvents.isEmpty()
+                && (expiresOn = adapterSettings.calcExpiresOn(AdapterSettings.LIMIT_CONSENT, limitEvents.get(0).getCreatedOn())) != null
+                && DateUtils.isBeforeDateTimeOfTenant(expiresOn))
             return LIMIT_EXPIRATION;
 
         Short maxFrequency = adapterSettings.getMaxFrequency(AdapterSettings.LIMIT_CONSENT);

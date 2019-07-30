@@ -33,7 +33,8 @@ public class AisConsentCreateValidateProcessor extends ApiValidateProcessor {
     public void process(Exchange exchange) throws Exception {
         super.process(exchange);
 
+        String clientId = exchange.getProperty(ExchangeHeader.CLIENT_ID.getKey(), String.class);
         AisConsentCreateRequestDto request = exchange.getProperty(ExchangeHeader.REQUEST_DTO.getKey(), AisConsentCreateRequestDto.class);
-        consentService.validatePermissions(request.getData().getPermissions());
+        consentService.validatePermissions(clientId, request.getData().getPermissions());
     }
 }

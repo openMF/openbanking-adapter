@@ -35,7 +35,7 @@ public final class Consent extends AbstractEntity implements Comparable<Consent>
 
     @NotNull
     @Column(name = "consent_id", nullable = false, length = 128)
-    private String consentId; // Unique identification as assigned by the ASPSP to uniquely identify the consent resourceId.
+    private String consentId; // Unique identification as assigned by the ASPSP to uniquely identify the consent resource.
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -252,17 +252,16 @@ public final class Consent extends AbstractEntity implements Comparable<Consent>
 
     public void mergePermissions(List<PermissionCode> permissionCodes, @NotNull ConsentEvent event) {
         if (permissionCodes == null)
-            getPermissions().clear();
-        else {
-            for (int i = getPermissions().size(); --i >= 0; ) {
-                ConsentPermission consentPermission = permissions.get(i);
-                if (!permissionCodes.contains(consentPermission.getPermission()))
-                    permissions.remove(consentPermission);
-            }
-            for (PermissionCode permissionCode : permissionCodes) {
-                if (!hasPermission(permissionCode))
-                    addPermission(permissionCode, event);
-            }
+            return;
+
+        for (int i = getPermissions().size(); --i >= 0; ) {
+            ConsentPermission consentPermission = permissions.get(i);
+            if (!permissionCodes.contains(consentPermission.getPermission()))
+                permissions.remove(consentPermission);
+        }
+        for (PermissionCode permissionCode : permissionCodes) {
+            if (!hasPermission(permissionCode))
+                addPermission(permissionCode, event);
         }
     }
 
@@ -286,17 +285,16 @@ public final class Consent extends AbstractEntity implements Comparable<Consent>
 
     public void mergeAccounts(List<String> accountIds, @NotNull ConsentEvent event) {
         if (accountIds == null)
-            getAccounts().clear();
-        else {
-            for (int i = getAccounts().size(); --i >= 0; ) {
-                ConsentAccount consentAccount = accounts.get(i);
-                if (!accountIds.contains(consentAccount.getAccountId()))
-                    accounts.remove(consentAccount);
-            }
-            for (String accountId : accountIds) {
-                if (!hasAccount(accountId))
-                    addAccount(accountId, event);
-            }
+            return;
+
+        for (int i = getAccounts().size(); --i >= 0; ) {
+            ConsentAccount consentAccount = accounts.get(i);
+            if (!accountIds.contains(consentAccount.getAccountId()))
+                accounts.remove(consentAccount);
+        }
+        for (String accountId : accountIds) {
+            if (!hasAccount(accountId))
+                addAccount(accountId, event);
         }
     }
 

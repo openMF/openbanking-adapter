@@ -22,7 +22,7 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
 
-@Component("api-ob-pis-client-payment-processor")
+@Component("api-ob-client-payment-processor")
 public class ClientPaymentRequestProcessor extends ApiRequestProcessor {
 
     private final PspRestClient pspRestClient;

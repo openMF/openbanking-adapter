@@ -94,11 +94,11 @@ public class PaymentService {
 
     @Transactional(MANDATORY)
     @NotNull
-    PaymentEvent createPayment(@NotNull Payment payment, @NotNull PaymentCreateRequestDto request, boolean test) {
+    PaymentEvent createPayment(@NotNull Payment payment, @NotNull PaymentCreateRequestDto request, boolean trustedClient, boolean test) {
         String reasonCode = null;
         String reasonDesc = request.updateEntity(payment);
         if (reasonDesc == null) {
-            EventReasonCode rejectReason = calcPaymentRejectReason(payment, PaymentActionCode.PAYMENT_ACCEPT, test);
+            EventReasonCode rejectReason = calcPaymentRejectReason(payment, PaymentActionCode.PAYMENT_ACCEPT, trustedClient, test);
             if (rejectReason != null) {
                 reasonCode = rejectReason.getId();
                 reasonDesc = rejectReason.getDisplayText();
@@ -115,12 +115,15 @@ public class PaymentService {
     /** Should call each time when an action is performed on an existing payment to validate the event.
      *  Internal use. Limit is calculated /payment/action */
     @Transactional(MANDATORY)
-    EventReasonCode calcPaymentRejectReason(@NotNull Payment payment, @NotNull PaymentActionCode action, boolean test) {
+    EventReasonCode calcPaymentRejectReason(@NotNull Payment payment, @NotNull PaymentActionCode action, boolean trustedClient, boolean test) {
         if (payment.isExpired())
             return TRANSACTION_EXPIRED;
 
         if (test)
             return null;
+
+        if (trustedClient)
+            return null; // TODO: maybe we would like to keep some restrictions
 
         List<PaymentEvent> limitEvents = payment.getEvents(action);
 
@@ -129,11 +132,14 @@ public class PaymentService {
             return LIMIT_AMOUNT;
 
         Short maxNo = adapterSettings.getMaxNumber(AdapterSettings.LIMIT_PAYMENT);
-        Long expiration = adapterSettings.getExpiration(AdapterSettings.LIMIT_PAYMENT);
 
         if (maxNo != null && limitEvents.size() >= maxNo)
             return LIMIT_NUMBER;
-        if (expiration != null && !limitEvents.isEmpty() && DateUtils.isBeforeDateTimeOfTenant(limitEvents.get(0).getCreatedOn().plusSeconds(expiration)))
+
+        LocalDateTime expiresOn;
+        if (!limitEvents.isEmpty()
+                && (expiresOn = adapterSettings.calcExpiresOn(AdapterSettings.LIMIT_PAYMENT, limitEvents.get(0).getCreatedOn())) != null
+                && DateUtils.isBeforeDateTimeOfTenant(expiresOn))
             return LIMIT_EXPIRATION;
 
         Short maxFrequency = adapterSettings.getMaxFrequency(AdapterSettings.LIMIT_PAYMENT);
@@ -175,8 +181,10 @@ public class PaymentService {
         if (maxNo != null && payments.size() >= maxNo)
             return LIMIT_NUMBER;
 
-        Long expiration = adapterSettings.getExpiration(AdapterSettings.LIMIT_SCA);
-        if (expiration != null && !payments.isEmpty() && DateUtils.isBeforeDateTimeOfTenant(payments.get(0).getCreatedOn().plusSeconds(expiration)))
+        boolean expires = adapterSettings.hasExpiration(AdapterSettings.LIMIT_SCA);
+        if (expires
+                && !payments.isEmpty()
+                && DateUtils.isBeforeDateTimeOfTenant(adapterSettings.calcExpiresOn(AdapterSettings.LIMIT_SCA, payments.get(0).getCreatedOn())))
             return LIMIT_EXPIRATION;
 
         Short maxFrequency = adapterSettings.getMaxFrequency(AdapterSettings.LIMIT_SCA);
@@ -191,7 +199,7 @@ public class PaymentService {
                 return LIMIT_FREQUENCY;
         }
 
-        return maxAmount == null && maxNo == null && expiration == null && maxFrequency == null ? SCA_NEEDED : null;
+        return maxAmount == null && maxNo == null && !expires && maxFrequency == null ? SCA_NEEDED : null;
     }
 
     @Transactional(MANDATORY)

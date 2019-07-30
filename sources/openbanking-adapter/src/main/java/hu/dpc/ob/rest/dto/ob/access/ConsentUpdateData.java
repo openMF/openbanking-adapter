@@ -45,4 +45,8 @@ public class ConsentUpdateData {
         this.reasonCode = reasonCode;
         this.reasonDesc = reasonDesc;
     }
+
+    public boolean isAuthorize() {
+        return action == ConsentActionCode.AUTHORIZE;
+    }
 }

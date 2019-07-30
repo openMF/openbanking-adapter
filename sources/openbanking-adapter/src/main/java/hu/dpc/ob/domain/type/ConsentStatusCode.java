@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 public enum ConsentStatusCode implements PersistentType<ConsentStatusCode, String>, DisplayType {
 
     @JsonProperty("AwaitingAuthorisation")
-    AWAITING_AUTHORIZATION("AwaitingAuthorisation", "The consent resourceId is awaiting PSU authorisation"),
+    AWAITING_AUTHORIZATION("AwaitingAuthorisation", "The consent resource is awaiting PSU authorisation"),
     @JsonProperty("Authorised")
-    AUTHORIZED("Authorised", "The consent resourceId has been successfully authorised"),
+    AUTHORIZED("Authorised", "The consent resource has been successfully authorised"),
     @JsonProperty("Rejected")
-    REJECTED("Rejected", "The consent resourceId has been rejected"),
+    REJECTED("Rejected", "The consent resource has been rejected"),
     @JsonProperty("Consumed")
     CONSUMED("Consumed", "The consented action has been successfully completed."),
     @JsonProperty("Revoked")

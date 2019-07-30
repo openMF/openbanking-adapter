@@ -52,7 +52,7 @@ public class AccessPrepareProcessor extends ObPrepareProcessor {
 
         Message in = exchange.getIn();
         ApiSchema schema = exchange.getProperty(ExchangeHeader.SCHEMA.getKey(), ApiSchema.class);
-        String apiUserId = in.getHeader(accessSettings.getHeader(schema, AccessSettings.AccessHeader.USER).getKey(), String.class);
+        String apiUserId = in.getHeader(accessSettings.getHeaderProps(schema, AccessSettings.AccessHeader.USER).getKey(), String.class);
         ContextUtils.assertNotNull(apiUserId);
         User user = consent.getUser();
         if (user != null)

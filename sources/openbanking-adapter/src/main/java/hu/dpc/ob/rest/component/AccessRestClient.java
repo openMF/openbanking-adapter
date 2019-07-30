@@ -7,7 +7,11 @@
  */
 package hu.dpc.ob.rest.component;
 
-import hu.dpc.ob.config.*;
+import hu.dpc.ob.config.AccessSettings;
+import hu.dpc.ob.config.OperationProperties;
+import hu.dpc.ob.config.UriProperties;
+import hu.dpc.ob.config.type.AuthEncodeType;
+import hu.dpc.ob.config.type.AuthProfileType;
 import hu.dpc.ob.model.internal.ApiSchema;
 import hu.dpc.ob.rest.dto.ob.access.IntrospectResponseDto;
 import hu.dpc.ob.rest.dto.ob.access.UserInfoResponseDto;
@@ -45,10 +49,10 @@ public class AccessRestClient {
     }
 
     public UserInfoResponseDto callUserInfo(@NotNull ApiSchema schema, @NotNull String tenant, @NotNull String accessCode) {
-        OperationProperties opProps = accessSettings.getOperation(schema, AccessSettings.AccessOperation.USER_INFO);
+        OperationProperties opProps = accessSettings.getOperationProps(schema, AccessSettings.AccessOperation.USER_INFO);
         log.debug(String.format("Call Identity " + opProps.getMethod() + " /" + opProps.getName() + ", access: %s", accessCode));
 
-        TenantProperties tenantProps = opProps.getTenant(tenant);
+        UriProperties tenantProps = opProps.getTenantProps(tenant);
         String url = tenantProps.getUrl();
 
         Map<String, String> headers = new HashMap<>();
@@ -61,10 +65,10 @@ public class AccessRestClient {
     }
 
     public IntrospectResponseDto callIntrospect(@NotNull ApiSchema schema, @NotNull String tenant, @NotNull String userAccessCode) {
-        OperationProperties opProps = accessSettings.getOperation(schema, AccessSettings.AccessOperation.INTROSPECT);
+        OperationProperties opProps = accessSettings.getOperationProps(schema, AccessSettings.AccessOperation.INTROSPECT);
         log.debug(String.format("Call Identity " + opProps.getMethod() + " /" + opProps.getName() + ", access: %s", userAccessCode));
 
-        TenantProperties tenantProps = opProps.getTenant(tenant);
+        UriProperties tenantProps = opProps.getTenantProps(tenant);
         String url = tenantProps.getUrl();
 
         String user = tenantProps.getUser();

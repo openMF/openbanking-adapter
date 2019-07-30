@@ -8,7 +8,7 @@
 package hu.dpc.ob.rest.processor.ob.api;
 
 import hu.dpc.ob.config.AdapterSettings;
-import hu.dpc.ob.config.Binding;
+import hu.dpc.ob.config.type.Binding;
 import hu.dpc.ob.model.internal.ApiSchema;
 import hu.dpc.ob.model.internal.PspId;
 import hu.dpc.ob.model.service.ApiService;
@@ -59,8 +59,9 @@ public class ApiPrepareProcessor extends ObPrepareProcessor {
 
         String clientId;
         if (adapterSettings.isTestEnv()) {
-            clientId = pspId.getId();
-            apiUserId = clientId + "_user";
+            String pspS = pspId.getId();
+            clientId = pspS + "_client";
+            apiUserId = pspS + "_user";
         } else {
             IntrospectResponseDto clientResponse = accessRestClient.callIntrospect(schema, tenant, accessCode);
             if (!clientResponse.isActive())

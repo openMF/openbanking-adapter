@@ -8,11 +8,8 @@
 package hu.dpc.ob.rest.parser;
 
 import hu.dpc.ob.config.AccessSettings;
-import hu.dpc.ob.config.ApiSettings;
 import hu.dpc.ob.config.BindingProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Component;
 
 public abstract class AccessJsonParser extends BindingJsonParser<AccessSettings.AccessBinding> {
 
@@ -24,7 +21,7 @@ public abstract class AccessJsonParser extends BindingJsonParser<AccessSettings.
 
     @Override
     public boolean hasBody(AccessSettings.AccessBinding binding) {
-        BindingProperties bindingProps = accessSettings.getBinding(getSchema(), binding);
+        BindingProperties bindingProps = accessSettings.getBindingProps(getSchema(), binding);
         return bindingProps.getHttpMethod() == HttpMethod.POST;
     }
 }

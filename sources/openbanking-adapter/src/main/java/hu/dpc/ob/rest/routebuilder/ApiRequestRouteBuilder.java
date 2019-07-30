@@ -9,6 +9,7 @@ package hu.dpc.ob.rest.routebuilder;
 
 import hu.dpc.ob.config.AdapterSettings;
 import hu.dpc.ob.config.ApiSettings;
+import hu.dpc.ob.config.TenantConfig;
 import hu.dpc.ob.model.internal.ApiSchema;
 import org.apache.camel.CamelContext;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class ApiRequestRouteBuilder extends OpenbankingRouteBuilder {
         });
     }
 
-    private void buildConsumerRoutes(ApiSchema schema, String tenant) {
+    private void buildConsumerRoutes(ApiSchema schema, TenantConfig tenant) {
         buildConsumerRoutes(schema, tenant, apiSettings);
     }
 

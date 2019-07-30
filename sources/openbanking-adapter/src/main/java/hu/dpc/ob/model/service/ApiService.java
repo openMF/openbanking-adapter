@@ -8,7 +8,7 @@
 package hu.dpc.ob.model.service;
 
 import hu.dpc.ob.config.ApiSettings;
-import hu.dpc.ob.config.Binding;
+import hu.dpc.ob.config.type.Binding;
 import hu.dpc.ob.domain.entity.*;
 import hu.dpc.ob.domain.repository.TrustedUserBeneficiaryRepository;
 import hu.dpc.ob.domain.type.*;
@@ -63,7 +63,11 @@ public class ApiService {
         @NotNull List<PermissionCode> validPermissions = apiSettings.getValidPermissions(schema, scope);
 
         @NotNull AisConsentCreateData consentData = request.getData();
-        List<PermissionCode> permissions = consentData.getPermissions().stream().filter(validPermissions::contains).collect(Collectors.toList());
+        List<PermissionCode> permissions = consentData.getPermissions();
+        if (permissions == null)
+            permissions = validPermissions;
+        else
+            permissions = permissions.stream().filter(validPermissions::contains).collect(Collectors.toList());
 
         return consentService.createConsent(clientId, scope, consentData.getExpirationDateTime(), consentData.getTransactionFromDateTime(),
                 consentData.getTransactionToDateTime(), permissions);
@@ -91,7 +95,7 @@ public class ApiService {
     @Transactional
     @NotNull
     public Consent updateConsent(@NotNull String apiUserId, @NotNull String clientId, @NotNull AisConsentUpdateRequestDto request,
-                                 boolean test) {
+                                 AccountsData accountsData, boolean test) {
         if (apiUserId == null)
             throw new UnsupportedOperationException("User is not specified");
         if (clientId == null)
@@ -101,7 +105,7 @@ public class ApiService {
         @NotNull ConsentActionCode action = request.getData().getAction();
         switch (action) {
             case AUTHORIZE:
-                return consentService.authorizeConsent(user, request, test);
+                return consentService.authorizeConsent(user, request, accountsData, test);
             case REJECT:
                 return consentService.rejectConsent(user, request, test);
             case REVOKE:

@@ -26,10 +26,10 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class AisConsentUpdateData extends ConsentUpdateData {
 
-    @JsonProperty(value = "Permissions", required = true)
+    @JsonProperty(value = "Permissions")
     List<PermissionCode> permissions;
 
-    @JsonProperty(value = "Account", required = true)
+    @JsonProperty(value = "Account")
     List<ConsentAccountData> accounts;
 
     public AisConsentUpdateData(@NotEmpty @Size(max = 128) String consentId, @NotNull ConsentActionCode action, String reasonCode,

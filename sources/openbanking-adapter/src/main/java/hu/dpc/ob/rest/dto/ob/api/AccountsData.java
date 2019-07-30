@@ -97,4 +97,12 @@ public class AccountsData {
     public static AccountsData transform(@NotNull PspAccountsResponseDto pspAccounts) {
         return transform(pspAccounts, null, false, null);
     }
+
+    public AccountData getAccount(String accountId) {
+        for (AccountData account : accounts) {
+            if (account.getAccountId().equals(accountId))
+                return account;
+        }
+        return null;
+    }
 }
