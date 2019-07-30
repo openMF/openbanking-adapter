@@ -7,6 +7,10 @@
  */
 package hu.dpc.ob.config;
 
+import hu.dpc.ob.config.type.ApplicationSettings;
+import hu.dpc.ob.config.type.Binding;
+import hu.dpc.ob.config.type.Header;
+import hu.dpc.ob.config.type.Operation;
 import hu.dpc.ob.model.internal.ApiSchema;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,9 +20,9 @@ import org.springframework.boot.context.properties.source.InvalidConfigurationPr
 
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter(AccessLevel.PUBLIC)
@@ -31,7 +35,7 @@ public abstract class SchemaSettings<_H extends Header, _O extends Operation, _B
 
     private boolean corsEnabled;
 
-    private List<SchemaProperties<_H, _O, _B>> schemas = new ArrayList<>(2);
+    private Map<String, SchemaProperties<_H, _O, _B>> schemas = new HashMap<>();
 
     public SchemaSettings(AdapterSettings adapterSettings) {
         this.adapterSettings = adapterSettings;
@@ -42,112 +46,105 @@ public abstract class SchemaSettings<_H extends Header, _O extends Operation, _B
     }
 
     public SchemaProperties<_H, _O, _B> getSchema(String schema) {
-        if (schema == null)
-            return null;
-        for (SchemaProperties<_H, _O, _B> schemaProps : getSchemas()) {
-            if (schema.equals(schemaProps.getName()))
-                return schemaProps;
-        }
-        return null;
+        return getSchemas().get(schema);
     }
 
     protected abstract _H[] getHeaders();
 
     public _H[] getHeaders(ApiSchema schema) {
-        return (_H[]) Arrays.stream(getHeaders()).filter(h -> getHeader(schema, h) != null).toArray(Header[]::new);
+        return (_H[]) Arrays.stream(getHeaders()).filter(h -> getHeaderProps(schema, h) != null).toArray(Header[]::new);
     }
 
-    public HeaderProperties getHeader(ApiSchema schema, @NotNull _H header) {
-        return getSchema(schema).getHeader(header);
+    public HeaderProperties getHeaderProps(ApiSchema schema, @NotNull _H header) {
+        return getSchema(schema).getHeaderProps(header);
     }
 
-    public HeaderProperties getHeader(String schema, String header) {
-        return getSchema(schema).getHeader(header);
+    public HeaderProperties getHeaderProps(String schema, String header) {
+        return getSchema(schema).getHeaderProps(header);
     }
 
     protected abstract _B[] getBindings();
 
     public _B[] getBindings(ApiSchema schema) {
-        return (_B[]) Arrays.stream(getBindings()).filter(b -> getBinding(schema, b) != null).toArray(Binding[]::new);
+        return (_B[]) Arrays.stream(getBindings()).filter(b -> getBindingProps(schema, b) != null).toArray(Binding[]::new);
     }
 
-    public BindingProperties getBinding(ApiSchema schema, @NotNull _B binding) {
-        return getSchema(schema).getBinding(binding);
+    public BindingProperties getBindingProps(ApiSchema schema, @NotNull _B binding) {
+        return getSchema(schema).getBindingProps(binding);
     }
 
-    public BindingProperties getBinding(String schema, String binding) {
-        return getSchema(schema).getBinding(binding);
+    public BindingProperties getBindingProps(String schema, String binding) {
+        return getSchema(schema).getBindingProps(binding);
     }
 
-    public TenantProperties getBinding(ApiSchema schema, @NotNull _B binding, String tenant) {
-        return getSchema(schema).getBinding(binding, tenant);
+    public UriProperties getBindingProps(ApiSchema schema, @NotNull _B binding, String tenant) {
+        return getSchema(schema).getBindingProps(binding, tenant);
     }
 
-    public TenantProperties getBinding(String schema, String binding, String tenant) {
-        return getSchema(schema).getBinding(binding, tenant);
+    public UriProperties getBindingProps(String schema, String binding, String tenant) {
+        return getSchema(schema).getBindingProps(binding, tenant);
     }
 
     protected abstract _O[] getOperations();
 
     public _O[] getOperations(ApiSchema schema) {
-        return (_O[]) Arrays.stream(getOperations()).filter(o -> getOperation(schema, o) != null).toArray(Operation[]::new);
+        return (_O[]) Arrays.stream(getOperations()).filter(o -> getOperationProps(schema, o) != null).toArray(Operation[]::new);
     }
 
-    public OperationProperties getOperation(ApiSchema schema, @NotNull _O operation) {
-        return getSchema(schema).getOperation(operation);
+    public OperationProperties getOperationProps(ApiSchema schema, @NotNull _O operation) {
+        return getSchema(schema).getOperationProps(operation);
     }
 
-    public OperationProperties getOperation(String schema, String operation) {
-        return getSchema(schema).getOperation(operation);
+    public OperationProperties getOperationProps(String schema, String operation) {
+        return getSchema(schema).getOperationProps(operation);
     }
 
-    public TenantProperties getOperation(ApiSchema schema, @NotNull _O operation, String tenant) {
-        return getSchema(schema).getOperation(operation, tenant);
+    public UriProperties getOperationProps(ApiSchema schema, @NotNull _O operation, String tenant) {
+        return getSchema(schema).getOperationProps(operation, tenant);
     }
 
-    public TenantProperties getOperation(String schema, String operation, String tenant) {
-        return getSchema(schema).getOperation(operation, tenant);
+    public UriProperties getOperationProps(String schema, String operation, String tenant) {
+        return getSchema(schema).getOperationProps(operation, tenant);
     }
 
-    private SchemaProperties<_H, _O, _B> addSchema(SchemaProperties<_H, _O, _B> schema) {
-        getSchemas().add(schema);
-        return schema;
+    private SchemaProperties<_H, _O, _B> addSchemaProps(ApiSchema schema, SchemaProperties<_H, _O, _B> properties) {
+        getSchemas().put(schema.getId(), properties);
+        return properties;
     }
 
-    private SchemaProperties<_H, _O, _B> removeSchema(SchemaProperties<_H, _O, _B> schema) {
+    private void removeSchemaProps(String schema) {
         getSchemas().remove(schema);
-        return schema;
     }
 
     void postConstruct() {
-        SchemaProperties<_H, _O, _B> defaultSchema = getSchema(SCHEMA_DEFAULT_SETTINGS);
+        String defaultSchemaName = SchemaProperties.getDefaultName();
+        SchemaProperties<_H, _O, _B> defaultSchema = getSchema(defaultSchemaName);
+
         for (ApiSchema schema : adapterSettings.getSchemas()) {
             SchemaProperties<_H, _O, _B> schemaProps = getSchema(schema);
             if (schemaProps == null) {
                 if (defaultSchema == null) {
-                    throw new InvalidConfigurationPropertyValueException("schema", SCHEMA_DEFAULT_SETTINGS, "Configuration is missing on " + getClass().getSimpleName());
+                    throw new InvalidConfigurationPropertyValueException("schema", defaultSchemaName, "Configuration is missing on " + getClass().getSimpleName());
                 }
-                schemaProps = addSchema(new SchemaProperties<_H, _O, _B>(schema));
+                schemaProps = addSchemaProps(schema, new SchemaProperties<_H, _O, _B>());
             }
-            if (schemaProps.isDefault())
-                continue;
 
             if  (defaultSchema != null) {
                 if (defaultSchema.getOperations() != null) {
                     for (OperationProperties defaultOps : defaultSchema.getOperations()) {
                         if (defaultOps.isDefault())
                             continue;
-                        if (schemaProps.getOperation(defaultOps.getName()) == null)
-                            schemaProps.addOperation(new OperationProperties(defaultOps.getName()));
+                        if (schemaProps.getOperationProps(defaultOps.getName()) == null)
+                            schemaProps.addOperationProps(new OperationProperties(defaultOps.getName()));
                     }
                 }
 
                 if (defaultSchema.getBindings() != null) {
-                    for (BindingProperties bindingProps : defaultSchema.getBindings()) {
-                        if (defaultSchema.isDefault())
+                    for (BindingProperties defaultBindings : defaultSchema.getBindings()) {
+                        if (defaultBindings.isDefault())
                             continue;
-                        if (schemaProps.getBinding(defaultSchema.getName()) == null)
-                            schemaProps.addBinding(new BindingProperties(defaultSchema.getName()));
+                        if (schemaProps.getBindingProps(defaultBindings.getName()) == null)
+                            schemaProps.addBindingProps(new BindingProperties(defaultBindings.getName()));
                     }
                 }
             }
@@ -155,6 +152,6 @@ public abstract class SchemaSettings<_H extends Header, _O extends Operation, _B
             schemaProps.postConstruct(defaultSchema);
         }
 
-        removeSchema(defaultSchema);
+        removeSchemaProps(defaultSchemaName);
     }
 }

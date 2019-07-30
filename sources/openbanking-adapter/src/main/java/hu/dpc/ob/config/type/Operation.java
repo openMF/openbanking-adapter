@@ -5,8 +5,10 @@
  *
  * https://mozilla.org/MPL/2.0/.
  */
-package hu.dpc.ob.config;
+package hu.dpc.ob.config.type;
 
-public interface Schema extends ListConfig {
+import hu.dpc.ob.domain.type.DisplayType;
+
+public interface Operation extends ListConfig, DisplayType {
 
 }

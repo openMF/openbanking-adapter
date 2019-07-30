@@ -7,11 +7,17 @@
  */
 package hu.dpc.ob.config;
 
+import hu.dpc.ob.config.type.ApplicationSettings;
+import hu.dpc.ob.config.type.Binding;
+import hu.dpc.ob.config.type.Header;
+import hu.dpc.ob.config.type.Operation;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +28,14 @@ import java.util.List;
 @SuppressWarnings("unused")
 public abstract class UriSettings<_H extends Header, _O extends Operation, _B extends Binding> implements ApplicationSettings {
 
+    @Valid
     private List<HeaderProperties> headers;
+    @Valid
     private List<OperationProperties> operations;
+    @Valid
     private List<BindingProperties> bindings;
 
-    public HeaderProperties getHeader(String header) {
+    HeaderProperties getHeaderProps(String header) {
         if (header == null)
             return null;
         if (getHeaders() == null)
@@ -38,22 +47,22 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
         return null;
     }
 
-    public HeaderProperties getHeader(@NotNull _H header) {
-        return getHeader(header.getConfigName());
+    public HeaderProperties getHeaderProps(@NotNull _H header) {
+        return getHeaderProps(header.getConfigName());
     }
 
-    private HeaderProperties addHeader(HeaderProperties header) {
+    private HeaderProperties addHeaderProps(HeaderProperties header) {
         if (getHeaders() == null)
             headers = new ArrayList<>(1);
         headers.add(header);
         return header;
     }
 
-    public OperationProperties getOperation(@NotNull _O operation) {
-        return getOperation(operation.getConfigName());
+    public OperationProperties getOperationProps(@NotNull _O operation) {
+        return getOperationProps(operation.getConfigName());
     }
 
-    protected OperationProperties getOperation(String operation) {
+    OperationProperties getOperationProps(String operation) {
         if (operation == null)
             return null;
         if (getOperations() == null)
@@ -65,23 +74,23 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
         return null;
     }
 
-    public TenantProperties getOperation(@NotNull _O operation, String tenant) {
-        return getOperation(operation.getConfigName(), tenant);
+    public UriProperties getOperationProps(@NotNull _O operation, String tenant) {
+        return getOperationProps(operation.getConfigName(), tenant);
     }
 
-    protected TenantProperties getOperation(String operation, String tenant) {
+    UriProperties getOperationProps(String operation, String tenant) {
         if (operation == null)
             return null;
         if (getOperations() == null)
             return null;
         for (OperationProperties operationProps : operations) {
             if (operation.equals(operationProps.getName()))
-                return operationProps.getTenant(tenant);
+                return operationProps.getTenantProps(tenant);
         }
         return null;
     }
 
-    protected OperationProperties addOperation(OperationProperties operation) {
+    OperationProperties addOperationProps(OperationProperties operation) {
         if (getOperations() == null) {
             operations = new ArrayList<>(1);
         }
@@ -89,18 +98,18 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
         return operation;
     }
 
-    protected OperationProperties removeOperation(OperationProperties operation) {
+    private OperationProperties removeOperationProps(OperationProperties operation) {
         if (getOperations() != null) {
             operations.remove(operation);
         }
         return operation;
     }
 
-    public BindingProperties getBinding(@NotNull _B binding) {
-        return getBinding(binding.getConfigName());
+    BindingProperties getBindingProps(@NotNull _B binding) {
+        return getBindingProps(binding.getConfigName());
     }
 
-    protected BindingProperties getBinding(String binding) {
+    BindingProperties getBindingProps(String binding) {
         if (binding == null)
             return null;
         if (getBindings() == null)
@@ -112,23 +121,23 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
         return null;
     }
 
-    public TenantProperties getBinding(@NotNull _B binding, String tenant) {
-        return getBinding(binding.getConfigName(), tenant);
+    public UriProperties getBindingProps(@NotNull _B binding, String tenant) {
+        return this.getBindingProps(binding.getConfigName(), tenant);
     }
 
-    protected TenantProperties getBinding(String binding, String tenant) {
+    UriProperties getBindingProps(@NotNull String binding, String tenant) {
         if (binding == null)
             return null;
         if (getBindings() == null)
             return null;
         for (BindingProperties bindingProps : bindings) {
             if (binding.equals(bindingProps.getName()))
-                return bindingProps.getTenant(tenant);
+                return bindingProps.getTenantProps(tenant);
         }
         return null;
     }
 
-    protected BindingProperties addBinding(BindingProperties binding) {
+    BindingProperties addBindingProps(BindingProperties binding) {
         if (getBindings() == null) {
             bindings = new ArrayList<>(1);
         }
@@ -136,7 +145,7 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
         return binding;
     }
 
-    protected BindingProperties removeBinding(BindingProperties binding) {
+    private BindingProperties removeBindingProps(BindingProperties binding) {
         if (getBindings() != null) {
             bindings.remove(binding);
         }
@@ -153,9 +162,10 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
             for (OperationProperties operation : operations) {
                 if (operation.isDefault())
                     continue;
-                for (String tenant : adapterSettings.getTenants()) {
-                    if (operation.getTenant(tenant) == null)
-                        operation.addTenant(new TenantProperties(tenant));
+                for (TenantConfig tenant : adapterSettings.getTenants()) {
+                    @NotEmpty String tenantName = tenant.getName();
+                    if (operation.getTenantProps(tenantName) == null)
+                        operation.addTenantProps(tenantName, new UriProperties());
                 }
             }
         }
@@ -166,9 +176,10 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
             for (BindingProperties binding : bindings) {
                 if (binding.isDefault())
                     continue;
-                for (String tenant : adapterSettings.getTenants()) {
-                    if (binding.getTenant(tenant) == null)
-                        binding.addTenant(new TenantProperties(tenant));
+                for (TenantConfig tenant : adapterSettings.getTenants()) {
+                    @NotEmpty String tenantName = tenant.getName();
+                    if (binding.getTenantProps(tenantName) == null)
+                        binding.addTenantProps(tenantName, new UriProperties());
                 }
             }
         }
@@ -179,9 +190,9 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
             List<HeaderProperties> defaultHeaders = defaultSettings.getHeaders();
             if (defaultHeaders != null) {
                 for (HeaderProperties defaultHeader : defaultHeaders) {
-                    HeaderProperties header = getHeader(defaultHeader.getName());
+                    HeaderProperties header = getHeaderProps(defaultHeader.getName());
                     if (header == null) {
-                        header = addHeader(new HeaderProperties(defaultHeader.getName()));
+                        header = addHeaderProps(new HeaderProperties(defaultHeader.getName()));
                     }
                     header.postConstruct(defaultHeader);
                 }
@@ -189,9 +200,9 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
             List<OperationProperties> defaultOps = defaultSettings.getOperations();
             if (defaultOps != null) {
                 for (OperationProperties defaultOp : defaultOps) {
-                    OperationProperties operation = getOperation(defaultOp.getName());
+                    OperationProperties operation = getOperationProps(defaultOp.getName());
                     if (operation == null) {
-                        operation = addOperation(new OperationProperties(defaultOp.getName()));
+                        operation = addOperationProps(new OperationProperties(defaultOp.getName()));
                     }
                     operation.postConstruct(defaultOp);
                 }
@@ -199,9 +210,9 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
             List<BindingProperties> defaultBindings = defaultSettings.getBindings();
             if (defaultBindings != null) {
                 for (BindingProperties defaultBinding : defaultBindings) {
-                    BindingProperties binding = getBinding(defaultBinding.getName());
+                    BindingProperties binding = getBindingProps(defaultBinding.getName());
                     if (binding == null) {
-                        binding = addBinding(new BindingProperties(defaultBinding.getName()));
+                        binding = addBindingProps(new BindingProperties(defaultBinding.getName()));
                     }
                     binding.postConstruct(defaultBinding);
                 }
@@ -210,25 +221,25 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
         if (operations == null)
             operations = new ArrayList<>(0);
         else {
-            OperationProperties defaultOperation = getOperation(OPERATION_DEFAULT_SETTINGS);
+            OperationProperties defaultOperation = getOperationProps(OPERATION_DEFAULT_SETTINGS);
             for (OperationProperties operation : operations) {
                 if (operation.isDefault())
                     continue;
                 operation.postConstruct(defaultOperation);
             }
-            removeOperation(defaultOperation);
+            removeOperationProps(defaultOperation);
         }
 
         if (bindings == null)
             bindings = new ArrayList<>(0);
         else {
-            BindingProperties defaultBinding = getBinding(BINDING_DEFAULT_SETTINGS);
+            BindingProperties defaultBinding = getBindingProps(BINDING_DEFAULT_SETTINGS);
             for (BindingProperties binding : bindings) {
                 if (binding.isDefault())
                     continue;
                 binding.postConstruct(defaultBinding);
             }
-            removeBinding(defaultBinding);
+            removeBindingProps(defaultBinding);
         }
     }
 }

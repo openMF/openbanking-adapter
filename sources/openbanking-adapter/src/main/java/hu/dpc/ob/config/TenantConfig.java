@@ -12,13 +12,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
+import java.time.ZoneId;
+
 @Getter
-@Setter(AccessLevel.PROTECTED)
+@Setter(AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
-public class TenantProperties extends BaseUriProperties {
+public class TenantConfig {
 
-    protected TenantProperties(String name) {
-        super(name);
-    }
+    @NotEmpty
+    private String name;
+    @NotEmpty
+    private String dbSchema;
+
+    private ZoneId timeZone = ZoneId.of("UTC");
 }

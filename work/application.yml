@@ -9,6 +9,9 @@
 debug: true
 
 spring:
+  profiles:
+    active: dev, fineract12, test # dev/prod, fineract12/fineractcn, test
+
   main:
     web-application-type: none
   datasource:
@@ -17,6 +20,7 @@ spring:
     password: mysql
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: none
       dialect: org.hibernate.dialect.MySQLDialect
@@ -32,6 +36,18 @@ spring:
   liquibase:
     enabled: false
     change-log: classpath:/db/liquibase-changelog.yml
+
+---
+
+spring:
+  profiles: prod & fineract12
+
+  datasource:
+    url: jdbc:mariadb://hackathon2019-fin12ireland2.c1doadknyjf1.eu-west-1.rds.amazonaws.com:3306/ob_tn01
+    username: admin
+    password: adminadminadmin
+
+---
 
 logging:
   level:
@@ -54,17 +70,23 @@ camel:
     name: AdapterCamel
 
 adapter-settings:
-  env: test # test, prod (default: prod)
   instance: in01
   schemas: OB # OB (OpenBanking UK), PSD2 (NextGenPsd2)
-  tenants: tn02
+  tenants:
+  - name: tn01
+    db-schema: ob_tn01
+    time-zone: UTC #ZoneId  - TimeZone.getAvailableIDs()
+  - name: tn02
+    db-schema: ob_tn02
+    time-zone: UTC
+
   # default limits, may be overwritten in request
   event-limits: # request must be rejected if any of the limits was reached
     frequency: 100 # per day
 #  consent-limits: # consent must be rejected if any of the limits was reached
-#    expiration: 36000 #sec = 10h
+#    expiration: 36000s #sec = 10h
   payment-limits: # payment is not valid if any of the limits was reached
-    expiration: 3600 #sec = 1h
+    expiration: 3600s #sec = 1h
   sca-limits: # new sca is needed if any of the limits was reached
     number: 5
     amounts:
@@ -74,146 +96,192 @@ adapter-settings:
       amount: 1000
     expiration: 3600 #sec
 
+---
+
+spring:
+  profiles: test
+
+adapter-settings:
+  env: test # test, prod (default: prod)
+
+---
+
 api-settings:
   cors-enabled: true
   schemas:
-  - name: OB
-    permissions: ReadAccountsBasic, ReadAccountsDetail, ReadBalances, ReadTransactionsBasic, ReadTransactionsDetail, ReadTransactionsCredits, ReadTransactionsDebits, ReadParty, ReadPartyPSU
-    headers:
-    - name: auth-date
-      key: x-fapi-auth-date
-    - name: customer-ip-address
-      key: x-fapi-customer-ip-address
-    - name: interaction-id
-      key: x-fapi-interaction-id
-    - name: transactions_from
-      key: fromBookingDateTime
-    - name: transactions_to
-      key: toBookingDateTime
-    bindings: #tpp -> adapter
-    - name: binding-basic-settings
-      tenants:
-      - name: tn01
-        port: 62020
-      - name: tn02
-        port: 62021
-      host: http://0.0.0.0 #http://payments.dpc.hu:80
-      base: adapter/ob
-    - name: ais-consent-create #create AIS TPP consent
-      path: account-access-consents
-      method: POST
-      body-class: hu.dpc.ob.rest.dto.ob.api.AisConsentCreateRequestDto
-    - name: ais-consent #get AIS consent
-      path: account-access-consents/{consentId}
-      method: GET
-    - name: ais-consent-delete #delete AIS consent
-      path: account-access-consents/{consentId}
-      method: DELETE
-    - name: accounts #get list of owned accounts
-      path: accounts
-      method: GET
-    - name: account #get owned account details
-      path: accounts/{accountId}
-      method: GET
-    - name: balances #get balances of owned accounts
-      path: balances
-      method: GET
-    - name: balance #get account balance information
-      path: accounts/{accountId}/balances
-      method: GET
-    - name: transactions #get transactions of owned accounts
-      path: transactions
-      method: GET
-    - name: transaction #get account transaction information
-      path: /accounts/{accountId}/transactions
-      method: GET
-    - name: psu-party #get party information on the PSU logged in
-      path: party
-      method: GET
-    - name: account-party #get party information of the account owner
-      path: accounts/{accountId}/party
-      method: GET
+    OB:
+      permissions: ReadAccountsBasic, ReadAccountsDetail, ReadBalances, ReadTransactionsBasic, ReadTransactionsDetail, ReadTransactionsCredits, ReadTransactionsDebits, ReadParty, ReadPartyPSU
+      headers:
+      - name: auth-date
+        key: x-fapi-auth-date
+      - name: customer-ip-address
+        key: x-fapi-customer-ip-address
+      - name: interaction-id
+        key: x-fapi-interaction-id
+      - name: transactions_from
+        key: fromBookingDateTime
+      - name: transactions_to
+        key: toBookingDateTime
+      bindings: #tpp -> adapter
+      - name: binding-basic-settings
+        tenants:
+          tn01:
+            port: 62020
+          tn02:
+            port: 62021
+        host: http://0.0.0.0 #http://payments.dpc.hu:80
+        base: adapter/ob
+      - name: ais-consent-create #create AIS TPP consent
+        path: account-access-consents
+        method: POST
+        body-class: hu.dpc.ob.rest.dto.ob.api.AisConsentCreateRequestDto
+      - name: ais-consent #get AIS consent
+        path: account-access-consents/{consentId}
+        method: GET
+      - name: ais-consent-delete #delete AIS consent
+        path: account-access-consents/{consentId}
+        method: DELETE
+      - name: accounts #get list of owned accounts
+        path: accounts
+        method: GET
+      - name: account #get owned account details
+        path: accounts/{accountId}
+        method: GET
+      - name: balances #get balances of owned accounts
+        path: balances
+        method: GET
+      - name: balance #get account balance information
+        path: accounts/{accountId}/balances
+        method: GET
+      - name: transactions #get transactions of owned accounts
+        path: transactions
+        method: GET
+      - name: transaction #get account transaction information
+        path: /accounts/{accountId}/transactions
+        method: GET
+      - name: psu-party #get party information on the PSU logged in
+        path: party
+        method: GET
+      - name: account-party #get party information of the account owner
+        path: accounts/{accountId}/party
+        method: GET
 
-    - name: pis-consent-create
-      path: domestic-payment-consents
-      method: POST
-      body-class: hu.dpc.ob.rest.dto.ob.api.PisConsentCreateRequestDto
-    - name: pis-consent
-      path: domestic-payment-consents/{consentId}
-      method: GET
-    - name: pis-funds
-      path: domestic-payment-consents/{consentId}/funds-confirmation
-      method: GET
-    - name: pis-payment-create
-      path: domestic-payments
-      method: POST
-      body-class: hu.dpc.ob.rest.dto.ob.api.PaymentCreateRequestDto
-    - name: pis-payment
-      path: domestic-payments/{paymentId}
-      method: GET
-    - name: pis-payment-details
-      path: domestic-payments/{paymentId}/payment-details
-      method: GET
-    - name: pis-client-payment
-      path: domestic-payments-client/{clientPaymentId}
-      method: GET
+      - name: pis-consent-create
+        path: domestic-payment-consents
+        method: POST
+        body-class: hu.dpc.ob.rest.dto.ob.api.PisConsentCreateRequestDto
+      - name: pis-consent
+        path: domestic-payment-consents/{consentId}
+        method: GET
+      - name: funds
+        path: domestic-payment-consents/{consentId}/funds-confirmation
+        method: GET
+      - name: payment-create
+        path: domestic-payments
+        method: POST
+        body-class: hu.dpc.ob.rest.dto.ob.api.PaymentCreateRequestDto
+      - name: payment
+        path: domestic-payments/{paymentId}
+        method: GET
+      - name: payment-details
+        path: domestic-payments/{paymentId}/payment-details
+        method: GET
+      - name: client-payment
+        path: domestic-payments-client/{clientPaymentId}
+        method: GET
 
 access-settings:
   cors-enabled: false
   schemas:
-  - name: schema-basic-settings
-    operations: #adapter -> identity
-    - name: operation-basic-settings
-      user: admin
-      password: admin
-      host: https://api.lion.mlabs.dpc.hu # https://10.3.2.101
-    - name: userinfo
-      port: 8243 # https: 8243 http: 9763, 8280
-      base:
-      path: userinfo
-      method: GET
-    - name: introspect
-      port: 9443
-      base: oauth2
-      path: introspect
-      method: POST
-  - name: OB
-    headers:
-    - name: user
-      key: user-id
-    bindings: #identity -> adapter
-    - name: binding-basic-settings
-      tenants:
-      - name: tn01
-        port: 63030
-      - name: tn02
-        port: 63031
-      host: http://0.0.0.0
-      base: adapter/ob
-    - name: ais-consent #get user consent
-      path: consents/{consentId}
-      method: GET
-    - name: consent-party #get user details
-      path: consents/{consentId}/party
-      method: GET
-    - name: consent-accounts #get list of consent accounts
-      path: consents/{consentId}/accounts
-      method: GET
-    - name: ais-consent-update #update user consent
-      path: consents/{consentId}
-      method: PUT
-      body-class: hu.dpc.ob.rest.dto.ob.access.AisConsentUpdateRequestDto
-    - name: pis-consent #get user consent
-      path: pis-consents/{consentId}
-      method: GET
-    - name: pis-consent-init #initialize user payment consent
-      path: pis-consents/{consentId}
-      method: POST
-    - name: pis-consent-update #update user payment consent
-      path: pis-consents/{consentId}
-      method: PUT
-      body-class: hu.dpc.ob.rest.dto.ob.access.PisConsentUpdateRequestDto
+    schema-basic-settings:
+      operations: #adapter -> identity
+      - name: operation-basic-settings
+        user: admin
+        password: admin
+        host: https://api.lion.mlabs.dpc.hu
+      - name: userinfo
+        port: 8243
+        base:
+        path: userinfo
+        method: GET
+      - name: introspect
+        port: 9443
+        base: oauth2
+        path: introspect
+        method: POST
+    OB:
+      headers:
+      - name: user
+        key: user-id
+      bindings: #identity -> adapter
+      - name: binding-basic-settings
+        tenants:
+          tn01:
+            port: 63030
+          tn02:
+            port: 63031
+        host: http://0.0.0.0
+        base: adapter/ob
+      - name: ais-consent #get user consent
+        path: consents/{consentId}
+        method: GET
+      - name: consent-party #get user details
+        path: consents/{consentId}/party
+        method: GET
+      - name: consent-accounts #get list of consent accounts
+        path: consents/{consentId}/accounts
+        method: GET
+      - name: ais-consent-update #update user consent
+        path: consents/{consentId}
+        method: PUT
+        body-class: hu.dpc.ob.rest.dto.ob.access.AisConsentUpdateRequestDto
+      - name: pis-consent #get user consent
+        path: pis-consents/{consentId}
+        method: GET
+      - name: pis-consent-init #initialize user payment consent
+        path: pis-consents/{consentId}
+        method: POST
+      - name: pis-consent-update #update user payment consent
+        path: pis-consents/{consentId}
+        method: PUT
+        body-class: hu.dpc.ob.rest.dto.ob.access.PisConsentUpdateRequestDto
 
+---
+
+spring:
+  profiles: dev & fineract12
+
+hub:
+  tn01:
+    host: http://buffalo.mlabs.dpc.hu
+  tn02:
+    host: http://lion.mlabs.dpc.hu
+  port: 80
+  base: api
+
+---
+
+spring:
+  profiles: prod & fineract12
+
+psp:
+  port: 80
+hub:
+  port: 80
+  base: api
+---
+
+psp:
+  port: 8080
+hub:
+  tn01:
+    host: http://localhost
+  tn02:
+    host: http://localhost
+  port: 58080
+  base: channel
+
+# Fineract 1.2
 psp-settings:
   auth:
     profile: BASIC
@@ -230,11 +298,11 @@ psp-settings:
     user: mifos
     password: password
     tenants:
-    - name: tn01
-      host: http://localhost
-    - name: tn02
-      host: http://localhost
-    port: 8080 # 8080
+      tn01:
+        host: http://localhost # http://buffalo.mlabs.dpc.hu
+      tn02:
+        host: http://localhost # http://lion.mlabs.dpc.hu
+    port: ${psp.port}
     base: fineract-provider/api/v1
   - name: auth #login
     path: authentication
@@ -249,7 +317,7 @@ psp-settings:
   - name: account
     path: interoperation/accounts/{accountId}
     method: GET
-  - name: account-transactions
+  - name: transactions
     path: interoperation/accounts/{accountId}/transactions
     method: GET
   - name: identifiers
@@ -264,23 +332,24 @@ psp-settings:
   - name: quote-create
     path: interoperation/quotes
     method: POST
-  - name: transaction-create
+  - name: payment-create
     tenants:
-      - name: tn01
-        host: http://buffalo.mlabs.dpc.hu
-      - name: tn02
-        host: http://lion.mlabs.dpc.hu
-    port: 80
-    base: api
+      tn01:
+        host: ${hub.tn01.host}
+      tn02:
+        host: ${hub.tn02.host}
+    port: ${hub.port}
+    base: ${hub.base}
     path: transactions
     method: POST
-  - name: transaction #get status by transaction id
+  - name: payment #get payment status by transaction id
     tenants:
-      - name: tn01
-        host: http://buffalo.mlabs.dpc.hu
-      - name: tn02
-        host: http://lion.mlabs.dpc.hu
-    port: 80
-    base: api
+      tn01:
+        host: ${hub.tn01.host}
+      tn02:
+        host: ${hub.tn02.host}
+    port: ${hub.port}
+    base: ${hub.base}
     path: transactions/{transactionId}
     method: GET
+

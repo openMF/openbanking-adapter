@@ -5,10 +5,9 @@
  *
  * https://mozilla.org/MPL/2.0/.
  */
-package hu.dpc.ob.config;
+package hu.dpc.ob.config.type;
 
-public interface DefaultProperties {
+public interface ListConfig {
 
-    boolean isDefault();
-
+    String getConfigName();
 }

@@ -7,21 +7,23 @@
  */
 package hu.dpc.ob.config;
 
+import hu.dpc.ob.config.type.ApplicationSettings;
 import hu.dpc.ob.model.internal.ApiSchema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Configuration
 @ConfigurationProperties("adapter-settings")
 @Getter
 @Setter(AccessLevel.PUBLIC)
@@ -35,13 +37,16 @@ public class AdapterSettings implements ApplicationSettings {
     public static final int LIMIT_SCA = 4;
 
     private String env;
+    @NotEmpty
     private String instance;
 
     @Getter(lazy = true)
+    @Valid
     private final List<ApiSchema> schemas = new ArrayList<>(0);
 
     @Getter(lazy = true)
-    private final List<String> tenants = new ArrayList<>(0);
+    @Valid
+    private final List<TenantConfig> tenants = new ArrayList<>(0);
 
     private LimitProperties eventLimits;
     private LimitProperties consentLimits;
@@ -59,7 +64,12 @@ public class AdapterSettings implements ApplicationSettings {
         return limits == null ? null : limits.getMaxNumber();
     }
 
-    public Long getExpiration(int limitType) {
+    public boolean hasExpiration(int limitType) {
+        LimitProperties limits = getLimits(limitType);
+        return limits != null && limits.getExpiration() != null;
+    }
+
+    public Duration getExpiration(int limitType) {
         LimitProperties limits = getLimits(limitType);
         return limits == null ? null : limits.getExpiration();
     }

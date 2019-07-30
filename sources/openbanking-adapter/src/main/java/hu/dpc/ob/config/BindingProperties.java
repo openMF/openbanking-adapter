@@ -7,6 +7,7 @@
  */
 package hu.dpc.ob.config;
 
+import hu.dpc.ob.config.type.ApplicationSettings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

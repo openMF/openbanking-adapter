@@ -7,13 +7,14 @@
  */
 package hu.dpc.ob.config;
 
-import hu.dpc.ob.model.internal.ApiSchema;
+import hu.dpc.ob.config.type.Binding;
+import hu.dpc.ob.config.type.Header;
+import hu.dpc.ob.config.type.Operation;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,32 +22,12 @@ import java.util.List;
 @Setter(AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
-public class SchemaProperties<_H extends Header, _O extends Operation, _B extends Binding> extends UriSettings<_H, _O, _B> implements DefaultProperties {
-
-    @NotNull
-    private String name;
+public class SchemaProperties<_H extends Header, _O extends Operation, _B extends Binding> extends UriSettings<_H, _O, _B> {
 
     @Getter(lazy = true)
     private final List<String> permissions = new ArrayList<>(0);
 
-    protected SchemaProperties(@NotNull String name) {
-        this.name = name;
-    }
-
-    protected SchemaProperties(@NotNull ApiSchema schema) {
-        this(schema.getId());
-    }
-
-    @Override
-    public boolean isDefault() {
-        return getName().equals(getDefaultName());
-    }
-
-    protected String getDefaultName() {
+    protected static String getDefaultName() {
         return SCHEMA_DEFAULT_SETTINGS;
-    }
-
-    public ApiSchema getSchema() {
-        return ApiSchema.fromId(name);
     }
 }

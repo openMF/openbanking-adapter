@@ -7,7 +7,8 @@
  */
 package hu.dpc.ob.config;
 
-import hu.dpc.ob.rest.dto.psp.PspLoginResponseDto;
+import hu.dpc.ob.config.type.AuthEncodeType;
+import hu.dpc.ob.config.type.AuthProfileType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

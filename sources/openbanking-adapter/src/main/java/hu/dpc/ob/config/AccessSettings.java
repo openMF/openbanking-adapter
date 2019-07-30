@@ -7,6 +7,9 @@
  */
 package hu.dpc.ob.config;
 
+import hu.dpc.ob.config.type.Binding;
+import hu.dpc.ob.config.type.Header;
+import hu.dpc.ob.config.type.Operation;
 import hu.dpc.ob.domain.type.ApiScope;
 import hu.dpc.ob.domain.type.ConsentActionCode;
 import hu.dpc.ob.domain.type.PermissionCode;
@@ -14,12 +17,10 @@ import hu.dpc.ob.domain.type.RequestSource;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 
-@Configuration
 @ConfigurationProperties("access-settings")
 @Getter
 @Setter(AccessLevel.PACKAGE)
@@ -86,13 +87,13 @@ public class AccessSettings extends SchemaSettings<AccessSettings.AccessHeader, 
     @Getter
     @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
     public enum AccessBinding implements Binding {
-        ACCOUNTS_HELD("consent-accounts", ApiScope.AIS, ConsentActionCode.QUERY_ACCOUNT, true, "Read consent accounts list"),
-        PARTY("consent-party", ApiScope.AIS, ConsentActionCode.QUERY_PARTY, true, "Read PSP user details"),
-        AIS_CONSENT("ais-consent", ApiScope.AIS, ConsentActionCode.QUERY_CONSENT, true, "Read user consent resourceId details"),
-        AIS_CONSENT_UPDATE("ais-consent-update", ApiScope.AIS, ConsentActionCode.AUTHORIZE, true, "Authorize user consent"),
-        PIS_CONSENT("pis-consent", ApiScope.PIS, ConsentActionCode.QUERY_CONSENT, true, "Read user payment consent"),
-        PIS_CONSENT_INIT("pis-consent-init", ApiScope.PIS, ConsentActionCode.PREPARE, true, "Prepare user payment consent"),
-        PIS_CONSENT_UPDATE("pis-consent-update", ApiScope.PIS, ConsentActionCode.AUTHORIZE, true, "Authorize user payment consent"),
+        ACCOUNTS_HELD("consent-accounts", ApiScope.AIS, ConsentActionCode.QUERY_ACCOUNT, false, "Read consent accounts list"),
+        PARTY("consent-party", ApiScope.AIS, ConsentActionCode.QUERY_PARTY, false, "Read PSP user details"),
+        AIS_CONSENT("ais-consent", ApiScope.AIS, ConsentActionCode.QUERY_CONSENT, false, "Read user consent resource details"),
+        AIS_CONSENT_UPDATE("ais-consent-update", ApiScope.AIS, ConsentActionCode.AUTHORIZE, false, "Authorize user consent"),
+        PIS_CONSENT("pis-consent", ApiScope.PIS, ConsentActionCode.QUERY_CONSENT, false, "Read user payment consent"),
+        PIS_CONSENT_INIT("pis-consent-init", ApiScope.PIS, ConsentActionCode.PREPARE, false, "Prepare user payment consent"),
+        PIS_CONSENT_UPDATE("pis-consent-update", ApiScope.PIS, ConsentActionCode.AUTHORIZE, false, "Authorize user payment consent"),
         ;
 
         private @NotNull final String configName;

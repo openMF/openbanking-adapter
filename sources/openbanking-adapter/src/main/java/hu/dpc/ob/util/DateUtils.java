@@ -26,18 +26,18 @@ public class DateUtils {
     private final static SimpleDateFormat LOCAL_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     @NotNull
-    public static String getTimezoneIdOfTenant() {
-        return ZoneId.of("UTC").getId();
+    public static ZoneId getZoneIdOfTenant() {
+        return ThreadLocalContext.getTenant().getTimeZone();
     }
 
     @NotNull
-    public static ZoneId getZoneIdOfTenant() {
-        return ZoneId.of(getTimezoneIdOfTenant());
+    public static String getTimezoneIdOfTenant() {
+        return getZoneIdOfTenant().getId();
     }
 
     @NotNull
     public static TimeZone getTimeZoneOfTenant() {
-        return TimeZone.getTimeZone(getTimezoneIdOfTenant());
+        return TimeZone.getTimeZone(getZoneIdOfTenant());
     }
 
     private static long getMillisOfTenant() {

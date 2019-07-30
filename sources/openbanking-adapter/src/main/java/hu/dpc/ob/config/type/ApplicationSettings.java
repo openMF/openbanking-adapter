@@ -5,7 +5,7 @@
  *
  * https://mozilla.org/MPL/2.0/.
  */
-package hu.dpc.ob.config;
+package hu.dpc.ob.config.type;
 
 import hu.dpc.ob.domain.type.RequestSource;
 

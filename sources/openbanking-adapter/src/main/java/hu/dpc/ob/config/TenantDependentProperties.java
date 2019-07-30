@@ -11,61 +11,79 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.HttpMethod;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
-@Setter(AccessLevel.PACKAGE)
+@Setter(AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
-public abstract class TenantDependentProperties extends UriProperties implements DefaultProperties {
+public abstract class TenantDependentProperties extends UriProperties {
+
+    @NotEmpty
+    private String name;
+
+    @NotEmpty
+    private String method;
+
+    private Class bodyClass;
 
     @Getter(lazy = true)
-    private final List<TenantProperties> tenants = new ArrayList<>(1);
+    @Valid
+    private final Map<String, UriProperties> tenants = new HashMap<>();
 
     protected TenantDependentProperties(String name) {
-        super(name);
+        this.name = name;
     }
 
     protected abstract String getDefaultName();
 
-    @Override
     public boolean isDefault() {
         return getName().equals(getDefaultName());
     }
 
-    public TenantProperties getTenant(String tenant) {
-        if (tenant == null)
-            return null;
-        for (TenantProperties channelTenant : getTenants()) {
-            if (tenant.equals(channelTenant.getName()))
-                return channelTenant;
-        }
-        return null;
+    @NotNull
+    public HttpMethod getHttpMethod() {
+        return HttpMethod.resolve(method);
     }
 
-    protected TenantProperties addTenant(TenantProperties tenant) {
-        getTenants().add(tenant);
-        return tenant;
+    public UriProperties getTenantProps(String tenant) {
+        return getTenants().get(tenant);
+    }
+
+    protected UriProperties addTenantProps(String tenant, UriProperties properties) {
+        getTenants().put(tenant, properties);
+        return properties;
     }
 
     void postConstruct(TenantDependentProperties defaultProps) {
         super.postConstruct(defaultProps); // tenant independent default settings
 
+        // empty is a valid value
+        if (method == null)
+            method = defaultProps.getMethod();
+        if (bodyClass == null)
+            bodyClass = defaultProps.getBodyClass();
+
         if (defaultProps != null && defaultProps != this) {
-            for (TenantProperties parentTenant : defaultProps.getTenants()) {
-                TenantProperties tenant = getTenant(parentTenant.getName());
-                if (tenant == null)
-                    addTenant(new TenantProperties(parentTenant.getName()));
+            for (String tenant : defaultProps.getTenants().keySet()) {
+                UriProperties tenantProps = getTenantProps(tenant);
+                if (tenantProps == null)
+                    addTenantProps(tenant, new UriProperties());
             }
         }
 
-        for (TenantProperties tenant : getTenants()) {
-            tenant.postConstruct(this); // tenant independent settings - strongest
+        for (Map.Entry<String, UriProperties> tenantEntry : getTenants().entrySet()) {
+            UriProperties tenantProps = tenantEntry.getValue();
+            tenantProps.postConstruct(this); // tenant independent settings - strongest
             if (defaultProps != null && defaultProps != this) {
-                tenant.postConstruct(defaultProps.getTenant(tenant.getName())); // update with default tenant dependent settings - weaker
-                tenant.postConstruct(defaultProps); // update with default tenant independent default settings - weakest
+                tenantProps.postConstruct(defaultProps.getTenantProps(tenantEntry.getKey())); // update with default tenant dependent settings - weaker
+                tenantProps.postConstruct(defaultProps); // update with default tenant independent default settings - weakest
             }
         }
     }

@@ -7,16 +7,17 @@
  */
 package hu.dpc.ob.config;
 
+import hu.dpc.ob.config.type.Binding;
+import hu.dpc.ob.config.type.Header;
+import hu.dpc.ob.config.type.Operation;
 import hu.dpc.ob.domain.type.*;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 
-@Configuration
 @ConfigurationProperties("psp-settings")
 @Getter
 @Setter(AccessLevel.PUBLIC)
@@ -96,14 +97,14 @@ public class PspSettings extends UriSettings<PspSettings.PspHeader, PspSettings.
         ACCOUNTS("accounts", "Read accounts list"),
         ACCOUNT("account", "Read account information"),
         CLIENT("client", "Read client information"),
-        ACCOUNT_BALANCES("account-balances", "Read balance information"),
-        ACCOUNT_TRANSACTIONS("account-transactions", "Read payment information"),
+//        BALANCES("balances", "Read balance information"),
+        TRANSACTIONS("transactions", "Read payment information"),
         IDENTIFIERS("identifiers", "Read secondary identifiers for an accountId"),
-        PARTY_BY_IDENTIFIER("party-by-identifier", "Query Interoperation Account by secondary identifier"),
-        PARTY_BY_SUBIDENTIFIER("party-by-subidentifier", "Query Interoperation Account by secondary sub-identifier"),
+        PARTY_BY_IDENTIFIER("party-by-identifier", "Read Interoperation Account by secondary identifier"),
+        PARTY_BY_SUBIDENTIFIER("party-by-subidentifier", "Read Interoperation Account by secondary sub-identifier"),
         QUOTE_CREATE("quote-create", "Calculate Interoperation Quote"),
-        TRANSACTION_CREATE("transaction-create", "Start payment transaction"),
-        TRANSACTION("transaction", "Read transaction status"),
+        PAYMENT_CREATE("payment-create", "Start payment transaction"),
+        PAYMENT("payment", "Read payment status"),
         ;
 
         @NotNull

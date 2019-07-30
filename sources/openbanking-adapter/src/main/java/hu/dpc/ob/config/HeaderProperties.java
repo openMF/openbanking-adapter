@@ -12,13 +12,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
+
 @Getter
 @Setter(AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @SuppressWarnings("unused")
 public class HeaderProperties {
 
+    @NotEmpty
     private String name;
+    @NotEmpty
     private String key;
 
     public HeaderProperties(String name) {

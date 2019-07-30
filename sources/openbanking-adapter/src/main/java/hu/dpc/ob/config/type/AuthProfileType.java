@@ -5,13 +5,11 @@
  *
  * https://mozilla.org/MPL/2.0/.
  */
-package hu.dpc.ob.config;
+package hu.dpc.ob.config.type;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.logging.log4j.util.Strings;
 
 import javax.validation.constraints.NotNull;

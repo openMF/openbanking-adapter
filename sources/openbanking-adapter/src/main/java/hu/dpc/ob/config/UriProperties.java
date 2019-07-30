@@ -11,39 +11,50 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.http.HttpMethod;
+import org.apache.logging.log4j.util.Strings;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Setter(AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
-public abstract class UriProperties extends BaseUriProperties {
+public class UriProperties {
 
-    @NotNull
-    private String method;
+    private String user;
+    private String password;
+    @NotEmpty
+    private String host;
+    private String port;
+    private String base;
+    @NotEmpty
+    private String path;
 
-    private Class bodyClass;
-
-    protected UriProperties(String name) {
-        super(name);
+    public String getUrl() {
+        return host + (Strings.isEmpty(port) ? "" : (':' + port)) + getUriPath();
     }
 
-    @NotNull
-    public HttpMethod getHttpMethod() {
-        return HttpMethod.resolve(method);
+    public String getUriPath() {
+        return (Strings.isEmpty(base) ? "" : ((base.charAt(0) != '/' ? '/' : "") + base))
+                + ((path.charAt(0) != '/' ? '/' : "") + path);
     }
 
-    void postConstruct(UriProperties oProps) {
-        if (oProps == null || oProps == this)
+    void postConstruct(UriProperties parentProps) {
+        if (parentProps == null || parentProps == this)
             return;
-        super.postConstruct(oProps);
 
         // empty is a valid value
-        if (method == null)
-            method = oProps.getMethod();
-        if (bodyClass == null)
-            bodyClass = oProps.getBodyClass();
+        if (user == null)
+            user = parentProps.getUser();
+        if (password == null)
+            password = parentProps.getPassword();
+        if (host == null)
+            host = parentProps.getHost();
+        if (port == null)
+            port = parentProps.getPort();
+        if (base == null)
+            base = parentProps.getBase();
+        if (path == null)
+            path = parentProps.getPath();
     }
 }

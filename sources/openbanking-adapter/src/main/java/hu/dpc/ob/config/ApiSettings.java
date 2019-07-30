@@ -7,6 +7,9 @@
  */
 package hu.dpc.ob.config;
 
+import hu.dpc.ob.config.type.Binding;
+import hu.dpc.ob.config.type.Header;
+import hu.dpc.ob.config.type.Operation;
 import hu.dpc.ob.domain.type.ApiScope;
 import hu.dpc.ob.domain.type.ConsentActionCode;
 import hu.dpc.ob.domain.type.PermissionCode;
@@ -15,7 +18,6 @@ import hu.dpc.ob.model.internal.ApiSchema;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
@@ -24,7 +26,6 @@ import java.util.stream.Collectors;
 
 import static hu.dpc.ob.domain.type.PermissionCode.*;
 
-@Configuration
 @ConfigurationProperties("api-settings")
 @Getter
 @Setter(AccessLevel.PACKAGE)
@@ -100,19 +101,19 @@ public class ApiSettings extends SchemaSettings<ApiSettings.ApiHeader, ApiSettin
                 new PermissionCode[]{READ_PARTY_PSU}),
         PARTY("account-party", ApiScope.AIS, ConsentActionCode.QUERY_PARTY, true, "Read account owner information",
                 new PermissionCode[]{READ_PARTY}),
-        AIS_CONSENT_CREATE("ais-consent-create", ApiScope.AIS, ConsentActionCode.CREATE, false, "Create a new AIS consent resourceId"),
-        AIS_CONSENT("ais-consent", ApiScope.AIS, ConsentActionCode.QUERY_CONSENT, false, "Retrieve an AIS consent resourceId"),
-        AIS_CONSENT_DELETE("ais-consent-delete", ApiScope.AIS, ConsentActionCode.DELETE, false, "User deletes an AIS consent resourceId"),
-        PIS_CONSENT_CREATE("pis-consent-create", ApiScope.PIS, ConsentActionCode.CREATE, false, "Create a new domestic PIS consent resourceId"),
-        PIS_CONSENT("pis-consent", ApiScope.PIS, ConsentActionCode.QUERY_CONSENT, false, "Retrieve a domestic PIS consent resourceId"),
-        PIS_FUNDS("pis-funds", ApiScope.PIS, ConsentActionCode.QUERY_CONSENT, true, "Confirm funds on a domestic PIS consent resourceId",
+        AIS_CONSENT_CREATE("ais-consent-create", ApiScope.AIS, ConsentActionCode.CREATE, false, "Create a new AIS consent resource"),
+        AIS_CONSENT("ais-consent", ApiScope.AIS, ConsentActionCode.QUERY_CONSENT, false, "Read an AIS consent resource"),
+        AIS_CONSENT_DELETE("ais-consent-delete", ApiScope.AIS, ConsentActionCode.DELETE, false, "User deletes an AIS consent resource"),
+        PIS_CONSENT_CREATE("pis-consent-create", ApiScope.PIS, ConsentActionCode.CREATE, false, "Create a new domestic PIS consent resource"),
+        PIS_CONSENT("pis-consent", ApiScope.PIS, ConsentActionCode.QUERY_CONSENT, false, "Read a domestic PIS consent resource"),
+        FUNDS("funds", ApiScope.PIS, ConsentActionCode.QUERY_CONSENT, true, "Read funds on a domestic PIS consent resource",
                 new PermissionCode[]{READ_BALANCES, READ_TRANSACTIONS_BASIC, READ_TRANSACTIONS_DETAIL}),
-        PIS_PAYMENT_CREATE("pis-payment-create", ApiScope.PIS, ConsentActionCode.PAYMENT, true, "Initiate domestic payment",
+        PAYMENT_CREATE("payment-create", ApiScope.PIS, ConsentActionCode.PAYMENT, true, "Initiate domestic payment",
                 new PermissionCode[]{READ_BALANCES, READ_TRANSACTIONS_BASIC, READ_TRANSACTIONS_DETAIL}),
-        PIS_PAYMENT("pis-payment", ApiScope.PIS, ConsentActionCode.QUERY_PAYMENT, false, "Retrieve a domestic PIS resourceId"),
-        PIS_CLIENT_PAYMENT("pis-client-payment", ApiScope.PIS, ConsentActionCode.QUERY_PAYMENT, false, "Retrieve a domestic PIS resourceId by client reference identifier",
+        PAYMENT("payment", ApiScope.PIS, ConsentActionCode.QUERY_PAYMENT, false, "Read a domestic PIS resource"),
+        CLIENT_PAYMENT("client-payment", ApiScope.PIS, ConsentActionCode.QUERY_PAYMENT, false, "Read a domestic PIS resource by client reference identifier",
                 new PermissionCode[]{READ_BALANCES, READ_TRANSACTIONS_BASIC, READ_TRANSACTIONS_DETAIL}),
-        PIS_PAYMENT_DETAILS("pis-payment-details", ApiScope.PIS, ConsentActionCode.QUERY_PAYMENT, false, "Retrieve a domestic PIS details"),
+        PAYMENT_DETAILS("payment-details", ApiScope.PIS, ConsentActionCode.QUERY_PAYMENT, false, "Read a domestic PIS details"),
         ;
 
 

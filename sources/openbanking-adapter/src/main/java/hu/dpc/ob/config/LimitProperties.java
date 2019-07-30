@@ -7,7 +7,6 @@
  */
 package hu.dpc.ob.config;
 
-import hu.dpc.ob.model.ConsentGroupValidator;
 import hu.dpc.ob.util.DateUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,8 +15,8 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,26 +24,23 @@ import java.util.List;
 @Setter(AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuppressWarnings("unused")
-public class LimitProperties implements ConsentGroupValidator {
+public class LimitProperties {
 
     private Short frequency;
     private Short number;
-    private Long expiration; // sec
+    private Duration expiration;
     @Getter(lazy = true)
     private final List<AmountProperties> amounts = new ArrayList<>(0);
 
 
-    @Override
     public Short getMaxFrequency() {
         return frequency;
     }
 
-    @Override
     public Short getMaxNumber() {
         return number;
     }
 
-    @Override
     public BigDecimal getMaxAmount(@NotNull String currency) {
         if (getAmounts() != null) {
             for (AmountProperties amount : getAmounts()) {
@@ -55,12 +51,10 @@ public class LimitProperties implements ConsentGroupValidator {
         return null;
     }
 
-    @Override
     public LocalDateTime calcExpiresOn(@NotNull LocalDateTime createdOn) {
-        return getExpiration() == null ? null : createdOn.plus(expiration, ChronoUnit.SECONDS);
+        return getExpiration() == null ? null : createdOn.plusSeconds(expiration.getSeconds());
     }
 
-    @Override
     public LocalDateTime calcExpiresOn() {
         return calcExpiresOn(DateUtils.getLocalDateTimeOfTenant());
     }
