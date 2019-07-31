@@ -37,7 +37,7 @@ public class PspTransactionData {
     private TransactionType transactionType;
     @NotNull
     private BigDecimal amount;
-    @NotNull
+
     private BigDecimal chargeAmount;
     @NotNull
     private String currency;

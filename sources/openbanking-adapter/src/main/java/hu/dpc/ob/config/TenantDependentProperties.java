@@ -16,8 +16,8 @@ import org.springframework.http.HttpMethod;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter(AccessLevel.PUBLIC)
@@ -35,7 +35,7 @@ public abstract class TenantDependentProperties extends UriProperties {
 
     @Getter(lazy = true)
     @Valid
-    private final Map<String, UriProperties> tenants = new HashMap<>();
+    private final List<TenantProperties> tenants = new ArrayList<>();
 
     protected TenantDependentProperties(String name) {
         this.name = name;
@@ -52,12 +52,16 @@ public abstract class TenantDependentProperties extends UriProperties {
         return HttpMethod.resolve(method);
     }
 
-    public UriProperties getTenantProps(String tenant) {
-        return getTenants().get(tenant);
+    public TenantProperties getTenantProps(String tenant) {
+        for (TenantProperties channelTenant : getTenants()) {
+            if (channelTenant.getName().equals(tenant))
+                return channelTenant;
+        }
+        return null;
     }
 
-    protected UriProperties addTenantProps(String tenant, UriProperties properties) {
-        getTenants().put(tenant, properties);
+    protected TenantProperties addTenantProps(TenantProperties properties) {
+        getTenants().add(properties);
         return properties;
     }
 
@@ -71,18 +75,18 @@ public abstract class TenantDependentProperties extends UriProperties {
             bodyClass = defaultProps.getBodyClass();
 
         if (defaultProps != null && defaultProps != this) {
-            for (String tenant : defaultProps.getTenants().keySet()) {
-                UriProperties tenantProps = getTenantProps(tenant);
+            for (TenantProperties defaultTenant : defaultProps.getTenants()) {
+                @NotEmpty String tenantName = defaultTenant.getName();
+                TenantProperties tenantProps = getTenantProps(tenantName);
                 if (tenantProps == null)
-                    addTenantProps(tenant, new UriProperties());
+                    addTenantProps(new TenantProperties(tenantName));
             }
         }
 
-        for (Map.Entry<String, UriProperties> tenantEntry : getTenants().entrySet()) {
-            UriProperties tenantProps = tenantEntry.getValue();
-            tenantProps.postConstruct(this); // tenant independent settings - strongest
+        for (TenantProperties tenantProps : getTenants()) {
+             tenantProps.postConstruct(this); // tenant independent settings - strongest
             if (defaultProps != null && defaultProps != this) {
-                tenantProps.postConstruct(defaultProps.getTenantProps(tenantEntry.getKey())); // update with default tenant dependent settings - weaker
+                tenantProps.postConstruct(defaultProps.getTenantProps(tenantProps.getName())); // update with default tenant dependent settings - weaker
                 tenantProps.postConstruct(defaultProps); // update with default tenant independent default settings - weakest
             }
         }

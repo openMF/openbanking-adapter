@@ -60,7 +60,7 @@ public class AccessRestClient {
 
         String responseJson = restClient.call(url, opProps.getHttpMethod(), headers, null);
 
-        log.debug(String.format("Response Identity " + opProps.getMethod() + " /" + opProps.getName() + ", access: %s", accessCode));
+        log.debug(String.format("Response Identity " + opProps.getMethod() + " /" + opProps.getName() + ", access: %s, payload: %s", accessCode, responseJson));
         return JsonUtils.toPojo(responseJson, UserInfoResponseDto.class);
     }
 
@@ -86,7 +86,7 @@ public class AccessRestClient {
         String body = "token=" + token;
         String responseJson = restClient.call(url, opProps.getHttpMethod(), headers, body);
 
-        log.debug(String.format("Response Identity " + opProps.getMethod() + " /" + opProps.getName() + ", access: %s", userAccessCode));
+        log.debug(String.format("Response Identity " + opProps.getMethod() + " /" + opProps.getName() + ", access: %s, payload: %s", userAccessCode, responseJson));
         return JsonUtils.toPojo(responseJson, IntrospectResponseDto.class);
     }
 }

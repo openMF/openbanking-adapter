@@ -10,12 +10,40 @@ debug: true
 
 spring:
   profiles:
-    active: dev, fineract12, test # dev/prod, fineract12/fineractcn, test
+    active: in2, dev, fineractx, test # in1/in2, dev/prod, fineractx/fineractcn, test
 
+---
+spring:
+  profiles: in1
+
+instance: in01
+tn1: tn01
+tn2: tn02
+
+domain:
+  tn1: buffalo.mlabs.dpc.hu
+  tn2: lion.mlabs.dpc.hu
+---
+
+spring:
+  profiles: in2
+
+instance: in02
+tn1: tn03
+tn2: tn04
+
+domain:
+  tn1: rhino.mlabs.dpc.hu
+  tn2: elephant.mlabs.dpc.hu
+---
+
+# ------------ Spring settings -----------
+
+spring:
   main:
     web-application-type: none
   datasource:
-    url: jdbc:mariadb://localhost:3306/ob_tn02
+    url: jdbc:mariadb://localhost:3306/ob_${tn1}
     username: root
     password: mysql
     driver-class-name: org.mariadb.jdbc.Driver
@@ -38,15 +66,22 @@ spring:
     change-log: classpath:/db/liquibase-changelog.yml
 
 ---
-
 spring:
-  profiles: prod & fineract12
+  profiles: prod & in1
 
   datasource:
-    url: jdbc:mariadb://hackathon2019-fin12ireland2.c1doadknyjf1.eu-west-1.rds.amazonaws.com:3306/ob_tn01
+    url: jdbc:mariadb://hackathon2019-fin12ireland2.c1doadknyjf1.eu-west-1.rds.amazonaws.com:3306/ob_${tn1}
     username: admin
     password: adminadminadmin
+---
 
+spring:
+  profiles: prod & in2
+
+  datasource:
+    url: jdbc:mariadb://hackathon2019-fin12ireland.c1doadknyjf1.eu-west-1.rds.amazonaws.com:3306/ob_${tn1}
+    username: admin
+    password: adminadminadmin
 ---
 
 logging:
@@ -69,15 +104,17 @@ camel:
   springboot:
     name: AdapterCamel
 
+# ------------ ADAPTER global settings -----------
+
 adapter-settings:
-  instance: in01
+  instance: ${instance}
   schemas: OB # OB (OpenBanking UK), PSD2 (NextGenPsd2)
   tenants:
-  - name: tn01
-    db-schema: ob_tn01
+  - name: ${tn1}
+    db-schema: ob_${tn1}
     time-zone: UTC #ZoneId  - TimeZone.getAvailableIDs()
-  - name: tn02
-    db-schema: ob_tn02
+  - name: ${tn2}
+    db-schema: ob_${tn2}
     time-zone: UTC
 
   # default limits, may be overwritten in request
@@ -97,14 +134,14 @@ adapter-settings:
     expiration: 3600 #sec
 
 ---
-
 spring:
   profiles: test
 
 adapter-settings:
   env: test # test, prod (default: prod)
-
 ---
+
+# ------------ API settings -----------
 
 api-settings:
   cors-enabled: true
@@ -125,10 +162,10 @@ api-settings:
       bindings: #tpp -> adapter
       - name: binding-basic-settings
         tenants:
-          tn01:
-            port: 62020
-          tn02:
-            port: 62021
+        - name: ${tn1}
+          port: 62020
+        - name: ${tn2}
+          port: 62021
         host: http://0.0.0.0 #http://payments.dpc.hu:80
         base: adapter/ob
       - name: ais-consent-create #create AIS TPP consent
@@ -190,6 +227,8 @@ api-settings:
         path: domestic-payments-client/{clientPaymentId}
         method: GET
 
+# ------------ ACCESS settings -----------
+
 access-settings:
   cors-enabled: false
   schemas:
@@ -198,7 +237,11 @@ access-settings:
       - name: operation-basic-settings
         user: admin
         password: admin
-        host: https://api.lion.mlabs.dpc.hu
+        tenants:
+        - name: ${tn1}
+          host: https://api.${domain.tn1}
+        - name: ${tn2}
+          host: https://api.${domain.tn2}
       - name: userinfo
         port: 8243
         base:
@@ -216,10 +259,10 @@ access-settings:
       bindings: #identity -> adapter
       - name: binding-basic-settings
         tenants:
-          tn01:
-            port: 63030
-          tn02:
-            port: 63031
+        - name: ${tn1}
+          port: 63030
+        - name: ${tn2}
+          port: 63031
         host: http://0.0.0.0
         base: adapter/ob
       - name: ais-consent #get user consent
@@ -246,46 +289,55 @@ access-settings:
         method: PUT
         body-class: hu.dpc.ob.rest.dto.ob.access.PisConsentUpdateRequestDto
 
----
-
-spring:
-  profiles: dev & fineract12
-
-hub:
-  tn01:
-    host: http://buffalo.mlabs.dpc.hu
-  tn02:
-    host: http://lion.mlabs.dpc.hu
-  port: 80
-  base: api
+# ------------ PSP settings -----------
 
 ---
-
-spring:
-  profiles: prod & fineract12
-
 psp:
-  port: 80
-hub:
-  port: 80
-  base: api
----
-
-psp:
-  port: 8080
-hub:
-  tn01:
+  tn1:
     host: http://localhost
-  tn02:
+  tn2:
+    host: http://localhost
+  port: 8080
+  base: fineract-provider/api/v1
+hub:
+  tn1:
+    host: http://localhost
+  tn2:
     host: http://localhost
   port: 58080
   base: channel
+---
+
+spring:
+  profiles: dev
+
+hub:
+  tn1:
+    host: http://${domain.tn1}
+  tn2:
+    host: http://${domain.tn2}
+  port: 80
+  base: api
+---
+
+spring:
+  profiles: prod
+
+psp:
+  port: 80
+hub:
+  port: 80
+  base: api
+---
+
+spring:
+  profiles: fineractx
 
 # Fineract 1.2
 psp-settings:
   auth:
-    profile: BASIC
-    encode: NONE
+    profile: BASIC # NONE, BASIC, BASIC_TWOFACTOR, OAUTH, OAUTH_TWOFACTOR
+    encode: NONE # NONE, BASE64
   headers:
   - name: user
     key: User
@@ -298,15 +350,15 @@ psp-settings:
     user: mifos
     password: password
     tenants:
-      tn01:
-        host: http://localhost # http://buffalo.mlabs.dpc.hu
-      tn02:
-        host: http://localhost # http://lion.mlabs.dpc.hu
+    - name: ${tn1}
+      host: ${psp.tn1.host}
+    - name: ${tn2}
+      host: ${psp.tn2.host}
     port: ${psp.port}
-    base: fineract-provider/api/v1
+    base: ${psp.base}
   - name: auth #login
     path: authentication
-    method: GET
+    method: POST
     body-class: hu.dpc.ob.rest.dto.psp.FineractXLoginResponseDto
   - name: accounts
     path: clients/{clientId}/accounts
@@ -334,22 +386,83 @@ psp-settings:
     method: POST
   - name: payment-create
     tenants:
-      tn01:
-        host: ${hub.tn01.host}
-      tn02:
-        host: ${hub.tn02.host}
+    - name: ${tn1}
+      host: ${hub.tn1.host}
+    - name: ${tn2}
+      host: ${hub.tn2.host}
     port: ${hub.port}
     base: ${hub.base}
     path: transactions
     method: POST
   - name: payment #get payment status by transaction id
     tenants:
-      tn01:
-        host: ${hub.tn01.host}
-      tn02:
-        host: ${hub.tn02.host}
+    - name: ${tn1}
+      host: ${hub.tn1.host}
+    - name: ${tn2}
+      host: ${hub.tn2.host}
     port: ${hub.port}
     base: ${hub.base}
     path: transactions/{transactionId}
     method: GET
+---
+
+spring:
+  profiles: fineractcn
+
+# Fineract CN
+psp-settings:
+  auth:
+    profile: OAUTH # NONE, BASIC, BASIC_TWOFACTOR, OAUTH, OAUTH_TWOFACTOR
+    encode: BASE64 # NONE, BASE64
+  headers:
+    - name: user
+      key: User
+    - name: tenant
+      key: X-Tenant-Identifier
+    - name: transaction-tenant
+      key: X-Tenant-Identifier
+  operations: #adapter -> psp
+    - name: operation-basic-settings
+      user: interopUser
+      password: intop@d1
+      tenants:
+        ${tn1}:
+          host: http://localhost # http://rhino.mlabs.dpc.hu
+        ${tn2}:
+          host: http://localhost # http://elephant.mlabs.dpc.hu
+      port: 80 #2034
+      base:
+    - name: auth #login
+      port: 80 #2021
+      base: identity/v1
+      path: token
+      method: GET
+      body-class: hu.dpc.ob.rest.dto.psp.FineractCnLoginResponseDto
+
+    - name: accounts
+      path: clients/{clientId}/accounts
+      method: GET
+    - name: client
+      path: clients/{clientId}
+      method: GET
+
+    - name: account
+      path: interoperation/v1/accounts/{accountId}
+      method: GET
+    - name: transactions
+      path: interoperation/v1/accounts/{accountId}/transactions
+      method: GET
+    - name: identifiers
+      path: interoperation/v1/accounts/{accountId}/identifiers
+      method: GET
+    - name: party-by-identifier
+      path: interoperation/v1/parties/{idType}/{idValue}
+      method: GET
+    - name: party-by-subidentifier
+      path: interoperation/v1/parties/{idType}/{idValue}/{subIdOrType}
+      method: GET
+    - name: quote-create
+      path: interoperation/v1/quotes
+      method: POST
+
 

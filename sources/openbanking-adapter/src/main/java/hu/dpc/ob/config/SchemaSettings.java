@@ -77,11 +77,11 @@ public abstract class SchemaSettings<_H extends Header, _O extends Operation, _B
         return getSchema(schema).getBindingProps(binding);
     }
 
-    public UriProperties getBindingProps(ApiSchema schema, @NotNull _B binding, String tenant) {
+    public TenantProperties getBindingProps(ApiSchema schema, @NotNull _B binding, String tenant) {
         return getSchema(schema).getBindingProps(binding, tenant);
     }
 
-    public UriProperties getBindingProps(String schema, String binding, String tenant) {
+    public TenantProperties getBindingProps(String schema, String binding, String tenant) {
         return getSchema(schema).getBindingProps(binding, tenant);
     }
 
@@ -99,11 +99,11 @@ public abstract class SchemaSettings<_H extends Header, _O extends Operation, _B
         return getSchema(schema).getOperationProps(operation);
     }
 
-    public UriProperties getOperationProps(ApiSchema schema, @NotNull _O operation, String tenant) {
+    public TenantProperties getOperationProps(ApiSchema schema, @NotNull _O operation, String tenant) {
         return getSchema(schema).getOperationProps(operation, tenant);
     }
 
-    public UriProperties getOperationProps(String schema, String operation, String tenant) {
+    public TenantProperties getOperationProps(String schema, String operation, String tenant) {
         return getSchema(schema).getOperationProps(operation, tenant);
     }
 

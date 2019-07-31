@@ -74,11 +74,11 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
         return null;
     }
 
-    public UriProperties getOperationProps(@NotNull _O operation, String tenant) {
+    public TenantProperties getOperationProps(@NotNull _O operation, String tenant) {
         return getOperationProps(operation.getConfigName(), tenant);
     }
 
-    UriProperties getOperationProps(String operation, String tenant) {
+    TenantProperties getOperationProps(String operation, String tenant) {
         if (operation == null)
             return null;
         if (getOperations() == null)
@@ -121,11 +121,11 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
         return null;
     }
 
-    public UriProperties getBindingProps(@NotNull _B binding, String tenant) {
+    public TenantProperties getBindingProps(@NotNull _B binding, String tenant) {
         return this.getBindingProps(binding.getConfigName(), tenant);
     }
 
-    UriProperties getBindingProps(@NotNull String binding, String tenant) {
+    TenantProperties getBindingProps(@NotNull String binding, String tenant) {
         if (binding == null)
             return null;
         if (getBindings() == null)
@@ -165,7 +165,7 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
                 for (TenantConfig tenant : adapterSettings.getTenants()) {
                     @NotEmpty String tenantName = tenant.getName();
                     if (operation.getTenantProps(tenantName) == null)
-                        operation.addTenantProps(tenantName, new UriProperties());
+                        operation.addTenantProps(new TenantProperties(tenantName));
                 }
             }
         }
@@ -179,7 +179,7 @@ public abstract class UriSettings<_H extends Header, _O extends Operation, _B ex
                 for (TenantConfig tenant : adapterSettings.getTenants()) {
                     @NotEmpty String tenantName = tenant.getName();
                     if (binding.getTenantProps(tenantName) == null)
-                        binding.addTenantProps(tenantName, new UriProperties());
+                        binding.addTenantProps(new TenantProperties(tenantName));
                 }
             }
         }

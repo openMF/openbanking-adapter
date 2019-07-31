@@ -24,6 +24,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -122,8 +123,14 @@ public class TransactionData {
 
     @NotNull
     public static TransactionData transform(@NotNull PspTransactionData transaction, boolean detail) {
+        BigDecimal charge = transaction.getChargeAmount();
+        @NotNull String currency = transaction.getCurrency();
+        AmountData chargeAmount = null;
+        if (charge != null)
+            chargeAmount = new AmountData(charge, currency);
+
         return new TransactionData(transaction.getAccountId(), transaction.getTransactionId(), null, null, transaction.getTransactionType().toCreditDebitType(),
                 TransactionStatus.BOOKED, transaction.getBookingDateTime().atStartOfDay(), transaction.getValueDateTime().atStartOfDay(), transaction.getNote(),
-                null, null, null, null);
+                null, new AmountData(transaction.getAmount(), currency), chargeAmount, null);
     }
 }
