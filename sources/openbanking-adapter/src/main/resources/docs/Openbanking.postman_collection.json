@@ -1,105 +1,3990 @@
 {
-	"id": "f8f0f85e-7987-4386-9db4-f2a64ac5a6e7",
-	"name": "Openbanking-AWS-ELEPHANT",
-	"values": [
+	"info": {
+		"_postman_id": "53097418-a9e3-4020-9eea-7c34dd748781",
+		"name": "Openbanking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
 		{
-			"key": "domain",
-			"value": "elephant.mlabs.dpc.hu",
-			"description": "",
-			"enabled": true
+			"name": "API",
+			"item": [
+				{
+					"name": "Create AIS Consent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d85986c9-83be-4a67-b79f-ec684071f309",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"consentId\", response.Data.ConsentId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{clientToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"value": "104.25.212.99",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"value": "93bac548-d2de-4546-b106-880a5018460d",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Data\": {\n    \"Permissions\": [\n      \"ReadAccountsBasic\",\n      \"ReadAccountsDetail\",\n      \"ReadBalances\",\n      \"ReadBeneficiariesDetail\",\n      \"ReadDirectDebits\",\n      \"ReadProducts\",\n      \"ReadStandingOrdersDetail\",\n      \"ReadTransactionsCredits\",\n      \"ReadTransactionsDebits\",\n      \"ReadTransactionsDetail\",\n      \"ReadOffers\",\n      \"ReadPAN\",\n      \"ReadParty\",\n      \"ReadPartyPSU\",\n      \"ReadScheduledPaymentsDetail\",\n      \"ReadStatementsDetail\"\n    ],\n    \"ExpirationDateTime\": \"2019-12-31T00:00:00+00:00\",\n    \"TransactionFromDateTime\": \"2017-05-31T00:00:00+00:00\",\n    \"TransactionToDateTime\": \"2027-12-31T00:00:00+00:00\"\n  },\n  \"Risk\": {}\n}"
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/account-access-consents",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"account-access-consents"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create AIS Consent",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{clientToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT",
+										"type": "text"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"value": "104.25.212.99",
+										"type": "text"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"value": "93bac548-d2de-4546-b106-880a5018460d",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"Data\": {\n    \"Permissions\": [\n      \"ReadAccountsBasic\",\n      \"ReadAccountsDetail\",\n      \"ReadBalances\",\n      \"ReadBeneficiariesDetail\",\n      \"ReadDirectDebits\",\n      \"ReadProducts\",\n      \"ReadStandingOrdersDetail\",\n      \"ReadTransactionsCredits\",\n      \"ReadTransactionsDebits\",\n      \"ReadTransactionsDetail\",\n      \"ReadOffers\",\n      \"ReadPAN\",\n      \"ReadParty\",\n      \"ReadPartyPSU\",\n      \"ReadScheduledPaymentsDetail\",\n      \"ReadStatementsDetail\"\n    ],\n    \"ExpirationDateTime\": \"2019-12-31T00:00:00+00:00\",\n    \"TransactionFromDateTime\": \"2017-05-31T00:00:00+00:00\",\n    \"TransactionToDateTime\": \"2027-12-31T00:00:00+00:00\"\n  },\n  \"Risk\": {}\n}"
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/account-access-consents",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"account-access-consents"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer 681d73e3-74de-4b03-9da0-a826dbc72c5c"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564454627771-0-7"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "05422dea-a6a2-4fe6-bda9-e98552c0365d"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "x-fapi-auth-date",
+									"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+								},
+								{
+									"key": "x-fapi-customer-ip-address",
+									"value": "104.25.212.99"
+								},
+								{
+									"key": "x-fapi-interaction-id",
+									"value": "93bac548-d2de-4546-b106-880a5018460d"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Permissions\": [\n            \"ReadAccountsBasic\",\n            \"ReadAccountsDetail\",\n            \"ReadBalances\",\n            \"ReadTransactionsCredits\",\n            \"ReadTransactionsDebits\",\n            \"ReadTransactionsDetail\",\n            \"ReadParty\",\n            \"ReadPartyPSU\"\n        ],\n        \"ExpirationDateTime\": \"2019-12-31T01:00:00.000+01:00\",\n        \"TransactionFromDateTime\": \"2017-05-31T02:00:00.000+02:00\",\n        \"TransactionToDateTime\": \"2027-12-31T01:00:00.000+01:00\",\n        \"ConsentId\": \"98e3c377-adaa-4ec3-a828-8653ccb9bd0c\",\n        \"CreationDateTime\": \"2019-07-30T04:51:15.651+02:00\",\n        \"Status\": \"AwaitingAuthorisation\",\n        \"StatusUpdateDateTime\": \"2019-07-30T04:51:15.651+02:00\"\n    },\n    \"Risk\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Get AIS Consent",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{clientToken}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"value": "104.25.212.99",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"value": "93bac548-d2de-4546-b106-880a5018460d",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/account-access-consents/{{consentId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"account-access-consents",
+								"{{consentId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get AIS Consent",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{clientToken}}"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT",
+										"type": "text"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"value": "104.25.212.99",
+										"type": "text"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"value": "93bac548-d2de-4546-b106-880a5018460d",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/account-access-consents/{{consentId}}",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"account-access-consents",
+										"{{consentId}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer 681d73e3-74de-4b03-9da0-a826dbc72c5c"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-87"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "0ce1c10f-c420-4ec9-b962-fead4e02d65a"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "x-fapi-auth-date",
+									"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+								},
+								{
+									"key": "x-fapi-customer-ip-address",
+									"value": "104.25.212.99"
+								},
+								{
+									"key": "x-fapi-interaction-id",
+									"value": "93bac548-d2de-4546-b106-880a5018460d"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Permissions\": [\n            \"ReadAccountsBasic\",\n            \"ReadAccountsDetail\",\n            \"ReadBalances\",\n            \"ReadTransactionsCredits\",\n            \"ReadTransactionsDebits\",\n            \"ReadTransactionsDetail\",\n            \"ReadParty\",\n            \"ReadPartyPSU\"\n        ],\n        \"ExpirationDateTime\": \"2019-12-31T01:00:00.000+01:00\",\n        \"TransactionFromDateTime\": \"2017-05-31T02:00:00.000+02:00\",\n        \"TransactionToDateTime\": \"2027-12-31T01:00:00.000+01:00\",\n        \"ConsentId\": \"98e3c377-adaa-4ec3-a828-8653ccb9bd0c\",\n        \"CreationDateTime\": \"2019-07-30T04:51:15.651+02:00\",\n        \"Status\": \"Authorised\",\n        \"StatusUpdateDateTime\": \"2019-07-30T13:36:49.713+02:00\"\n    },\n    \"Risk\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Accounts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "63204cf6-15f4-4154-aefa-b0b43419e1de",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"accountId\", response.Data.Account[0].AccountId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Accounts",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"accounts"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "*/*"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer {{userToken}}"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-19"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "ebe0a081-cd63-4fa3-b282-2bd56ad0106b"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Account\": [\n            {\n                \"AccountId\": \"31d77b06141c11e9ab14d6\",\n                \"Status\": \"Enabled\",\n                \"StatusUpdateDateTime\": \"2019-07-30T02:00:00.000+02:00\",\n                \"Currency\": \"TZS\",\n                \"AccountType\": \"Personal\",\n                \"AccountSubType\": \"Savings\",\n                \"Nickname\": \"Saving Product1\",\n                \"Account\": [\n                    {\n                        \"SchemeName\": \"UK.OBIE.IBAN\",\n                        \"Identification\": \"62\"\n                    },\n                    {\n                        \"SchemeName\": \"UK.OBIE.Paym\",\n                        \"Identification\": \"27710101999\"\n                    }\n                ]\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Account",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts/{{accountId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"accounts",
+								"{{accountId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Account",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts/{{accountId}}",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"accounts",
+										"{{accountId}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "*/*"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer {{userToken}}"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-21"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "1ba8b70c-7e93-43c6-af49-20344abf56b2"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Account\": [\n            {\n                \"AccountId\": \"31d77b06141c11e9ab14d6\",\n                \"Status\": \"Enabled\",\n                \"StatusUpdateDateTime\": \"2019-07-30T02:00:00.000+02:00\",\n                \"Currency\": \"TZS\",\n                \"AccountType\": \"Personal\",\n                \"AccountSubType\": \"Savings\",\n                \"Nickname\": \"Saving Product1\",\n                \"Account\": [\n                    {\n                        \"SchemeName\": \"UK.OBIE.IBAN\",\n                        \"Identification\": \"62\"\n                    },\n                    {\n                        \"SchemeName\": \"UK.OBIE.Paym\",\n                        \"Identification\": \"27710101999\"\n                    }\n                ]\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Balances",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/balances",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"balances"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Balances",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/balances",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"balances"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "*/*"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer {{userToken}}"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-23"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "3231ef0d-3ea8-4f5d-97ab-119e45be63ca"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Balance\": [\n            {\n                \"AccountId\": \"31d77b06141c11e9ab14d6\",\n                \"Amount\": {\n                    \"Amount\": 100000000,\n                    \"Currency\": \"TZS\"\n                },\n                \"CreditDebitIndicator\": \"Debit\",\n                \"Type\": \"Information\",\n                \"DateTime\": \"2019-04-21T02:00:00.000+02:00\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Account Balances",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts/{{accountId}}/balances",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"accounts",
+								"{{accountId}}",
+								"balances"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Account Balances",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts/{{accountId}}/balances",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"accounts",
+										"{{accountId}}",
+										"balances"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "*/*"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer {{userToken}}"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-25"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "1efe0584-6061-4e0a-b9a9-cac255bf29c8"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Balance\": [\n            {\n                \"AccountId\": \"31d77b06141c11e9ab14d6\",\n                \"Amount\": {\n                    \"Amount\": 100000000,\n                    \"Currency\": \"TZS\"\n                },\n                \"CreditDebitIndicator\": \"Debit\",\n                \"Type\": \"Information\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Transactions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/transactions?fromBookingDateTime=2019-05-01T05:00:00&toBookingDateTime=2019-07-01T17:04:12",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "fromBookingDateTime",
+									"value": "2019-05-01T05:00:00"
+								},
+								{
+									"key": "toBookingDateTime",
+									"value": "2019-07-01T17:04:12"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Transactions",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/transactions?fromBookingDateTime=2019-05-01T05:00:00&toBookingDateTime=2019-07-01T17:04:12",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"transactions"
+									],
+									"query": [
+										{
+											"key": "fromBookingDateTime",
+											"value": "2019-05-01T05:00:00"
+										},
+										{
+											"key": "toBookingDateTime",
+											"value": "2019-07-01T17:04:12"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "*/*"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer {{userToken}}"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-27"
+								},
+								{
+									"key": "fromBookingDateTime",
+									"value": "2019-05-01T05:00:00"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "3a2bf179-061d-4813-b8c4-8cb71d2aa300"
+								},
+								{
+									"key": "toBookingDateTime",
+									"value": "2019-07-01T17:04:12"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Account Transactions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts/{{accountId}}/transactions",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"accounts",
+								"{{accountId}}",
+								"transactions"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Account Transactions",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts/{{accountId}}/transactions",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"accounts",
+										"{{accountId}}",
+										"transactions"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "*/*"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer {{userToken}}"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-29"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "dca5ad8c-29d7-4a4a-a135-845f5f8a9978"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Get PSU Party",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/party",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"party"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get PSU Party",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/party",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"party"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "*/*"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer {{userToken}}"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-31"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "219b1eda-ab4f-4c87-a893-2f602616a492"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Party\": {\n            \"PartyId\": \"1\",\n            \"Name\": \"InteropCustomer\",\n            \"FullLegalName\": \"InteropCustomer\",\n            \"BeneficialOwnership\": false\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Account Party - NOT WORKING",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts/{{accountId}}/party",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"accounts",
+								"{{accountId}}",
+								"party"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Account Party - NOT WORKING",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/accounts/{{accountId}}/party",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"accounts",
+										"{{accountId}}",
+										"party"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "*/*"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer {{userToken}}"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-33"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "db2c3b73-65e5-4ce7-bf01-857096a64e6a"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Party\": {\n            \"PartyId\": \"1\",\n            \"Name\": \"InteropCustomer\",\n            \"FullLegalName\": \"InteropCustomer\",\n            \"BeneficialOwnership\": false\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create PIS Consent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "353a7dcb-a1a9-4a6d-a86a-5e11e24f44a8",
+								"exec": [
+									"var res = pm.response.json();",
+									"pm.environment.set(\"pis-consentId\", res.Data.ConsentId);",
+									"",
+									"pm.environment.set(\"amount\", res.Data.Initiation.InstructedAmount.Amount);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "db06b798-7def-4d1f-9815-fd6c32dbca7d",
+								"exec": [
+									"var clientRefId = pm.environment.get(\"clientRefId\");",
+									"var refBase = clientRefId.substr(0, clientRefId.length - 6);",
+									"var refNo = parseInt(clientRefId.substring(clientRefId.length - 6, clientRefId.length), 10) + 1;",
+									"pm.environment.set(\"clientRefId\", (refBase + refNo));",
+									"",
+									"var instructionId = pm.environment.get(\"instructionId\");",
+									"var instrBase = instructionId.substr(0, instructionId.length - 6);",
+									"var instrNo = parseInt(instructionId.substring(instructionId.length - 6, instructionId.length), 10) + 1;",
+									"pm.environment.set(\"instructionId\", (instrBase + instrNo));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{clientToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Data\": {\n    \"Initiation\": {\n      \"InstructionIdentification\": \"{{instructionId}}\",\n      \"EndToEndIdentification\": \"{{clientRefId}}\",\n      \"InstructedAmount\": {\n        \"Amount\": 4,\n        \"Currency\": \"TZS\"\n      },\n      \"DebtorAccount\": {\n        \"SchemeName\": \"UK.OBIE.BBAN\",\n        \"Identification\": \"{{accountId}}\"\n      },\n      \"CreditorAccount\": {\n        \"SchemeName\": \"UK.OBIE.Paym\",\n        \"Identification\": \"27710203999\",\n        \"Name\": \"Rhino Saving Account 1\"\n      },\n      \"SupplementaryData\": {\n      \t\"interopData\": {\n      \t\t\"amountType\": \"RECEIVE\",\n\t\t    \"transactionType\": {\n\t\t\t    \"scenario\": \"TRANSFER\",\n\t\t\t    \"initiator\": \"PAYER\",\n\t\t\t    \"initiatorType\": \"CONSUMER\"\n\t\t    },\n\t\t    \"note\": \"Test payment\"\n      \t}\n      }\n    }\n  },\n  \"Risk\": {}\n}"
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payment-consents",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"domestic-payment-consents"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create PIS Consent",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{clientToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"type": "text",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"type": "text",
+										"value": "104.25.212.99"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"type": "text",
+										"value": "93bac548-d2de-4546-b106-880a5018460d"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"Data\": {\n    \"Initiation\": {\n      \"InstructionIdentification\": \"{{instructionId}}\",\n      \"EndToEndIdentification\": \"{{clientRefId}}\",\n      \"InstructedAmount\": {\n        \"Amount\": 4,\n        \"Currency\": \"TZS\"\n      },\n      \"DebtorAccount\": {\n        \"SchemeName\": \"UK.OBIE.BBAN\",\n        \"Identification\": \"{{accountId}}\"\n      },\n      \"CreditorAccount\": {\n        \"SchemeName\": \"UK.OBIE.Paym\",\n        \"Identification\": \"27710203999\",\n        \"Name\": \"Rhino Saving Account 1\"\n      },\n      \"SupplementaryData\": {\n      \t\"interopData\": {\n      \t\t\"amountType\": \"RECEIVE\",\n\t\t    \"transactionType\": {\n\t\t\t    \"scenario\": \"TRANSFER\",\n\t\t\t    \"initiator\": \"PAYER\",\n\t\t\t    \"initiatorType\": \"CONSUMER\"\n\t\t    },\n\t\t    \"note\": \"Test payment\"\n      \t}\n      }\n    }\n  },\n  \"Risk\": {}\n}"
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payment-consents",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"domestic-payment-consents"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer 681d73e3-74de-4b03-9da0-a826dbc72c5c"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-67"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "162eb7ce-6fb7-4134-8dea-326c386eff4b"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "x-fapi-auth-date",
+									"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+								},
+								{
+									"key": "x-fapi-customer-ip-address",
+									"value": "104.25.212.99"
+								},
+								{
+									"key": "x-fapi-interaction-id",
+									"value": "93bac548-d2de-4546-b106-880a5018460d"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Initiation\": {\n            \"InstructionIdentification\": \"fefce099-2f17-4c3a-ae29-412732100015\",\n            \"EndToEndIdentification\": \"fefce099-2f17-4c3a-ae29-412732100015\",\n            \"InstructedAmount\": {\n                \"Amount\": 4,\n                \"Currency\": \"TZS\"\n            },\n            \"DebtorAccount\": {\n                \"SchemeName\": \"UK.OBIE.BBAN\",\n                \"Identification\": \"31d77b06141c11e9ab14d6\"\n            },\n            \"CreditorAccount\": {\n                \"SchemeName\": \"UK.OBIE.Paym\",\n                \"Identification\": \"27710203999\",\n                \"Name\": \"Rhino Saving Account 1\"\n            },\n            \"RemittanceInformation\": {},\n            \"SupplementaryData\": {\n                \"interopData\": {\n                    \"amountType\": \"RECEIVE\",\n                    \"transactionType\": {\n                        \"scenario\": \"TRANSFER\",\n                        \"initiator\": \"PAYER\",\n                        \"initiatorType\": \"CONSUMER\"\n                    },\n                    \"note\": \"Test payment\"\n                }\n            }\n        },\n        \"ConsentId\": \"19414031-6378-4f09-8283-d12d7de18ed2\",\n        \"CreationDateTime\": \"2019-07-30T13:53:41.433+02:00\",\n        \"Status\": \"AwaitingAuthorisation\"\n    },\n    \"Risk\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Get PIS Consent",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{clientToken}}"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payment-consents/{{pis-consentId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"domestic-payment-consents",
+								"{{pis-consentId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get PIS Consent",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{clientToken}}"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"type": "text",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"type": "text",
+										"value": "104.25.212.99"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"type": "text",
+										"value": "93bac548-d2de-4546-b106-880a5018460d"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payment-consents/{{pis-consentId}}",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"domestic-payment-consents",
+										"{{pis-consentId}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer 681d73e3-74de-4b03-9da0-a826dbc72c5c"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-57"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "5681fdac-b34b-49f5-9e96-922e6cc31656"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "x-fapi-auth-date",
+									"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+								},
+								{
+									"key": "x-fapi-customer-ip-address",
+									"value": "104.25.212.99"
+								},
+								{
+									"key": "x-fapi-interaction-id",
+									"value": "93bac548-d2de-4546-b106-880a5018460d"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Initiation\": {\n            \"InstructionIdentification\": \"fefce099-2f17-4c3a-ae29-412732100014\",\n            \"EndToEndIdentification\": \"fefce099-2f17-4c3a-ae29-412732100014\",\n            \"InstructedAmount\": {\n                \"Amount\": 4,\n                \"Currency\": \"TZS\"\n            },\n            \"DebtorAccount\": {\n                \"SchemeName\": \"UK.OBIE.BBAN\",\n                \"Identification\": \"31d77b06141c11e9ab14d6\"\n            },\n            \"CreditorAccount\": {\n                \"SchemeName\": \"UK.OBIE.Paym\",\n                \"Identification\": \"27710203999\",\n                \"Name\": \"Rhino Saving Account 1\"\n            },\n            \"RemittanceInformation\": {},\n            \"SupplementaryData\": {\n                \"interopData\": {\n                    \"amountType\": \"RECEIVE\",\n                    \"transactionType\": {\n                        \"scenario\": \"TRANSFER\",\n                        \"initiator\": \"PAYER\",\n                        \"initiatorType\": \"CONSUMER\"\n                    },\n                    \"note\": \"Test payment\"\n                }\n            }\n        },\n        \"SCASupportData\": {\n            \"RequestedSCAExemptionType\": \"PartyToParty\",\n            \"AppliedAuthenticationApproach\": \"SCA\"\n        },\n        \"ConsentId\": \"8da1d1b2-c772-4870-8695-36033bf97ae8\",\n        \"CreationDateTime\": \"2019-07-30T13:38:02.941+02:00\",\n        \"Status\": \"Authorised\",\n        \"StatusUpdateDateTime\": \"2019-07-30T13:50:07.037+02:00\",\n        \"Charges\": [\n            {\n                \"ChargeBearer\": \"BorneByDebtor\",\n                \"Type\": \"UK.OBIE.MoneyTransferOut\",\n                \"Amount\": {\n                    \"Amount\": 1,\n                    \"Currency\": \"TZS\"\n                }\n            }\n        ]\n    },\n    \"Risk\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Get PIS Consent Funds",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payment-consents/{{pis-consentId}}/funds-confirmation",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"domestic-payment-consents",
+								"{{pis-consentId}}",
+								"funds-confirmation"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get PIS Consent Funds",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"type": "text",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"type": "text",
+										"value": "104.25.212.99"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"type": "text",
+										"value": "93bac548-d2de-4546-b106-880a5018460d"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payment-consents/{{pis-consentId}}/funds-confirmation",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"domestic-payment-consents",
+										"{{pis-consentId}}",
+										"funds-confirmation"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer {{userToken}}"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-73"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "b44f41b0-14af-444f-8dd7-0fa57626f585"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "x-fapi-auth-date",
+									"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+								},
+								{
+									"key": "x-fapi-customer-ip-address",
+									"value": "104.25.212.99"
+								},
+								{
+									"key": "x-fapi-interaction-id",
+									"value": "93bac548-d2de-4546-b106-880a5018460d"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"FundsAvailableResult\": {\n            \"FundsAvailableDateTime\": \"2019-07-30T13:53:55.200+02:00\",\n            \"FundsAvailable\": true\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Start Payment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "efc44fe6-efef-458f-ae1c-3da50e1f3153",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"paymentId\", response.Data.DomesticPaymentId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Data\": {\n\t\"ConsentId\": \"{{pis-consentId}}\",\n\t\"Initiation\": {\n      \"InstructionIdentification\": \"{{instructionId}}\",\n      \"EndToEndIdentification\": \"{{clientRefId}}\",\n      \"InstructedAmount\": {\n        \"Amount\": {{amount}},\n        \"Currency\": \"TZS\"\n      },\n      \"DebtorAccount\": {\n        \"SchemeName\": \"UK.OBIE.BBAN\",\n        \"Identification\": \"{{accountId}}\"\n      },\n      \"CreditorAccount\": {\n        \"SchemeName\": \"UK.OBIE.Paym\",\n        \"Identification\": \"27710203999\",\n        \"Name\": \"Rhino Saving Account 1\"\n      },\n      \"SupplementaryData\": {\n      \t\"interopData\": {\n      \t\t\"amountType\": \"RECEIVE\",\n\t\t    \"transactionType\": {\n\t\t\t    \"scenario\": \"TRANSFER\",\n\t\t\t    \"initiator\": \"PAYER\",\n\t\t\t    \"initiatorType\": \"CONSUMER\"\n\t\t    },\n\t\t    \"note\": \"Test payment\"\n      \t}\n      }\n    }\n  },\n  \"Risk\": {}\n}"
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payments",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"domestic-payments"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Start Payment",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{userToken}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"type": "text",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"type": "text",
+										"value": "104.25.212.99"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"type": "text",
+										"value": "93bac548-d2de-4546-b106-880a5018460d"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"Data\": {\n\t\"ConsentId\": \"{{pis-consentId}}\",\n\t\"Initiation\": {\n      \"InstructionIdentification\": \"{{instructionId}}\",\n      \"EndToEndIdentification\": \"{{clientRefId}}\",\n      \"InstructedAmount\": {\n        \"Amount\": {{amount}},\n        \"Currency\": \"TZS\"\n      },\n      \"DebtorAccount\": {\n        \"SchemeName\": \"UK.OBIE.BBAN\",\n        \"Identification\": \"{{accountId}}\"\n      },\n      \"CreditorAccount\": {\n        \"SchemeName\": \"UK.OBIE.Paym\",\n        \"Identification\": \"27710203999\",\n        \"Name\": \"Rhino Saving Account 1\"\n      },\n      \"SupplementaryData\": {\n      \t\"interopData\": {\n      \t\t\"amountType\": \"RECEIVE\",\n\t\t    \"transactionType\": {\n\t\t\t    \"scenario\": \"TRANSFER\",\n\t\t\t    \"initiator\": \"PAYER\",\n\t\t\t    \"initiatorType\": \"CONSUMER\"\n\t\t    },\n\t\t    \"note\": \"Test payment\"\n      \t}\n      }\n    }\n  },\n  \"Risk\": {}\n}"
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payments",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"domestic-payments"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer {{userToken}}"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-75"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "214cefc8-0f15-4e73-9447-a44a0e9e2c01"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "x-fapi-auth-date",
+									"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+								},
+								{
+									"key": "x-fapi-customer-ip-address",
+									"value": "104.25.212.99"
+								},
+								{
+									"key": "x-fapi-interaction-id",
+									"value": "93bac548-d2de-4546-b106-880a5018460d"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Initiation\": {\n            \"InstructionIdentification\": \"fefce099-2f17-4c3a-ae29-412732100015\",\n            \"EndToEndIdentification\": \"fefce099-2f17-4c3a-ae29-412732100015\",\n            \"InstructedAmount\": {\n                \"Amount\": 4,\n                \"Currency\": \"TZS\"\n            },\n            \"DebtorAccount\": {\n                \"SchemeName\": \"UK.OBIE.BBAN\",\n                \"Identification\": \"31d77b06141c11e9ab14d6\"\n            },\n            \"CreditorAccount\": {\n                \"SchemeName\": \"UK.OBIE.Paym\",\n                \"Identification\": \"27710203999\",\n                \"Name\": \"Rhino Saving Account 1\"\n            },\n            \"RemittanceInformation\": {},\n            \"SupplementaryData\": {\n                \"interopData\": {\n                    \"amountType\": \"RECEIVE\",\n                    \"transactionType\": {\n                        \"scenario\": \"TRANSFER\",\n                        \"initiator\": \"PAYER\",\n                        \"initiatorType\": \"CONSUMER\"\n                    },\n                    \"note\": \"Test payment\"\n                }\n            }\n        },\n        \"DomesticPaymentId\": \"2d2dd7c3-3662-4e44-80f4-a6110732c442\",\n        \"ConsentId\": \"19414031-6378-4f09-8283-d12d7de18ed2\",\n        \"CreationDateTime\": \"2019-07-30T13:53:41.433+02:00\",\n        \"Status\": \"AcceptedWithoutPosting\",\n        \"StatusUpdateDateTime\": \"2019-07-30T13:54:02.295+02:00\",\n        \"Charges\": [\n            {\n                \"ChargeBearer\": \"BorneByDebtor\",\n                \"Type\": \"UK.OBIE.MoneyTransferOut\",\n                \"Amount\": {\n                    \"Amount\": 1,\n                    \"Currency\": \"TZS\"\n                }\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Payment",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{clientToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"value": "104.25.212.99",
+								"type": "text"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"value": "93bac548-d2de-4546-b106-880a5018460d",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payments/{{paymentId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"domestic-payments",
+								"{{paymentId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Payment",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{clientToken}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT",
+										"type": "text"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"value": "104.25.212.99",
+										"type": "text"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"value": "93bac548-d2de-4546-b106-880a5018460d",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payments/{{paymentId}}",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"domestic-payments",
+										"{{paymentId}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer 681d73e3-74de-4b03-9da0-a826dbc72c5c"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-85"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "aaf2ea3e-8a43-47cc-bbdf-8480b1751f4c"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "x-fapi-auth-date",
+									"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+								},
+								{
+									"key": "x-fapi-customer-ip-address",
+									"value": "104.25.212.99"
+								},
+								{
+									"key": "x-fapi-interaction-id",
+									"value": "93bac548-d2de-4546-b106-880a5018460d"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Initiation\": {\n            \"InstructionIdentification\": \"fefce099-2f17-4c3a-ae29-412732100015\",\n            \"EndToEndIdentification\": \"fefce099-2f17-4c3a-ae29-412732100015\",\n            \"InstructedAmount\": {\n                \"Amount\": 4,\n                \"Currency\": \"TZS\"\n            },\n            \"DebtorAccount\": {\n                \"SchemeName\": \"UK.OBIE.BBAN\",\n                \"Identification\": \"31d77b06141c11e9ab14d6\"\n            },\n            \"CreditorAccount\": {\n                \"SchemeName\": \"UK.OBIE.Paym\",\n                \"Identification\": \"27710203999\",\n                \"Name\": \"Rhino Saving Account 1\"\n            },\n            \"RemittanceInformation\": {},\n            \"SupplementaryData\": {\n                \"interopData\": {\n                    \"amountType\": \"RECEIVE\",\n                    \"transactionType\": {\n                        \"scenario\": \"TRANSFER\",\n                        \"initiator\": \"PAYER\",\n                        \"initiatorType\": \"CONSUMER\"\n                    },\n                    \"note\": \"Test payment\"\n                }\n            }\n        },\n        \"DomesticPaymentId\": \"2d2dd7c3-3662-4e44-80f4-a6110732c442\",\n        \"ConsentId\": \"19414031-6378-4f09-8283-d12d7de18ed2\",\n        \"CreationDateTime\": \"2019-07-30T13:53:41.433+02:00\",\n        \"Status\": \"AcceptedCreditSettlementCompleted\",\n        \"StatusUpdateDateTime\": \"2019-07-30T13:55:08.338+02:00\",\n        \"Charges\": [\n            {\n                \"ChargeBearer\": \"BorneByDebtor\",\n                \"Type\": \"UK.OBIE.MoneyTransferOut\",\n                \"Amount\": {\n                    \"Amount\": 1,\n                    \"Currency\": \"TZS\"\n                }\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Payment Details",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{clientToken}}"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payments/{{paymentId}}/payment-details",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"domestic-payments",
+								"{{paymentId}}",
+								"payment-details"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Payment Details",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{clientToken}}"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"type": "text",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"type": "text",
+										"value": "104.25.212.99"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"type": "text",
+										"value": "93bac548-d2de-4546-b106-880a5018460d"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payments/{{paymentId}}/payment-details",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"domestic-payments",
+										"{{paymentId}}",
+										"payment-details"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer 681d73e3-74de-4b03-9da0-a826dbc72c5c"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-83"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "7d0ae7b0-3ff4-451b-93d9-a7b6d090deb5"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "x-fapi-auth-date",
+									"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+								},
+								{
+									"key": "x-fapi-customer-ip-address",
+									"value": "104.25.212.99"
+								},
+								{
+									"key": "x-fapi-interaction-id",
+									"value": "93bac548-d2de-4546-b106-880a5018460d"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"PaymentStatus\": [\n            {\n                \"PaymentTransactionId\": \"11131832-6d05-4f00-af07-19fbd1d6b09b\",\n                \"Status\": \"Received\",\n                \"StatusUpdateDateTime\": \"2019-07-30T13:55:08.337+02:00\",\n                \"StatusDetail\": {\n                    \"Status\": \"COMMITTED\"\n                }\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get PIS Client Payment",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{clientToken}}"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payments-client/{{clientRefId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{apiPort}}{{apiBase}}",
+							"path": [
+								"domestic-payments-client",
+								"{{clientRefId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get PIS Client Payment",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{clientToken}}"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"type": "text",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"type": "text",
+										"value": "104.25.212.99"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"type": "text",
+										"value": "93bac548-d2de-4546-b106-880a5018460d"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{apiPort}}{{apiBase}}/domestic-payments-client/{{clientRefId}}",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{apiPort}}{{apiBase}}",
+									"path": [
+										"domestic-payments-client",
+										"{{clientRefId}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer 681d73e3-74de-4b03-9da0-a826dbc72c5c"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-81"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "1983c6d8-690a-4d71-a640-7aee88cbe9e9"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "x-fapi-auth-date",
+									"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+								},
+								{
+									"key": "x-fapi-customer-ip-address",
+									"value": "104.25.212.99"
+								},
+								{
+									"key": "x-fapi-interaction-id",
+									"value": "93bac548-d2de-4546-b106-880a5018460d"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Initiation\": {\n            \"InstructionIdentification\": \"fefce099-2f17-4c3a-ae29-412732100015\",\n            \"EndToEndIdentification\": \"fefce099-2f17-4c3a-ae29-412732100015\",\n            \"InstructedAmount\": {\n                \"Amount\": 4,\n                \"Currency\": \"TZS\"\n            },\n            \"DebtorAccount\": {\n                \"SchemeName\": \"UK.OBIE.BBAN\",\n                \"Identification\": \"31d77b06141c11e9ab14d6\"\n            },\n            \"CreditorAccount\": {\n                \"SchemeName\": \"UK.OBIE.Paym\",\n                \"Identification\": \"27710203999\",\n                \"Name\": \"Rhino Saving Account 1\"\n            },\n            \"RemittanceInformation\": {},\n            \"SupplementaryData\": {\n                \"interopData\": {\n                    \"amountType\": \"RECEIVE\",\n                    \"transactionType\": {\n                        \"scenario\": \"TRANSFER\",\n                        \"initiator\": \"PAYER\",\n                        \"initiatorType\": \"CONSUMER\"\n                    },\n                    \"note\": \"Test payment\"\n                }\n            }\n        },\n        \"DomesticPaymentId\": \"2d2dd7c3-3662-4e44-80f4-a6110732c442\",\n        \"ConsentId\": \"19414031-6378-4f09-8283-d12d7de18ed2\",\n        \"CreationDateTime\": \"2019-07-30T13:53:41.433+02:00\",\n        \"Status\": \"AcceptedCreditSettlementCompleted\",\n        \"StatusUpdateDateTime\": \"2019-07-30T13:55:08.338+02:00\",\n        \"Charges\": [\n            {\n                \"ChargeBearer\": \"BorneByDebtor\",\n                \"Type\": \"UK.OBIE.MoneyTransferOut\",\n                \"Amount\": {\n                    \"Amount\": 1,\n                    \"Currency\": \"TZS\"\n                }\n            }\n        ]\n    }\n}"
+						}
+					]
+				}
+			]
 		},
 		{
-			"key": "apiPort",
-			"value": "80",
-			"description": "",
-			"enabled": true
+			"name": "Access",
+			"item": [
+				{
+					"name": "Get AIS Consent",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							},
+							{
+								"key": "user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{accessPort}}{{accessBase}}",
+							"path": [
+								"consents",
+								"{{consentId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get AIS Consent",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"type": "text",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"type": "text",
+										"value": "104.25.212.99"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"type": "text",
+										"value": "93bac548-d2de-4546-b106-880a5018460d"
+									},
+									{
+										"key": "user-id",
+										"value": "{{userId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{accessPort}}{{accessBase}}",
+									"path": [
+										"consents",
+										"{{consentId}}"
+									]
+								}
+							},
+							"status": "Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain;charset=iso-8859-1"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "java.lang.NullPointerException\n\tat hu.dpc.ob.model.service.ConsentService.calcConsentRejectReason(ConsentService.java:425)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:498)\n\tat org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)\n\tat org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:198)\n\tat org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:752)\n\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)\n\tat org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:688)\n\tat hu.dpc.ob.model.service.ConsentService$$EnhancerBySpringCGLIB$$2a068279.calcConsentRejectReason(<generated>)\n\tat hu.dpc.ob.model.service.ApiService.validateAndRegisterAction(ApiService.java:215)\n\tat hu.dpc.ob.model.service.ApiService$$FastClassBySpringCGLIB$$83a99ddc.invoke(<generated>)\n\tat org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)\n\tat org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)\n\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)\n\tat org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:295)\n\tat org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:98)\n\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)\n\tat org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:688)\n\tat hu.dpc.ob.model.service.ApiService$$EnhancerBySpringCGLIB$$f1ca4df9.validateAndRegisterAction(<generated>)\n\tat hu.dpc.ob.rest.processor.ValidateProcessor.process(ValidateProcessor.java:102)\n\tat hu.dpc.ob.rest.processor.ob.ObValidateProcessor.process(ObValidateProcessor.java:30)\n\tat hu.dpc.ob.rest.processor.ob.access.AccessValidateProcessor.process(AccessValidateProcessor.java:31)\n\tat hu.dpc.ob.rest.processor.ob.access.AccessValidateProcessor$$FastClassBySpringCGLIB$$8e245436.invoke(<generated>)\n\tat org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)\n\tat org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:684)\n\tat hu.dpc.ob.rest.processor.ob.access.AccessValidateProcessor$$EnhancerBySpringCGLIB$$e54a3947.process(<generated>)\n\tat org.apache.camel.processor.DelegateSyncProcessor.process(DelegateSyncProcessor.java:63)\n\tat org.apache.camel.processor.RedeliveryErrorHandler.process(RedeliveryErrorHandler.java:548)\n\tat org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201)\n\tat org.apache.camel.processor.Pipeline.process(Pipeline.java:138)\n\tat org.apache.camel.processor.Pipeline.process(Pipeline.java:101)\n\tat org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201)\n\tat org.apache.camel.component.direct.DirectProducer.process(DirectProducer.java:76)\n\tat org.apache.camel.processor.SendProcessor.process(SendProcessor.java:148)\n\tat org.apache.camel.processor.RedeliveryErrorHandler.process(RedeliveryErrorHandler.java:548)\n\tat org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201)\n\tat org.apache.camel.processor.Pipeline.process(Pipeline.java:138)\n\tat org.apache.camel.processor.Pipeline.process(Pipeline.java:101)\n\tat org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201)\n\tat org.apache.camel.component.direct.DirectProducer.process(DirectProducer.java:76)\n\tat org.apache.camel.processor.SendProcessor.process(SendProcessor.java:148)\n\tat org.apache.camel.processor.RedeliveryErrorHandler.process(RedeliveryErrorHandler.java:548)\n\tat org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201)\n\tat org.apache.camel.processor.Pipeline.process(Pipeline.java:138)\n\tat org.apache.camel.processor.Pipeline.process(Pipeline.java:101)\n\tat org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201)\n\tat org.apache.camel.component.jetty.CamelContinuationServlet.doService(CamelContinuationServlet.java:220)\n\tat org.apache.camel.http.common.CamelServlet.service(CamelServlet.java:79)\n\tat javax.servlet.http.HttpServlet.service(HttpServlet.java:741)\n\tat org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:873)\n\tat org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:542)\n\tat org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:255)\n\tat org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1345)\n\tat org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:203)\n\tat org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:480)\n\tat org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:201)\n\tat org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1247)\n\tat org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:144)\n\tat org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132)\n\tat org.eclipse.jetty.server.Server.handle(Server.java:502)\n\tat org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:364)\n\tat org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:260)\n\tat org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:305)\n\tat org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:103)\n\tat org.eclipse.jetty.io.ChannelEndPoint$2.run(ChannelEndPoint.java:118)\n\tat org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:765)\n\tat org.eclipse.jetty.util.thread.QueuedThreadPool$2.run(QueuedThreadPool.java:683)\n\tat java.lang.Thread.run(Thread.java:748)\n"
+						}
+					]
+				},
+				{
+					"name": "Get Consent Party",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							},
+							{
+								"key": "user-id",
+								"type": "text",
+								"value": "{{userId}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}/party",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{accessPort}}{{accessBase}}",
+							"path": [
+								"consents",
+								"{{consentId}}",
+								"party"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Consent Party",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"type": "text",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"type": "text",
+										"value": "104.25.212.99"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"type": "text",
+										"value": "93bac548-d2de-4546-b106-880a5018460d"
+									},
+									{
+										"key": "user-id",
+										"type": "text",
+										"value": "{{userId}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}/party",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{accessPort}}{{accessBase}}",
+									"path": [
+										"consents",
+										"{{consentId}}",
+										"party"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-91"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "cda981f8-f9c3-4dd1-9d40-4c814b71a109"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "user-id",
+									"value": "in01tn01_user"
+								},
+								{
+									"key": "x-fapi-auth-date",
+									"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+								},
+								{
+									"key": "x-fapi-customer-ip-address",
+									"value": "104.25.212.99"
+								},
+								{
+									"key": "x-fapi-interaction-id",
+									"value": "93bac548-d2de-4546-b106-880a5018460d"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Party\": {\n            \"PartyId\": \"1\",\n            \"Name\": \"InteropCustomer\",\n            \"FullLegalName\": \"InteropCustomer\",\n            \"BeneficialOwnership\": false\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Consent Accounts",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							},
+							{
+								"key": "user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}/accounts",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{accessPort}}{{accessBase}}",
+							"path": [
+								"consents",
+								"{{consentId}}",
+								"accounts"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Consent Accounts",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"type": "text",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"type": "text",
+										"value": "104.25.212.99"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"type": "text",
+										"value": "93bac548-d2de-4546-b106-880a5018460d"
+									},
+									{
+										"key": "user-id",
+										"value": "{{userId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}/accounts",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{accessPort}}{{accessBase}}",
+									"path": [
+										"consents",
+										"{{consentId}}",
+										"accounts"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Update AIS Consent",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							},
+							{
+								"key": "user-id",
+								"type": "text",
+								"value": "{{userId}}"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Data\": {\n        \"Permissions\": [\n            \"ReadAccountsBasic\",\n            \"ReadAccountsDetail\",\n            \"ReadBalances\",\n            \"ReadTransactionsCredits\",\n            \"ReadTransactionsDebits\",\n            \"ReadTransactionsDetail\",\n            \"ReadParty\",\n            \"ReadPartyPSU\"\n        ],\n        \"ConsentId\": \"{{consentId}}\",\n        \"Action\": \"Authorize\",\n        \"Account\": [\n        \t{\n            \"AccountId\": \"{{accountId}}\"\n        \t}\n        ]\n    }\n}"
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{accessPort}}{{accessBase}}",
+							"path": [
+								"consents",
+								"{{consentId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Update AIS Consent",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"type": "text",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"type": "text",
+										"value": "104.25.212.99"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"type": "text",
+										"value": "93bac548-d2de-4546-b106-880a5018460d"
+									},
+									{
+										"key": "user-id",
+										"type": "text",
+										"value": "{{userId}}"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"Data\": {\n        \"Permissions\": [\n            \"ReadAccountsBasic\",\n            \"ReadAccountsDetail\",\n            \"ReadBalances\",\n            \"ReadTransactionsCredits\",\n            \"ReadTransactionsDebits\",\n            \"ReadTransactionsDetail\",\n            \"ReadParty\",\n            \"ReadPartyPSU\"\n        ],\n        \"ConsentId\": \"{{consentId}}\",\n        \"Action\": \"Authorize\",\n        \"Account\": [\n        \t{\n            \"AccountId\": \"{{accountId}}\"\n        \t}\n        ]\n    }\n}"
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{accessPort}}{{accessBase}}",
+									"path": [
+										"consents",
+										"{{consentId}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-15"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "68940ca2-742c-486e-95e3-b35ba0e4cdc1"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "user-id",
+									"value": "in01tn01_user"
+								},
+								{
+									"key": "x-fapi-auth-date",
+									"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+								},
+								{
+									"key": "x-fapi-customer-ip-address",
+									"value": "104.25.212.99"
+								},
+								{
+									"key": "x-fapi-interaction-id",
+									"value": "93bac548-d2de-4546-b106-880a5018460d"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Permissions\": [\n            \"ReadAccountsBasic\",\n            \"ReadAccountsDetail\",\n            \"ReadBalances\",\n            \"ReadTransactionsCredits\",\n            \"ReadTransactionsDebits\",\n            \"ReadTransactionsDetail\",\n            \"ReadParty\",\n            \"ReadPartyPSU\"\n        ],\n        \"ExpirationDateTime\": \"2019-12-31T01:00:00.000+01:00\",\n        \"TransactionFromDateTime\": \"2017-05-31T02:00:00.000+02:00\",\n        \"TransactionToDateTime\": \"2027-12-31T01:00:00.000+01:00\",\n        \"ConsentId\": \"98e3c377-adaa-4ec3-a828-8653ccb9bd0c\",\n        \"CreationDateTime\": \"2019-07-30T04:51:15.651+02:00\",\n        \"Status\": \"Authorised\",\n        \"StatusUpdateDateTime\": \"2019-07-30T13:36:49.713+02:00\",\n        \"Scope\": \"AIS\",\n        \"ClientId\": \"in01tn01_client\",\n        \"Account\": [\n            {\n                \"AccountId\": \"31d77b06141c11e9ab14d6\"\n            }\n        ],\n        \"UserId\": \"in01tn01_user\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update AIS TRUSTED Consent",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							},
+							{
+								"key": "user-id",
+								"type": "text",
+								"value": "{{userId}}"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Data\": {\n        \"ConsentId\": \"{{consentId}}\",\n        \"Action\": \"Authorize\"\n    }\n}"
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{accessPort}}{{accessBase}}",
+							"path": [
+								"consents",
+								"{{consentId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Update AIS Consent",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"type": "text",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"type": "text",
+										"value": "104.25.212.99"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"type": "text",
+										"value": "93bac548-d2de-4546-b106-880a5018460d"
+									},
+									{
+										"key": "user-id",
+										"type": "text",
+										"value": "{{userId}}"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"Data\": {\n        \"Permissions\": [\n            \"ReadAccountsBasic\",\n            \"ReadAccountsDetail\",\n            \"ReadBalances\",\n            \"ReadTransactionsCredits\",\n            \"ReadTransactionsDebits\",\n            \"ReadTransactionsDetail\",\n            \"ReadParty\",\n            \"ReadPartyPSU\"\n        ],\n        \"ConsentId\": \"{{consentId}}\",\n        \"Action\": \"Authorize\",\n        \"Account\": [\n        \t{\n            \"AccountId\": \"{{accountId}}\"\n        \t}\n        ]\n    }\n}"
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{accessPort}}{{accessBase}}",
+									"path": [
+										"consents",
+										"{{consentId}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-15"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "68940ca2-742c-486e-95e3-b35ba0e4cdc1"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "user-id",
+									"value": "in01tn01_user"
+								},
+								{
+									"key": "x-fapi-auth-date",
+									"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+								},
+								{
+									"key": "x-fapi-customer-ip-address",
+									"value": "104.25.212.99"
+								},
+								{
+									"key": "x-fapi-interaction-id",
+									"value": "93bac548-d2de-4546-b106-880a5018460d"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Permissions\": [\n            \"ReadAccountsBasic\",\n            \"ReadAccountsDetail\",\n            \"ReadBalances\",\n            \"ReadTransactionsCredits\",\n            \"ReadTransactionsDebits\",\n            \"ReadTransactionsDetail\",\n            \"ReadParty\",\n            \"ReadPartyPSU\"\n        ],\n        \"ExpirationDateTime\": \"2019-12-31T01:00:00.000+01:00\",\n        \"TransactionFromDateTime\": \"2017-05-31T02:00:00.000+02:00\",\n        \"TransactionToDateTime\": \"2027-12-31T01:00:00.000+01:00\",\n        \"ConsentId\": \"98e3c377-adaa-4ec3-a828-8653ccb9bd0c\",\n        \"CreationDateTime\": \"2019-07-30T04:51:15.651+02:00\",\n        \"Status\": \"Authorised\",\n        \"StatusUpdateDateTime\": \"2019-07-30T13:36:49.713+02:00\",\n        \"Scope\": \"AIS\",\n        \"ClientId\": \"in01tn01_client\",\n        \"Account\": [\n            {\n                \"AccountId\": \"31d77b06141c11e9ab14d6\"\n            }\n        ],\n        \"UserId\": \"in01tn01_user\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get PIS Consent",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							},
+							{
+								"key": "user-id",
+								"type": "text",
+								"value": "{{userId}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/pis-consents/{{pis-consentId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{accessPort}}{{accessBase}}",
+							"path": [
+								"pis-consents",
+								"{{pis-consentId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get AIS Consent",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"type": "text",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"type": "text",
+										"value": "104.25.212.99"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"type": "text",
+										"value": "93bac548-d2de-4546-b106-880a5018460d"
+									},
+									{
+										"key": "user-id",
+										"value": "{{userId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/consents/{{consentId}}",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{accessPort}}{{accessBase}}",
+									"path": [
+										"consents",
+										"{{consentId}}"
+									]
+								}
+							},
+							"status": "Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/plain;charset=iso-8859-1"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "java.lang.NullPointerException\n\tat hu.dpc.ob.model.service.ConsentService.calcConsentRejectReason(ConsentService.java:425)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:498)\n\tat org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:343)\n\tat org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:198)\n\tat org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:752)\n\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)\n\tat org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:688)\n\tat hu.dpc.ob.model.service.ConsentService$$EnhancerBySpringCGLIB$$2a068279.calcConsentRejectReason(<generated>)\n\tat hu.dpc.ob.model.service.ApiService.validateAndRegisterAction(ApiService.java:215)\n\tat hu.dpc.ob.model.service.ApiService$$FastClassBySpringCGLIB$$83a99ddc.invoke(<generated>)\n\tat org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)\n\tat org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:749)\n\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)\n\tat org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:295)\n\tat org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:98)\n\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)\n\tat org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:688)\n\tat hu.dpc.ob.model.service.ApiService$$EnhancerBySpringCGLIB$$f1ca4df9.validateAndRegisterAction(<generated>)\n\tat hu.dpc.ob.rest.processor.ValidateProcessor.process(ValidateProcessor.java:102)\n\tat hu.dpc.ob.rest.processor.ob.ObValidateProcessor.process(ObValidateProcessor.java:30)\n\tat hu.dpc.ob.rest.processor.ob.access.AccessValidateProcessor.process(AccessValidateProcessor.java:31)\n\tat hu.dpc.ob.rest.processor.ob.access.AccessValidateProcessor$$FastClassBySpringCGLIB$$8e245436.invoke(<generated>)\n\tat org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)\n\tat org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:684)\n\tat hu.dpc.ob.rest.processor.ob.access.AccessValidateProcessor$$EnhancerBySpringCGLIB$$e54a3947.process(<generated>)\n\tat org.apache.camel.processor.DelegateSyncProcessor.process(DelegateSyncProcessor.java:63)\n\tat org.apache.camel.processor.RedeliveryErrorHandler.process(RedeliveryErrorHandler.java:548)\n\tat org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201)\n\tat org.apache.camel.processor.Pipeline.process(Pipeline.java:138)\n\tat org.apache.camel.processor.Pipeline.process(Pipeline.java:101)\n\tat org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201)\n\tat org.apache.camel.component.direct.DirectProducer.process(DirectProducer.java:76)\n\tat org.apache.camel.processor.SendProcessor.process(SendProcessor.java:148)\n\tat org.apache.camel.processor.RedeliveryErrorHandler.process(RedeliveryErrorHandler.java:548)\n\tat org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201)\n\tat org.apache.camel.processor.Pipeline.process(Pipeline.java:138)\n\tat org.apache.camel.processor.Pipeline.process(Pipeline.java:101)\n\tat org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201)\n\tat org.apache.camel.component.direct.DirectProducer.process(DirectProducer.java:76)\n\tat org.apache.camel.processor.SendProcessor.process(SendProcessor.java:148)\n\tat org.apache.camel.processor.RedeliveryErrorHandler.process(RedeliveryErrorHandler.java:548)\n\tat org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201)\n\tat org.apache.camel.processor.Pipeline.process(Pipeline.java:138)\n\tat org.apache.camel.processor.Pipeline.process(Pipeline.java:101)\n\tat org.apache.camel.processor.CamelInternalProcessor.process(CamelInternalProcessor.java:201)\n\tat org.apache.camel.component.jetty.CamelContinuationServlet.doService(CamelContinuationServlet.java:220)\n\tat org.apache.camel.http.common.CamelServlet.service(CamelServlet.java:79)\n\tat javax.servlet.http.HttpServlet.service(HttpServlet.java:741)\n\tat org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:873)\n\tat org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:542)\n\tat org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:255)\n\tat org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1345)\n\tat org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:203)\n\tat org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:480)\n\tat org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:201)\n\tat org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1247)\n\tat org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:144)\n\tat org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132)\n\tat org.eclipse.jetty.server.Server.handle(Server.java:502)\n\tat org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:364)\n\tat org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:260)\n\tat org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:305)\n\tat org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:103)\n\tat org.eclipse.jetty.io.ChannelEndPoint$2.run(ChannelEndPoint.java:118)\n\tat org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:765)\n\tat org.eclipse.jetty.util.thread.QueuedThreadPool$2.run(QueuedThreadPool.java:683)\n\tat java.lang.Thread.run(Thread.java:748)\n"
+						}
+					]
+				},
+				{
+					"name": "Init PIS Consent",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							},
+							{
+								"key": "user-id",
+								"type": "text",
+								"value": "{{userId}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/pis-consents/{{pis-consentId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{accessPort}}{{accessBase}}",
+							"path": [
+								"pis-consents",
+								"{{pis-consentId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Init PIS Consent",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"type": "text",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"type": "text",
+										"value": "104.25.212.99"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"type": "text",
+										"value": "93bac548-d2de-4546-b106-880a5018460d"
+									},
+									{
+										"key": "user-id",
+										"type": "text",
+										"value": "{{userId}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/pis-consents/{{pis-consentId}}",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{accessPort}}{{accessBase}}",
+									"path": [
+										"pis-consents",
+										"{{pis-consentId}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-69"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "1ec937e1-bfd8-4887-8340-a00cb8a423b2"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "user-id",
+									"value": "in01tn01_user"
+								},
+								{
+									"key": "x-fapi-auth-date",
+									"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+								},
+								{
+									"key": "x-fapi-customer-ip-address",
+									"value": "104.25.212.99"
+								},
+								{
+									"key": "x-fapi-interaction-id",
+									"value": "93bac548-d2de-4546-b106-880a5018460d"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Initiation\": {\n            \"InstructionIdentification\": \"fefce099-2f17-4c3a-ae29-412732100015\",\n            \"EndToEndIdentification\": \"fefce099-2f17-4c3a-ae29-412732100015\",\n            \"InstructedAmount\": {\n                \"Amount\": 4,\n                \"Currency\": \"TZS\"\n            },\n            \"DebtorAccount\": {\n                \"SchemeName\": \"UK.OBIE.BBAN\",\n                \"Identification\": \"31d77b06141c11e9ab14d6\"\n            },\n            \"CreditorAccount\": {\n                \"SchemeName\": \"UK.OBIE.Paym\",\n                \"Identification\": \"27710203999\",\n                \"Name\": \"Rhino Saving Account 1\"\n            },\n            \"RemittanceInformation\": {},\n            \"SupplementaryData\": {\n                \"interopData\": {\n                    \"amountType\": \"RECEIVE\",\n                    \"transactionType\": {\n                        \"scenario\": \"TRANSFER\",\n                        \"initiator\": \"PAYER\",\n                        \"initiatorType\": \"CONSUMER\"\n                    },\n                    \"note\": \"Test payment\"\n                }\n            }\n        },\n        \"SCASupportData\": {\n            \"AppliedAuthenticationApproach\": \"CA\"\n        },\n        \"ConsentId\": \"19414031-6378-4f09-8283-d12d7de18ed2\",\n        \"CreationDateTime\": \"2019-07-30T13:53:41.433+02:00\",\n        \"Status\": \"AwaitingAuthorisation\",\n        \"StatusUpdateDateTime\": \"2019-07-30T13:53:46.300+02:00\",\n        \"Charges\": [\n            {\n                \"ChargeBearer\": \"BorneByDebtor\",\n                \"Type\": \"UK.OBIE.MoneyTransferOut\",\n                \"Amount\": {\n                    \"Amount\": 1,\n                    \"Currency\": \"TZS\"\n                }\n            },\n            {\n                \"ChargeBearer\": \"BorneByDebtor\",\n                \"Type\": \"UK.OBIE.MoneyTransferOut\",\n                \"Amount\": {\n                    \"Amount\": 1,\n                    \"Currency\": \"TZS\"\n                }\n            }\n        ]\n    },\n    \"Risk\": {}\n}"
+						}
+					]
+				},
+				{
+					"name": "Update PIS Consent",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-fapi-auth-date",
+								"type": "text",
+								"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+							},
+							{
+								"key": "x-fapi-customer-ip-address",
+								"type": "text",
+								"value": "104.25.212.99"
+							},
+							{
+								"key": "x-fapi-interaction-id",
+								"type": "text",
+								"value": "93bac548-d2de-4546-b106-880a5018460d"
+							},
+							{
+								"key": "user-id",
+								"type": "text",
+								"value": "{{userId}}"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Data\": {\n        \"ConsentId\": \"{{pis-consentId}}\",\n        \"Action\": \"Authorize\"\n    }\n}"
+						},
+						"url": {
+							"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/pis-consents/{{pis-consentId}}",
+							"protocol": "http",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{accessPort}}{{accessBase}}",
+							"path": [
+								"pis-consents",
+								"{{pis-consentId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Update PIS Consent",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "x-fapi-auth-date",
+										"type": "text",
+										"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+									},
+									{
+										"key": "x-fapi-customer-ip-address",
+										"type": "text",
+										"value": "104.25.212.99"
+									},
+									{
+										"key": "x-fapi-interaction-id",
+										"type": "text",
+										"value": "93bac548-d2de-4546-b106-880a5018460d"
+									},
+									{
+										"key": "user-id",
+										"type": "text",
+										"value": "{{userId}}"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"Data\": {\n        \"ConsentId\": \"{{pis-consentId}}\",\n        \"Action\": \"Authorize\"\n    }\n}"
+								},
+								"url": {
+									"raw": "http://{{domain}}:{{accessPort}}{{accessBase}}/pis-consents/{{pis-consentId}}",
+									"protocol": "http",
+									"host": [
+										"{{domain}}"
+									],
+									"port": "{{accessPort}}{{accessBase}}",
+									"path": [
+										"pis-consents",
+										"{{pis-consentId}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept",
+									"value": "application/json"
+								},
+								{
+									"key": "Accept-Encoding",
+									"value": "gzip, deflate"
+								},
+								{
+									"key": "breadcrumbId",
+									"value": "ID-jmarta-Inspiron-5567-1564456358382-0-71"
+								},
+								{
+									"key": "Postman-Token",
+									"value": "f33e6b31-09ab-4ef2-8b8f-6568f7faf107"
+								},
+								{
+									"key": "User-Agent",
+									"value": "PostmanRuntime/7.6.0"
+								},
+								{
+									"key": "user-id",
+									"value": "in01tn01_user"
+								},
+								{
+									"key": "x-fapi-auth-date",
+									"value": "Sun, 10 Sep 2017 19:43:31 GMT"
+								},
+								{
+									"key": "x-fapi-customer-ip-address",
+									"value": "104.25.212.99"
+								},
+								{
+									"key": "x-fapi-interaction-id",
+									"value": "93bac548-d2de-4546-b106-880a5018460d"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.13.v20181111)"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"Data\": {\n        \"Initiation\": {\n            \"InstructionIdentification\": \"fefce099-2f17-4c3a-ae29-412732100015\",\n            \"EndToEndIdentification\": \"fefce099-2f17-4c3a-ae29-412732100015\",\n            \"InstructedAmount\": {\n                \"Amount\": 4,\n                \"Currency\": \"TZS\"\n            },\n            \"DebtorAccount\": {\n                \"SchemeName\": \"UK.OBIE.BBAN\",\n                \"Identification\": \"31d77b06141c11e9ab14d6\"\n            },\n            \"CreditorAccount\": {\n                \"SchemeName\": \"UK.OBIE.Paym\",\n                \"Identification\": \"27710203999\",\n                \"Name\": \"Rhino Saving Account 1\"\n            },\n            \"RemittanceInformation\": {},\n            \"SupplementaryData\": {\n                \"interopData\": {\n                    \"amountType\": \"RECEIVE\",\n                    \"transactionType\": {\n                        \"scenario\": \"TRANSFER\",\n                        \"initiator\": \"PAYER\",\n                        \"initiatorType\": \"CONSUMER\"\n                    },\n                    \"note\": \"Test payment\"\n                }\n            }\n        },\n        \"SCASupportData\": {\n            \"AppliedAuthenticationApproach\": \"CA\"\n        },\n        \"ConsentId\": \"19414031-6378-4f09-8283-d12d7de18ed2\",\n        \"CreationDateTime\": \"2019-07-30T13:53:41.433+02:00\",\n        \"Status\": \"Authorised\",\n        \"StatusUpdateDateTime\": \"2019-07-30T13:53:49.248+02:00\",\n        \"Charges\": [\n            {\n                \"ChargeBearer\": \"BorneByDebtor\",\n                \"Type\": \"UK.OBIE.MoneyTransferOut\",\n                \"Amount\": {\n                    \"Amount\": 1,\n                    \"Currency\": \"TZS\"\n                }\n            }\n        ]\n    },\n    \"Risk\": {}\n}"
+						}
+					]
+				}
+			]
 		},
 		{
-			"key": "apiBase",
-			"value": "/apischema/ob",
-			"description": "",
-			"enabled": true
-		},
-		{
-			"key": "accountId",
-			"value": "a6b6c10b2aaa4778ac2fc9",
-			"description": "",
-			"enabled": true
-		},
-		{
-			"key": "accessBase",
-			"value": "/accessschema/ob",
-			"description": "",
-			"enabled": true
-		},
-		{
-			"key": "accessPort",
-			"value": "80",
-			"description": "",
-			"enabled": true
-		},
-		{
-			"key": "userId",
-			"value": "elephantuser1",
-			"description": "",
-			"enabled": true
-		},
-		{
-			"key": "consentId",
-			"value": "832d9723-d104-441a-8d2c-e540a12ade36",
-			"description": "",
-			"enabled": true
-		},
-		{
-			"key": "pis-consentId",
-			"value": "89ae460e-66f1-4fc1-a660-be26d6db4700",
-			"description": "",
-			"enabled": true
-		},
-		{
-			"key": "clientId",
-			"value": "7LcWNiTfUwX_Cz7lJk3fBqGHiSQa",
-			"description": "",
-			"enabled": true
-		},
-		{
-			"key": "clientToken",
-			"value": "672ea2cd-7466-3614-b2e2-a14d37c90aa3",
-			"description": "",
-			"enabled": true
-		},
-		{
-			"key": "userToken",
-			"value": "7d03e8f6-6868-380a-b2d5-c458402bb368",
-			"description": "",
-			"enabled": true
-		},
-		{
-			"key": "paymentId",
-			"value": "15079736-2d6c-46be-a90e-cf1ddd2da14e",
-			"description": "",
-			"enabled": true
-		},
-		{
-			"key": "clientRefId",
-			"value": "fefce099-2f17-4c3a-ae29-412732100017",
-			"description": "",
-			"enabled": true
-		},
-		{
-			"key": "instructionId",
-			"value": "fefce099-2f17-4c3a-ae29-412732100017",
-			"description": "",
-			"enabled": true
-		},
-		{
-			"key": "amount",
-			"value": 5,
-			"description": "",
-			"enabled": true
+			"name": "Fineract",
+			"item": [
+				{
+					"name": "Get Client Accounts",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic bWlmb3M6cGFzc3dvcmQ=",
+								"type": "text"
+							},
+							{
+								"key": "User",
+								"value": "mifos",
+								"type": "text"
+							},
+							{
+								"key": "Fineract-Platform-TenantId",
+								"value": "tn02",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://lion.mlabs.dpc.hu:80/fineract-provider/api/v1/interoperation/accounts/83c4ed1c074b484e85cc79",
+							"protocol": "http",
+							"host": [
+								"lion",
+								"mlabs",
+								"dpc",
+								"hu"
+							],
+							"port": "80",
+							"path": [
+								"fineract-provider",
+								"api",
+								"v1",
+								"interoperation",
+								"accounts",
+								"83c4ed1c074b484e85cc79"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Client Accounts",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Basic bWlmb3M6cGFzc3dvcmQ=",
+										"type": "text"
+									},
+									{
+										"key": "User",
+										"value": "mifos",
+										"type": "text"
+									},
+									{
+										"key": "Fineract-Platform-TenantId",
+										"value": "tn02",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://lion.mlabs.dpc.hu:80/fineract-provider/api/v1/interoperation/accounts/83c4ed1c074b484e85cc79",
+									"protocol": "http",
+									"host": [
+										"lion",
+										"mlabs",
+										"dpc",
+										"hu"
+									],
+									"port": "80",
+									"path": [
+										"fineract-provider",
+										"api",
+										"v1",
+										"interoperation",
+										"accounts",
+										"83c4ed1c074b484e85cc79"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 30 Jul 2019 12:09:01 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "X-Notification-Refresh",
+									"value": "false"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, PUT, DELETE, OPTIONS"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"accountId\": \"83c4ed1c074b484e85cc79\",\n    \"accountNo\": \"9062b90de19b43989005\",\n    \"savingProductId\": \"1\",\n    \"productName\": \"Saving Product1\",\n    \"shortProductName\": \"SP1\",\n    \"currency\": \"TZS\",\n    \"accountBalance\": 94078.655,\n    \"status\": \"ACTIVE\",\n    \"subStatus\": \"NONE\",\n    \"accountType\": \"INDIVIDUAL\",\n    \"depositType\": \"SAVINGS_DEPOSIT\",\n    \"activatedOn\": [\n        2018,\n        12,\n        2\n    ],\n    \"statusUpdateOn\": [\n        2019,\n        7,\n        30\n    ],\n    \"balanceOn\": [\n        2019,\n        7,\n        26\n    ],\n    \"identifiers\": [\n        {\n            \"idType\": \"IBAN\",\n            \"idValue\": \"IC11in01tn0283c4ed1c074b484e85cc79\"\n        },\n        {\n            \"idType\": \"MSISDN\",\n            \"idValue\": \"27710102999\"\n        },\n        {\n            \"idType\": \"ACCOUNT_ID\",\n            \"idValue\": \"83c4ed1c074b484e85cc79\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Calculate Quote",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Basic bWlmb3M6cGFzc3dvcmQ="
+							},
+							{
+								"key": "User",
+								"type": "text",
+								"value": "mifos"
+							},
+							{
+								"key": "Fineract-Platform-TenantId",
+								"type": "text",
+								"value": "tn02"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactionCode\": \"fc250f07-f065-447d-bbba-917f97200e72\",\n  \"quoteCode\": \"44fb65f1-749d-4eff-8fb2-97219b88ce4d\",\n  \"accountId\": \"83c4ed1c074b484e85cc79\",\n  \"amount\": {\n    \"amount\": 165.88000,\n    \"currency\": \"TZS\"\n  },\n  \"amountType\": \"RECEIVE\",\n  \"transactionRole\": \"PAYER\",\n  \"transactionType\": {\n    \"scenario\": \"PAYMENT\",\n    \"initiator\": \"PAYER\",\n    \"initiatorType\": \"CONSUMER\",\n    \"refundInfo\": {}\n  },\n  \"note\": \"Test payment\",\n  \"expiration\": {\n    \"nano\": 766000000,\n    \"hour\": 0,\n    \"minute\": 44,\n    \"second\": 14,\n    \"dayOfMonth\": 22,\n    \"dayOfWeek\": \"MONDAY\",\n    \"dayOfYear\": 203,\n    \"monthValue\": 7,\n    \"year\": 2019,\n    \"month\": \"JULY\",\n    \"chronology\": {\n      \"calendarType\": \"iso8601\",\n      \"id\": \"ISO\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "http://lion.mlabs.dpc.hu:80/fineract-provider/api/v1/interoperation/quotes",
+							"protocol": "http",
+							"host": [
+								"lion",
+								"mlabs",
+								"dpc",
+								"hu"
+							],
+							"port": "80",
+							"path": [
+								"fineract-provider",
+								"api",
+								"v1",
+								"interoperation",
+								"quotes"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Calculate Quote",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Basic bWlmb3M6cGFzc3dvcmQ="
+									},
+									{
+										"key": "User",
+										"type": "text",
+										"value": "mifos"
+									},
+									{
+										"key": "Fineract-Platform-TenantId",
+										"type": "text",
+										"value": "tn02"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"transactionCode\": \"fc250f07-f065-447d-bbba-917f97200e72\",\n  \"quoteCode\": \"44fb65f1-749d-4eff-8fb2-97219b88ce4d\",\n  \"accountId\": \"83c4ed1c074b484e85cc79\",\n  \"amount\": {\n    \"amount\": 165.88000,\n    \"currency\": \"TZS\"\n  },\n  \"amountType\": \"RECEIVE\",\n  \"transactionRole\": \"PAYER\",\n  \"transactionType\": {\n    \"scenario\": \"PAYMENT\",\n    \"initiator\": \"PAYER\",\n    \"initiatorType\": \"CONSUMER\",\n    \"refundInfo\": {}\n  },\n  \"note\": \"Test payment\",\n  \"expiration\": {\n    \"nano\": 766000000,\n    \"hour\": 0,\n    \"minute\": 44,\n    \"second\": 14,\n    \"dayOfMonth\": 22,\n    \"dayOfWeek\": \"MONDAY\",\n    \"dayOfYear\": 203,\n    \"monthValue\": 7,\n    \"year\": 2019,\n    \"month\": \"JULY\",\n    \"chronology\": {\n      \"calendarType\": \"iso8601\",\n      \"id\": \"ISO\"\n    }\n  }\n}"
+								},
+								"url": {
+									"raw": "http://lion.mlabs.dpc.hu:80/fineract-provider/api/v1/interoperation/quotes",
+									"protocol": "http",
+									"host": [
+										"lion",
+										"mlabs",
+										"dpc",
+										"hu"
+									],
+									"port": "80",
+									"path": [
+										"fineract-provider",
+										"api",
+										"v1",
+										"interoperation",
+										"quotes"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 30 Jul 2019 12:09:12 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "X-Notification-Refresh",
+									"value": "false"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, PUT, DELETE, OPTIONS"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"quoteCode\": \"44fb65f1-749d-4eff-8fb2-97219b88ce4d\",\n    \"fspFee\": {\n        \"amount\": 1,\n        \"currency\": \"TZS\"\n    },\n    \"transactionCode\": \"fc250f07-f065-447d-bbba-917f97200e72\",\n    \"state\": \"ACCEPTED\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Start interop transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Basic bWlmb3M6cGFzc3dvcmQ="
+							},
+							{
+								"key": "User",
+								"type": "text",
+								"value": "mifos"
+							},
+							{
+								"key": "Fineract-Platform-TenantId",
+								"type": "text",
+								"value": "tn02"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \n    \"transactionCode\":\"fc250f07-f065-447d-bbba-917f97200e72\",\n    \"quoteCode\":\"f4019396-853b-4bfc-bbbe-ed0af47b7f78\",\n    \"accountId\":\"83c4ed1c074b484e85cc79\",\n    \"amount\":{  \n        \"amount\":165.88000,\n        \"currency\":\"TZS\"\n    },\n    \"amountType\":\"RECEIVE\",\n    \"transactionRole\":\"PAYER\",\n    \"transactionType\":{  \n        \"scenario\":\"PAYMENT\",\n        \"initiator\":\"PAYER\",\n        \"initiatorType\":\"CONSUMER\"\n    },\n    \"note\":\"Test payment\",\n    \"expiration\":\"2019-12-22T02:44:14.76\"\n}"
+						},
+						"url": {
+							"raw": "http://lion.mlabs.dpc.hu:80/api/transactions",
+							"protocol": "http",
+							"host": [
+								"lion",
+								"mlabs",
+								"dpc",
+								"hu"
+							],
+							"port": "80",
+							"path": [
+								"api",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
-	],
-	"_postman_variable_scope": "environment",
-	"_postman_exported_at": "2019-07-31T18:11:02.929Z",
-	"_postman_exported_using": "Postman/6.7.1"
+	]
 }
