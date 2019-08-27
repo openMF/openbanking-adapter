@@ -10,7 +10,7 @@ debug: true
 
 spring:
   profiles:
-    active: in2, dev, fineractx, test # in1/in2, dev/prod, fineractx/fineractcn, test
+    active: in1, dev, fineractx, test # in1/in2, dev/prod, fineractx/fineractcn, test
 
 ---
 spring:

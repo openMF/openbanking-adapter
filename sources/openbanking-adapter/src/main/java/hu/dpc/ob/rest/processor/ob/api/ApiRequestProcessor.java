@@ -32,7 +32,7 @@ public abstract class ApiRequestProcessor extends ObRequestProcessor {
     public boolean updateTransferState(PspRestClient pspRestClient, @NotNull Payment payment, @NotNull PspId pspId) {
         String transactionId = payment.getTransactionId();
         if (transactionId != null && !payment.getStatus().isComplete()) {
-            PspPaymentResponseDto transactionResponse = pspRestClient.callTransaction(transactionId, pspId);
+            PspPaymentResponseDto transactionResponse = pspRestClient.callPayment(transactionId, pspId);
             @NotNull String failedReason = transactionResponse.updateEntity(payment); // TODO
             if (failedReason != null)
                 throw new UnsupportedOperationException("Can not refresh payment state: " + failedReason);

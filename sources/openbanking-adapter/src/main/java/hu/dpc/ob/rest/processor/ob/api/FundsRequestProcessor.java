@@ -53,7 +53,7 @@ public class FundsRequestProcessor extends ApiRequestProcessor {
         PspAccountResponseDto accountResponse = pspRestClient.callAccount(accountId, pspId);
 
         LocalDateTime fundsDateTime = DateUtils.getLocalDateTimeOfTenant();
-        boolean fundsAvailable = MathUtils.isGreaterThanOrEqualTo(accountResponse.getAccountBalance(), payment.getRequiredAmount());
+        boolean fundsAvailable = MathUtils.isGreaterThanOrEqualTo(accountResponse.getAvailableBalance(), payment.getRequiredAmount());
 
         FundsResponseDto response = FundsResponseDto.create(fundsDateTime, fundsAvailable);
         exchange.getIn().setBody(response);

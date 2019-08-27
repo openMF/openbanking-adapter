@@ -60,7 +60,7 @@ public class PaymentCreateProcessor extends AccessRequestProcessor {
             PspPaymentCreateRequestDto transactionRequest = PspPaymentCreateRequestDto.create(payment);
             PspId pspId = exchange.getProperty(ExchangeHeader.PSP_ID.getKey(), PspId.class);
 
-            PspPaymentCreateResponseDto transactionResponse = getPspRestClient().callTransactionCreate(transactionRequest, pspId);
+            PspPaymentCreateResponseDto transactionResponse = getPspRestClient().callPaymentCreate(transactionRequest, pspId);
             //TODO handle failed response
             transactionResponse.mapToEntity(payment);
             response = PaymentResponseDto.create(payment);

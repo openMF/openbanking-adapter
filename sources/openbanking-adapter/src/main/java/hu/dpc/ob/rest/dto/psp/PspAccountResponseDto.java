@@ -34,8 +34,6 @@ public class PspAccountResponseDto {
     @NotNull
     private String accountId;
     @NotNull
-    private String accountNo;
-    @NotNull
     @JsonProperty("savingProductId")
     private String productId;
     @NotNull
@@ -46,6 +44,8 @@ public class PspAccountResponseDto {
     private String currency;
     @NotNull
     private BigDecimal accountBalance;
+    @NotNull
+    private BigDecimal availableBalance;
     @NotNull
     private String status; // PspAccountStatus
 
@@ -69,7 +69,7 @@ public class PspAccountResponseDto {
     @Transient
     public String getApiNickName() {
         return getProductName() == null
-                ? (getShortProductName() == null ? getAccountNo() : getShortProductName())
+                ? (getShortProductName() == null ? getAccountId() : getShortProductName())
                 : getProductName();
     }
 

@@ -85,6 +85,23 @@ public class PspRestClient {
         return JsonUtils.toPojo(responseJson, PspAccountResponseDto.class); // TODO: response class for CN
     }
 
+    public PspAccountsResponseDto callAccounts(String pspUserId, PspId pspId) {
+        OperationProperties opProps = pspSettings.getOperationProps(PspSettings.PspOperation.ACCOUNTS);
+        @NotNull HttpMethod method = opProps.getHttpMethod();
+        log.debug(String.format("Call PSP " + method + " /" + opProps.getName() + ", user: %s", pspUserId));
+
+        String tenant = pspId.getTenant();
+        UriProperties tenantProps = opProps.getTenantProps(tenant);
+        String url = ContextUtils.resolvePathParams(tenantProps.getUrl(), pspUserId);
+
+        Map<String, String> headers = getHeaders(tenant);
+
+        String responseJson = restClient.call(url, method, headers, null);
+
+        log.debug(String.format("Response PSP  " + method + " /" + opProps.getName() + ", user: %s, payload: %s", pspUserId, responseJson));
+        return JsonUtils.toPojo(responseJson, PspAccountsResponseDto.class); // TODO: response class for CN
+    }
+
     public PspTransactionsResponseDto callTransactions(String accountId, PspId pspId, boolean debit, boolean credit, LocalDateTime fromBookingDateTime, LocalDateTime toBookingDateTime) {
         OperationProperties opProps = pspSettings.getOperationProps(PspSettings.PspOperation.TRANSACTIONS);
         @NotNull HttpMethod method = opProps.getHttpMethod();
@@ -104,23 +121,6 @@ public class PspRestClient {
 
         log.debug(String.format("Response PSP  " + method + " /" + opProps.getName() + ", account: %s, payload: %s", accountId, responseJson));
         return JsonUtils.toPojo(responseJson, PspTransactionsResponseDto.class); // TODO: response class for CN
-    }
-
-    public PspAccountsResponseDto callAccounts(String pspUserId, PspId pspId) {
-        OperationProperties opProps = pspSettings.getOperationProps(PspSettings.PspOperation.ACCOUNTS);
-        @NotNull HttpMethod method = opProps.getHttpMethod();
-        log.debug(String.format("Call PSP " + method + " /" + opProps.getName() + ", user: %s", pspUserId));
-
-        String tenant = pspId.getTenant();
-        UriProperties tenantProps = opProps.getTenantProps(tenant);
-        String url = ContextUtils.resolvePathParams(tenantProps.getUrl(), pspUserId);
-
-        Map<String, String> headers = getHeaders(tenant);
-
-        String responseJson = restClient.call(url, method, headers, null);
-
-        log.debug(String.format("Response PSP  " + method + " /" + opProps.getName() + ", user: %s, payload: %s", pspUserId, responseJson));
-        return JsonUtils.toPojo(responseJson, PspAccountsResponseDto.class); // TODO: response class for CN
     }
 
     public PspIdentifiersResponseDto callIdentifiers(String accountId, PspId pspId) {
@@ -197,7 +197,7 @@ public class PspRestClient {
         return JsonUtils.toPojo(responseJson, PspQuoteResponseDto.class);
     }
 
-    public PspPaymentCreateResponseDto callTransactionCreate(@NotNull PspPaymentCreateRequestDto request, PspId pspId) {
+    public PspPaymentCreateResponseDto callPaymentCreate(@NotNull PspPaymentCreateRequestDto request, PspId pspId) {
         OperationProperties opProps = pspSettings.getOperationProps(PspSettings.PspOperation.PAYMENT_CREATE);
         @NotNull HttpMethod method = opProps.getHttpMethod();
         log.debug(String.format("Call PSP " + method + " /" + opProps.getName() + ", psp: %s, paymentId: %s", pspId, request.getClientRefId()));
@@ -216,7 +216,7 @@ public class PspRestClient {
         return JsonUtils.toPojo(responseJson, PspPaymentCreateResponseDto.class);
     }
 
-    public PspPaymentResponseDto callTransaction(@NotNull String transactionId, PspId pspId) {
+    public PspPaymentResponseDto callPayment(@NotNull String transactionId, PspId pspId) {
         OperationProperties opProps = pspSettings.getOperationProps(PspSettings.PspOperation.PAYMENT);
         @NotNull HttpMethod method = opProps.getHttpMethod();
         log.debug(String.format("Call PSP " + method + " /" + opProps.getName() + ", psp: %s, transactionId: %s", pspId, transactionId));

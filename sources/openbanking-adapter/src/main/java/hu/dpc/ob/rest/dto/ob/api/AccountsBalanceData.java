@@ -24,18 +24,16 @@ import java.util.List;
 public class AccountsBalanceData {
 
     @JsonProperty(value = "Balance", required = true)
+    @NotNull
     private List<AccountBalanceData> balances;
 
-    public AccountsBalanceData(List<AccountBalanceData> balances) {
+    public AccountsBalanceData(@NotNull List<AccountBalanceData> balances) {
         this.balances = balances;
     }
 
     @NotNull
     public static AccountsBalanceData transform(@NotNull PspAccountResponseDto pspAccount) {
-        List<AccountBalanceData> balances = new ArrayList<>(1);
-        AccountBalanceData transform = AccountBalanceData.transform(pspAccount);
-        if (transform != null)
-            balances.add(transform);
+        List<AccountBalanceData> balances = AccountBalanceData.transform(pspAccount);
         return new AccountsBalanceData(balances);
     }
 

@@ -26,6 +26,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -75,10 +76,18 @@ public class AccountBalanceData {
         this(accountId, amount, creditDebitIndicator, type, dateTime, null);
     }
 
-    static AccountBalanceData transform(@NotNull PspAccountResponseDto pspAccount) {
-        AmountData amount = AmountData.transform(pspAccount);
-        return new AccountBalanceData(pspAccount.getAccountId(), amount, CreditDebitType.DEBIT, BalanceType.INFORMATION,
-                DateUtils.toLocalDateTime(pspAccount.getBalanceOn()));
+    @NotNull
+    static List<AccountBalanceData> transform(@NotNull PspAccountResponseDto pspAccount) {
+        @NotNull String accountId = pspAccount.getAccountId();
+        @NotNull LocalDateTime dateTime = DateUtils.toLocalDateTime(pspAccount.getBalanceOn());
+
+        List<AccountBalanceData> balances = new ArrayList<>(1);
+        AmountData amount = new AmountData(pspAccount.getAccountBalance(), pspAccount.getCurrency());
+        balances.add(new AccountBalanceData(accountId, amount, CreditDebitType.DEBIT, BalanceType.INFORMATION, dateTime));
+
+        amount = new AmountData(pspAccount.getAvailableBalance(), pspAccount.getCurrency());
+        balances.add(new AccountBalanceData(accountId, amount, CreditDebitType.DEBIT, BalanceType.INTERIM_AVAILABLE, dateTime));
+        return balances;
     }
 
     static AccountBalanceData transform(@NotNull PspAccountsSavingsData pspAccount, String accountId) {

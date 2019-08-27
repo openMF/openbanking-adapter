@@ -109,7 +109,7 @@ public class PaymentService {
         }
         return reasonCode == null
                 ? acceptAction(payment, PaymentActionCode.PAYMENT_ACCEPT, null)
-                : registerAction(payment, PaymentActionCode.PAYMENT_ACCEPT, null, EventStatusCode.REJECTED, reasonCode, reasonDesc);
+                : rejectAction(payment, PaymentActionCode.PAYMENT_ACCEPT, null, reasonCode, reasonDesc);
     }
 
     /** Should call each time when an action is performed on an existing payment to validate the event.
@@ -234,12 +234,29 @@ public class PaymentService {
     }
 
     @Transactional(MANDATORY)
+    PaymentEvent rejectAction(@NotNull Payment payment, @NotNull PaymentActionCode actionCode, ConsentEvent cause, String reasonCode,
+                              String reasonDesc) {
+        return registerAction(payment, actionCode, cause, EventStatusCode.REJECTED, reasonCode, reasonDesc);
+    }
+
+    @Transactional(MANDATORY)
     PaymentEvent rejectAction(@NotNull Payment payment, @NotNull PaymentActionCode actionCode, ConsentEvent cause, @NotNull EventReasonCode reasonCode) {
-        return registerAction(payment, actionCode, cause, EventStatusCode.REJECTED, reasonCode.getId(), reasonCode.getDisplayText());
+        return rejectAction(payment, actionCode, cause, reasonCode.getId(), reasonCode.getDisplayText());
+    }
+
+    @Transactional(MANDATORY)
+    PaymentEvent acceptAction(@NotNull Payment payment, @NotNull PaymentActionCode actionCode, ConsentEvent cause, String reasonCode,
+                              String reasonDesc) {
+        return registerAction(payment, actionCode, cause, EventStatusCode.ACCEPTED, reasonCode, reasonDesc);
+    }
+
+    @Transactional(MANDATORY)
+    PaymentEvent acceptAction(@NotNull Payment payment, @NotNull PaymentActionCode actionCode, ConsentEvent cause, @NotNull EventReasonCode reasonCode) {
+        return acceptAction(payment, actionCode, cause, reasonCode.getId(), reasonCode.getDisplayText());
     }
 
     @Transactional(MANDATORY)
     PaymentEvent acceptAction(@NotNull Payment payment, @NotNull PaymentActionCode actionCode, ConsentEvent cause) {
-        return registerAction(payment, actionCode, cause, EventStatusCode.ACCEPTED, null, null);
+        return acceptAction(payment, actionCode, cause, null, null);
     }
 }

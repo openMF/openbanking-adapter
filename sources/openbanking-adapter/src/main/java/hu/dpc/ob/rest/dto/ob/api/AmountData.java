@@ -46,11 +46,6 @@ public class AmountData {
     }
 
     @NotNull
-    static AmountData transform(@NotNull PspAccountResponseDto pspAccount) {
-        return new AmountData(pspAccount.getAccountBalance(), pspAccount.getCurrency());
-    }
-
-    @NotNull
     static AmountData transform(@NotNull PspAccountsSavingsData pspAccount) {
         return new AmountData(pspAccount.getAccountBalance(), pspAccount.getCurrency().getCode());
     }

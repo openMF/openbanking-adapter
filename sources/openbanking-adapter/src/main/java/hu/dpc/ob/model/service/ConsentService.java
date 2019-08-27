@@ -174,7 +174,7 @@ public class ConsentService {
             String failedMsg = debtorInit.failedMsg == null ? debtorInit.failedReason.getDisplayText() : debtorInit.failedMsg;
             ConsentEvent prepareEvent = registerAction(consent, ConsentActionCode.PREPARE, EventStatusCode.REJECTED, consentId, null, failedCode, failedMsg);
             consentEvent = acceptAction(consent, ConsentActionCode.REJECT, consentId, prepareEvent);
-            paymentService.rejectAction(payment, PaymentActionCode.PAYMENT_REJECT, consentEvent, null);
+//            paymentService.acceptAction(payment, PaymentActionCode.PAYMENT_REJECT, consentEvent); // consent reject will register payment reject action
         }
         else {
             consentEvent = acceptAction(consent, ConsentActionCode.PREPARE, consentId, null);

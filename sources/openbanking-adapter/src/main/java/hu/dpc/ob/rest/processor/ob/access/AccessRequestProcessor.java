@@ -94,11 +94,15 @@ public abstract class AccessRequestProcessor extends ObRequestProcessor {
         Charge charge = null;
         if (failedReason == null) {
             PspAccountResponseDto accountResponse = pspRestClient.callAccount(accountId, pspId);
-            balance = accountResponse.getAccountBalance();
-            if (!accountResponse.getApiAccountStatus().isEnabled())
+            balance = accountResponse.getAvailableBalance();
+            if (!accountResponse.getApiAccountStatus().isEnabled()) {
                 failedReason = ACCOUNT_NOT_ENABLED;
-            else if (MathUtils.isLessThan(balance, payment.getAmount()))
+                failedMsg = failedReason.getDisplayText() + ", status: " + accountResponse.getApiAccountStatus();
+            }
+            else if (MathUtils.isLessThan(balance, payment.getAmount())) {
                 failedReason = NOT_ENOUGH_FUNDS;
+                failedMsg = failedReason.getDisplayText() + ", available: " + balance;
+            }
 
             if (failedReason == null) {
                 PspQuoteRequestDto quoteRequest = PspQuoteRequestDto.create(payment, UUID.randomUUID().toString(), accountId); // TODO store generated quote id
