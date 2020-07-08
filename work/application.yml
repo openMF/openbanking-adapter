@@ -8,33 +8,24 @@
 
 debug: true
 
+server:
+  port: 5000
+
 spring:
   profiles:
-    active: in1, dev, fineractx, test # in1/in2, dev/prod, fineractx/fineractcn, test
+    active: in1, prod, fineractx # in1/in2, dev/prod, fineractx/fineractcn, test
 
 ---
 spring:
   profiles: in1
 
-instance: in01
-tn1: tn01
-tn2: tn02
+instance: in03
+tn1: tn05
+tn2: tn06
 
 domain:
-  tn1: buffalo.mlabs.dpc.hu
-  tn2: lion.mlabs.dpc.hu
----
-
-spring:
-  profiles: in2
-
-instance: in02
-tn1: tn03
-tn2: tn04
-
-domain:
-  tn1: rhino.mlabs.dpc.hu
-  tn2: elephant.mlabs.dpc.hu
+  tn1: leopard.mifos.io
+  tn2: gorilla.mifos.io
 ---
 
 # ------------ Spring settings -----------
@@ -43,7 +34,7 @@ spring:
   main:
     web-application-type: none
   datasource:
-    url: jdbc:mariadb://localhost:3306/ob_${tn1}
+    url: jdbc:mariadb://fineractmysql:3306/ob_${tn1}
     username: root
     password: mysql
     driver-class-name: org.mariadb.jdbc.Driver
@@ -65,23 +56,6 @@ spring:
     enabled: false
     change-log: classpath:/db/liquibase-changelog.yml
 
----
-spring:
-  profiles: prod & in1
-
-  datasource:
-    url: jdbc:mariadb://hackathon2019-fin12ireland2.c1doadknyjf1.eu-west-1.rds.amazonaws.com:3306/ob_${tn1}
-    username: admin
-    password: adminadminadmin
----
-
-spring:
-  profiles: prod & in2
-
-  datasource:
-    url: jdbc:mariadb://hackathon2019-fin12ireland.c1doadknyjf1.eu-west-1.rds.amazonaws.com:3306/ob_${tn1}
-    username: admin
-    password: adminadminadmin
 ---
 
 logging:
@@ -134,12 +108,6 @@ adapter-settings:
     expiration: 3600 #sec
 
 ---
-spring:
-  profiles: test
-
-adapter-settings:
-  env: test # test, prod (default: prod)
----
 
 # ------------ API settings -----------
 
@@ -166,7 +134,7 @@ api-settings:
           port: 62020
         - name: ${tn2}
           port: 62021
-        host: http://0.0.0.0 #http://payments.dpc.hu:80
+        host: http://0.0.0.0
         base: adapter/ob
       - name: ais-consent-create #create AIS TPP consent
         path: account-access-consents
@@ -239,9 +207,9 @@ access-settings:
         password: admin
         tenants:
         - name: ${tn1}
-          host: https://api.${domain.tn1}
+          host: https://api-${domain.tn1}
         - name: ${tn2}
-          host: https://api.${domain.tn2}
+          host: https://api-${domain.tn2}
       - name: userinfo
         port: 8243
         base:
@@ -294,40 +262,18 @@ access-settings:
 ---
 psp:
   tn1:
-    host: http://localhost
+    host: https://leopard.mifos.io
   tn2:
-    host: http://localhost
-  port: 8080
+    host: https://gorilla.mifos.io
+  port: 8443
   base: fineract-provider/api/v1
 hub:
   tn1:
-    host: http://localhost
+    host: http://med-connector-channel.mifos.io
   tn2:
-    host: http://localhost
-  port: 58080
+    host: http://med-connector-channel.mifos.io
+  port: 80
   base: channel
----
-
-spring:
-  profiles: dev
-
-hub:
-  tn1:
-    host: http://${domain.tn1}
-  tn2:
-    host: http://${domain.tn2}
-  port: 80
-  base: api
----
-
-spring:
-  profiles: prod
-
-psp:
-  port: 80
-hub:
-  port: 80
-  base: api
 ---
 
 spring:
@@ -344,7 +290,7 @@ psp-settings:
   - name: tenant
     key: Fineract-Platform-TenantId
   - name: transaction-tenant
-    key: X-Tenant-Identifier
+    key: Platform-TenantId
   operations: #adapter -> psp
   - name: operation-basic-settings
     user: mifos
@@ -392,7 +338,7 @@ psp-settings:
       host: ${hub.tn2.host}
     port: ${hub.port}
     base: ${hub.base}
-    path: transactions
+    path: transfer
     method: POST
   - name: payment #get payment status by transaction id
     tenants:
@@ -402,7 +348,7 @@ psp-settings:
       host: ${hub.tn2.host}
     port: ${hub.port}
     base: ${hub.base}
-    path: transactions/{transactionId}
+    path: transfer/{transactionId}
     method: GET
 ---
 
